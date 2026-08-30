@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "namespace": "yipex",
+  "prefix": "/yipex:",
+  "parsing": {
+    "position": "request-start",
+    "caseSensitive": true,
+    "separator": "whitespace-or-end",
+    "unknownCommand": "reject",
+    "missingRequest": "clarify"
+  },
+  "defaultMode": {
+    "id": "natural",
+    "explicit": false,
+    "implementationStatus": "available",
+    "workflow": "controlled-natural-generation",
+    "description": "未使用快捷命令时，继续 YiPex 原有的受控页面生成工作流。"
+  },
+  "commands": [
+    {
+      "id": "page",
+      "token": "/yipex:page",
+      "implementationStatus": "available",
+      "description": "完成需求理解、页面规格、实现、预览、轻量检查和交付记录。",
+      "workflow": "yipex-page-delivery"
+    },
+    {
+      "id": "fast",
+      "token": "/yipex:fast",
+      "implementationStatus": "available",
+      "description": "优先尝试已实现 Recipe；命中时使用标准渲染器，否则回退受控开放式页面生成。",
+      "fallbackMode": "auto",
+      "workflow": "yipex-fast-page-delivery"
+    },
+    {
+      "id": "prd",
+      "token": "/yipex:prd",
+      "implementationStatus": "available",
+      "description": "按基础产品部模板产出需求方案与需求记录，不生成页面预览。",
+      "primaryOutput": "requirement.md",
+      "resource": "modules/yipex/product/prd-standard.md",
+      "workflow": "yipex-prd-delivery"
+    }
+  ]
+}

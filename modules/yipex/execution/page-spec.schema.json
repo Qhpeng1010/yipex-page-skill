@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yipex.local/schemas/page-spec-v1.json",
+  "title": "YiPex Open Page Spec",
+  "type": "object",
+  "required": ["schemaVersion", "metadata", "page"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "metadata": {
+      "type": "object",
+      "required": ["changeId", "pageName", "pageType"],
+      "properties": {
+        "changeId": { "type": "string", "pattern": "^[0-9]{8}-[a-z0-9-]+$" },
+        "pageName": { "type": "string", "minLength": 1 },
+        "pageType": { "type": "string", "minLength": 1 },
+        "componentLibrary": {
+          "type": "object",
+          "properties": {
+            "name": { "const": "antd" },
+            "source": { "const": "official" }
+          },
+          "required": ["name", "source"],
+          "additionalProperties": true
+        },
+        "request": { "type": "string" },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "ruleRefs": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "page": {
+      "type": "object",
+      "required": ["root"],
+      "properties": {
+        "root": { "$ref": "#/$defs/component" },
+        "shell": {
+          "type": "object",
+          "properties": {
+            "id": { "const": "yipex-default" },
+            "sidebar": { "type": "object" },
+            "navigation": { "type": "array", "items": { "type": "object" } },
+            "header": { "type": "object" },
+            "footer": { "type": "object" }
+          },
+          "additionalProperties": true
+        },
+        "theme": { "type": "object" },
+        "data": { "type": "object" },
+        "states": { "type": "object" },
+        "interactions": { "type": "array", "items": { "type": "object" } },
+        "extensions": { "type": "object" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "props": { "type": "object" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+        "events": { "type": "object" },
+        "state": { "type": "object" },
+        "extensions": { "type": "object" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

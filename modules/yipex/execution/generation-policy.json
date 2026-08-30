@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "system": "yipex",
+  "capability": "page",
+  "command": "/yipex:page",
+  "strategy": "dual-composition",
+  "strategyVersion": 2,
+  "strategySource": "execution/capability-model",
+  "defaultMode": "auto",
+  "modes": {
+    "auto": {
+      "description": "命中已实现 Recipe 且本次装配能力均可交付时使用标准组合，否则保持开放组合。",
+      "standardWhenRecipeMatches": true,
+      "unregisteredCombination": "open"
+    },
+    "standard": {
+      "description": "只交付已登记且已实现的标准组合。",
+      "standardWhenRecipeMatches": true,
+      "unregisteredCombination": "capability-gap"
+    },
+    "open": {
+      "description": "允许 custom 和新组合，但仍受 Page Spec 与设计系统约束。",
+      "standardWhenRecipeMatches": false,
+      "unregisteredCombination": "open"
+    },
+    "strict": {
+      "description": "标准模式的严格变体，所有能力必须为 implemented。",
+      "standardWhenRecipeMatches": true,
+      "unregisteredCombination": "capability-gap"
+    }
+  },
+  "capabilityModel": {
+    "version": 1,
+    "registry": "execution/capability-model/capability-registry.json",
+    "compositionRules": "execution/capability-model/composition-rules.json",
+    "pageCompositionSchema": "execution/capability-model/page-composition.schema.json",
+    "dataBindingSchema": "execution/capability-model/data-binding.schema.json"
+  },
+  "pageSpec": {
+    "defaultVersion": 2,
+    "supportedVersions": [1, 2],
+    "v1Mode": "legacy-compatible",
+    "v2ContractRequired": true
+  },
+  "pageFamilyRouting": "single-family-progressive",
+  "presentationIntent": {
+    "guide": "design-system/director-rules/02-template-application-rules.md",
+    "record": "page.extensions.presentationDecisions",
+    "confidence": ["explicit", "inferred-high", "pattern-default"]
+  },
+  "fixedCapabilities": false,
+  "validatedRecipes": true,
+  "capabilityGapOutput": "capability-gap.md",
+  "componentLibrary": {
+    "name": "antd",
+    "source": "official",
+    "localCopy": false,
+    "fallback": "declare-integration-requirement"
+  },
+  "unsupportedCombination": "auto-open-standard-gap",
+  "validationMode": "basic-static-only",
+  "requiredQualityChecks": ["schema", "contract-consistency", "javascript-syntax", "derived-files"],
+  "derivedDesignRecord": {
+    "file": "page-design.md",
+    "default": false,
+    "flag": "--with-design-record",
+    "reason": "可从 Page Spec 恢复的审计产物，不阻塞默认页面交付"
+  },
+  "rulesTrace": "metadata.ruleRefs-and-contract",
+  "manualAcceptance": ["visual", "responsive", "interaction", "business-semantics"],
+  "browserValidation": "explicit-request-only",
+  "states": ["loading", "empty", "error", "permission-denied", "success"],
+  "sourceOfTruth": "page-spec.json"
+}

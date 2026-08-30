@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "2026.08.30.7",
+  "system": "yipex",
+  "skeletonRules": [
+    { "skeleton": "query-workbench", "allowedRegions": ["query", "summary", "table", "action", "detail-overlay", "form-overlay"], "requiredRegions": ["query", "table"], "order": ["query", "summary", "table", "action", "detail-overlay", "form-overlay"], "constraints": ["summary requires query", "table is the primary result region", "detail and form overlays stay in the list context when their field-count route is overlay"] },
+    { "skeleton": "form-workflow", "allowedRegions": ["form", "review", "action"], "requiredRegions": ["form"], "order": ["form", "review", "action"], "constraints": ["review requires form", "submit requires action"] },
+    { "skeleton": "detail-workbench", "allowedRegions": ["summary", "detail", "table", "action"], "requiredRegions": ["detail"], "order": ["summary", "detail", "table", "action"], "constraints": ["embedded tables belong to detail or are explicitly linked"] },
+    { "skeleton": "result-workflow", "allowedRegions": ["result", "action"], "requiredRegions": ["result"], "order": ["result", "action"], "constraints": ["result declares success, processing or failure state"] },
+    { "skeleton": "dashboard-overview", "allowedRegions": ["filter", "metrics", "chart", "table", "action"], "requiredRegions": ["metrics"], "order": ["filter", "metrics", "chart", "table", "action"], "constraints": ["dashboard needs a declared data scope", "dashboard cannot use row operations as its primary task"] },
+    { "skeleton": "custom-composition", "allowedRegions": ["content", "action", "detail", "table", "chart"], "requiredRegions": ["content"], "order": ["content", "action"], "constraints": ["custom pages must declare their regions in Page Contract"] }
+  ],
+  "capabilitySignals": [
+    { "id": "query.basic", "pageFamilies": ["list"], "signals": ["查询", "筛选", "搜索"] },
+    { "id": "table.flat", "pageFamilies": ["list"], "signals": ["表格", "排序", "列对齐"] },
+    { "id": "table.pagination", "pageFamilies": ["list"], "signals": ["分页", "翻页"] },
+    { "id": "query.dateRange", "pageFamilies": ["list"], "signals": ["日期范围", "时间范围", "起止日期", "开始日期", "结束日期"] },
+    { "id": "table.selection", "signals": ["批量选择", "批量操作", "勾选", "选择记录"] },
+    { "id": "table.export", "signals": ["导出", "下载列表"] },
+    { "id": "detail.overlay", "pageFamilies": ["list", "dashboard"], "signals": ["列表详情", "查看详情", "打开详情", "弹窗详情", "抽屉详情", "详情"] },
+    { "id": "form.overlay", "pageFamilies": ["list", "dashboard"], "signals": ["新增", "新建", "编辑", "新增表单", "编辑表单"], "patterns": ["(支持|可以|能够|允许)[^，。；,\\n]{0,8}(创建|编辑)(员工|订单|记录|账户|用户|对象|资料|信息)"] },
+    { "id": "summary.metrics", "pageFamilies": ["list"], "signals": ["汇总指标", "余额汇总", "统计指标", "汇总", "指标"] },
+    { "id": "summary.aggregate", "pageFamilies": ["list"], "signals": ["汇总指标", "余额汇总", "统计指标", "汇总"] },
+    { "id": "form.review", "signals": ["确认预览", "确认信息", "复核", "核对后提交"] },
+    { "id": "form.validation", "pageFamilies": ["form", "list", "custom"], "signals": ["实时校验", "字段校验", "表单校验"] },
+    { "id": "detail.embeddedTable", "signals": ["关联记录", "关联列表", "明细列表", "最近交易"] },
+    { "id": "result.retry", "signals": ["重试", "重新处理"] },
+    { "id": "dashboard.metrics", "pageFamilies": ["dashboard"], "signals": ["核心指标", "指标"] },
+    { "id": "dashboard.trend", "pageFamilies": ["dashboard"], "signals": ["趋势"] },
+    { "id": "dashboard.distribution", "pageFamilies": ["dashboard"], "signals": ["分布"] },
+    { "id": "dashboard.filter", "pageFamilies": ["dashboard"], "signals": ["全局筛选", "范围筛选", "日期筛选", "日期范围", "时间范围", "统计范围"] },
+    { "id": "dashboard.drilldown", "pageFamilies": ["dashboard"], "signals": ["下钻", "联动明细", "钻取"] },
+    { "id": "dashboard.refresh", "pageFamilies": ["dashboard"], "signals": ["自动刷新", "手动刷新", "刷新"] },
+    { "id": "dashboard.export", "pageFamilies": ["dashboard"], "signals": ["导出报表", "导出看板"] }
+  ],
+  "recipes": [
+    {
+      "id": "list.query-table", "skeleton": "query-workbench", "pageFamily": "list", "priority": 20,
+      "strongSignals": ["查询列表", "列表页", "查询页"], "signals": ["查询", "列表", "表格", "分页"],
+      "regions": ["query", "table"], "capabilities": ["query.basic", "table.flat", "table.pagination"],
+      "optionalCapabilities": ["query.dateRange", "table.selection", "table.export", "detail.overlay", "form.overlay", "summary.metrics", "summary.aggregate"],
+      "requiredRegionRoles": ["query-controls", "result-list"], "requiredComponentTypes": ["query-form", "data-table"], "requiredData": ["records", "columns"],
+      "rendererId": "yipex-standard-query-table-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "list.query-summary-table", "skeleton": "query-workbench", "pageFamily": "list", "priority": 60,
+      "requiresAnyCapabilities": ["summary.metrics", "summary.aggregate"],
+      "strongSignals": ["汇总指标", "余额汇总", "统计指标", "汇总"], "signals": ["查询", "列表", "统计", "指标", "余额"],
+      "regions": ["query", "summary", "table"], "capabilities": ["query.basic", "summary.metrics", "summary.aggregate", "table.flat", "table.pagination"],
+      "optionalCapabilities": ["query.dateRange", "table.selection", "table.export", "detail.overlay", "form.overlay"],
+      "requiredRegionRoles": ["query-controls", "summary", "result-list"], "requiredComponentTypes": ["query-form", "data-table", "metrics"], "requiredData": ["records", "columns", "metrics"],
+      "rendererId": "yipex-standard-query-table-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "list.query-detail-overlay", "skeleton": "query-workbench", "pageFamily": "list", "priority": 70,
+      "requiresAnyCapabilities": ["detail.overlay"],
+      "strongSignals": ["列表详情", "查看详情", "弹窗详情", "抽屉详情", "弹窗", "抽屉"], "signals": ["查询", "列表", "详情"],
+      "regions": ["query", "table", "detail-overlay"], "capabilities": ["query.basic", "table.flat", "table.pagination", "detail.overlay"],
+      "optionalCapabilities": ["query.dateRange", "table.selection", "table.export", "form.overlay", "summary.metrics", "summary.aggregate"],
+      "requiredRegionRoles": ["query-controls", "result-list", "detail-overlay"], "requiredComponentTypes": ["query-form", "data-table", "detail-overlay"], "requiredData": ["records", "columns", "detailFields"],
+      "rendererId": "yipex-standard-query-table-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "form.grouped-submit", "skeleton": "form-workflow", "pageFamily": "form", "priority": 40,
+      "strongSignals": ["分组表单", "分模块"], "negativeSignals": ["分步表单", "步骤表单", "步骤条", "向导"], "signals": ["表单", "新增", "新建", "编辑", "提交"],
+      "regions": ["form", "action"], "capabilities": ["form.groups", "form.validation", "form.stickyActions", "action.primary"], "optionalCapabilities": ["form.review"],
+      "requiredRegionRoles": ["form", "action"], "requiredComponentTypes": ["form"], "requiredData": ["sections"],
+      "rendererId": "yipex-standard-grouped-form-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "form.stepped-submit", "skeleton": "form-workflow", "pageFamily": "form", "priority": 30,
+      "strongSignals": ["分步表单", "步骤表单", "步骤条", "向导", "step"], "signals": ["表单", "新增", "新建", "编辑", "提交"],
+      "regions": ["form", "action"], "capabilities": ["form.steps", "form.validation", "form.stickyActions", "action.primary", "action.secondary"], "optionalCapabilities": ["form.review"],
+      "requiredRegionRoles": ["form", "action"], "requiredComponentTypes": ["steps-form"], "requiredData": ["steps"],
+      "rendererId": "yipex-standard-stepped-form-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "detail.grouped", "skeleton": "detail-workbench", "pageFamily": "detail", "priority": 60,
+      "strongSignals": ["详情页", "详情页面", "记录详情", "订单详情"], "signals": ["详情"],
+      "regions": ["detail"], "capabilities": ["detail.groups", "detail.metrics"], "optionalCapabilities": ["detail.embeddedTable"],
+      "requiredRegionRoles": ["detail"], "requiredComponentTypes": ["detail"], "requiredData": ["sections"],
+      "rendererId": "yipex-standard-grouped-detail-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "result.workflow", "skeleton": "result-workflow", "pageFamily": "result", "priority": 60,
+      "strongSignals": ["结果页", "处理结果", "提交成功", "操作结果"], "signals": ["结果"],
+      "regions": ["result"], "capabilities": ["result.summary", "result.actions"], "optionalCapabilities": ["result.retry"],
+      "requiredRegionRoles": ["result"], "requiredComponentTypes": ["result"],
+      "rendererId": "yipex-standard-result-workflow-v1", "runtimeStatus": "implemented"
+    },
+    {
+      "id": "dashboard.overview", "skeleton": "dashboard-overview", "pageFamily": "dashboard", "priority": 60,
+      "strongSignals": ["dashboard", "Dashboard", "数据看板", "经营概览", "监控大盘", "仪表盘"], "signals": ["看板", "监控"],
+      "regions": ["metrics", "chart"], "capabilities": ["dashboard.metrics", "dashboard.trend", "dashboard.distribution"],
+      "optionalCapabilities": ["dashboard.filter", "dashboard.drilldown", "dashboard.refresh", "dashboard.export"],
+      "requiredRegionRoles": ["metrics", "chart"], "requiredComponentTypes": ["metrics", "chart"], "requiredData": ["metrics", "trend", "distribution"],
+      "rendererId": "yipex-standard-dashboard-overview-v1", "runtimeStatus": "implemented"
+    }
+  ],
+  "transitions": [
+    { "id": "row-to-detail-overlay", "from": "query-workbench.table.rowAction", "event": "openDetailOverlay", "to": "detail-workbench", "requires": ["detail.overlay"] },
+    { "id": "row-to-form-page", "from": "query-workbench.table.rowAction", "event": "openPage", "to": "form-workflow", "requires": ["navigation.openPage", "binding.rowToForm"] },
+    { "id": "form-to-result", "from": "form-workflow.submit", "event": "submitted", "to": "result-workflow", "requires": ["binding.submissionToResult"] }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "version": 8,
+  "system": "yipex",
+  "designRoot": "design-system",
+  "designSystem": {
+    "name": "yipex-design-system",
+    "version": "0.5",
+    "source": "yipex-design-skill-v0.1"
+  },
+  "shell": {
+    "root": "shell",
+    "logo": "logo.svg",
+    "template": "shell.template.html",
+    "stylesheet": "shell.css",
+    "runtime": "shell-runtime.js",
+    "config": "shell-config.example.json",
+    "componentLibrary": "antd",
+    "iconLibrary": "@ant-design/icons",
+    "loadWhen": "build-or-shell-change"
+  },
+  "entry": "director-rules/02-template-application-rules.md",
+  "contract": {
+    "defaultVersion": 2,
+    "guide": "execution/page-contract-v2.md",
+    "presentationIntent": "design-system/director-rules/02-template-application-rules.md",
+    "schema": "execution/page-spec-v2.schema.json",
+    "legacySchema": "execution/page-spec.schema.json",
+    "capabilityModel": "execution/capability-model/capability-model.md",
+    "capabilityRegistry": "execution/capability-model/capability-registry.json",
+    "compositionRules": "execution/capability-model/composition-rules.json"
+  },
+  "loading": {
+    "director": [
+      "design-system/director-rules/01-visual-constitution.md",
+      "design-system/director-rules/02-template-application-rules.md",
+      "design-system/director-rules/03-interaction-acceptance-rules.md"
+    ],
+    "core": ["execution/context-packs/core.md"]
+  },
+  "alwaysGroups": ["director"],
+  "deepLoading": {},
+  "signals": {},
+  "presentationRouting": {
+    "contextFamilies": ["list", "dashboard"],
+    "operationSignals": ["新增", "新建", "编辑", "详情", "查看"],
+    "modalSignals": ["Modal", "modal", "弹窗", "对话框"],
+    "drawerSignals": ["Drawer", "drawer", "抽屉", "侧滑面板"],
+    "pageSignals": ["独立页面", "独立页", "二级页面", "二级页", "两个关联页面", "多个关联页面"],
+    "pagePatterns": [
+      "(新增|新建|创建|编辑|详情|表单)[^，。；,;\\n]{0,8}(页面|页)",
+      "(跳转|进入|打开)[^，。；,;\\n]{0,8}(页面|页)",
+      "(独立|二级|关联)[^，。；,;\\n]{0,4}(页面|页)",
+      "(两个|多个|两张|多张)[^，。；,;\\n]{0,4}(页面|页)"
+    ],
+    "nonPageSignals": ["进入表单", "进入分组表单", "打开表单", "分组表单", "分模块", "返回列表", "保存后返回", "流程"],
+    "automaticThresholds": { "modalMax": 6, "drawerMax": 16 },
+    "featureMarkers": ["支持", "可以", "能够", "允许", "提供"],
+    "featureBehaviorSignals": ["拖拽", "分支", "编排", "联动", "下钻", "钻取", "切换", "实时", "自动", "批量", "导入", "导出", "上传", "下载", "新增", "新建", "创建", "编辑", "删除", "复制", "审批", "撤销", "重做", "排序", "聚合", "计算", "刷新", "跳转", "校验", "预览", "重试", "选择", "勾选", "画布", "拓扑", "甘特", "泳道", "时间轴", "矩阵", "树形", "地图", "视图"],
+    "conflictMode": "clarify"
+  },
+  "pageFamilies": {
+    "dashboard": {
+      "priority": 90,
+      "signals": ["dashboard", "Dashboard", "数据看板", "经营概览", "分析看板", "监控大盘", "仪表盘"],
+      "contextGroups": [],
+      "files": ["design-system/page-patterns/dashboard.md"]
+    },
+    "list": {
+      "priority": 80,
+      "signals": ["查询", "列表", "记录", "查询列表", "查询页", "列表页", "数据列表", "订单查询", "筛选列表"],
+      "contextGroups": [],
+      "files": ["design-system/page-patterns/list.md"]
+    },
+    "form": {
+      "priority": 70,
+      "signals": ["表单", "表单页", "创建表单", "新增表单", "编辑表单", "录入表单", "新增页面", "编辑页面", "录入页面", "分组表单", "分步表单", "步骤表单", "向导", "分模块", "信息较多"],
+      "contextGroups": [],
+      "files": ["design-system/page-patterns/form.md"]
+    },
+    "detail": {
+      "priority": 60,
+      "signals": ["详情页", "详情页面", "记录详情", "订单详情"],
+      "contextGroups": [],
+      "files": ["design-system/page-patterns/detail.md"]
+    },
+    "result": {
+      "priority": 55,
+      "signals": ["结果页", "处理结果", "提交成功", "操作结果"],
+      "contextGroups": [],
+      "files": ["design-system/page-patterns/result.md"]
+    },
+    "custom": {
+      "priority": 0,
+      "signals": [],
+      "contextGroups": [],
+      "files": []
+    }
+  },
+  "retiredRuleRefs": {
+    "DESIGN.md": "references/legacy/yipex-design-system-v0.4.md",
+    "01-foundations.md": "design-system/director-rules/01-visual-constitution.md",
+    "02-components.md": "design-system/director-rules/01-visual-constitution.md",
+    "03-query-list-patterns.md": "design-system/page-patterns/list.md",
+    "04-dashboard-patterns.md": "design-system/page-patterns/dashboard.md",
+    "05-form-patterns.md": "design-system/page-patterns/form.md",
+    "06-detail-patterns.md": "design-system/page-patterns/detail.md",
+    "07-result-patterns.md": "design-system/page-patterns/result.md",
+    "execution/presentation-intent.md": "design-system/director-rules/02-template-application-rules.md",
+    "execution/context-packs/visual.md": "design-system/director-rules/01-visual-constitution.md",
+    "execution/context-packs/layout.md": "design-system/director-rules/02-template-application-rules.md",
+    "execution/context-packs/components.md": "design-system/director-rules/01-visual-constitution.md",
+    "execution/context-packs/interaction.md": "design-system/director-rules/03-interaction-acceptance-rules.md",
+    "execution/context-packs/accessibility.md": "design-system/director-rules/03-interaction-acceptance-rules.md"
+  }
+}

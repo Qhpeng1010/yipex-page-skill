@@ -1,0 +1,20 @@
+<div class="yipex-shell" data-shell="yipex-default">
+  <header class="yipex-shell-topbar">
+    <div class="yipex-shell-topbar-brand"><img class="yipex-shell-logo" src="data:image/svg+xml;base64,{{brandLogo}}" alt="{{brandName}}"></div>
+    <div class="yipex-shell-topbar-actions">
+      <button class="yipex-shell-topbar-button ant-btn" type="button" data-shell-action="tools" aria-label="功能" title="功能"><span data-antd-icon="AppstoreOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-topbar-button yipex-shell-notification-button ant-btn" type="button" data-shell-action="notifications" aria-label="消息" title="消息"><span data-antd-icon="BellOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-account ant-btn" type="button" data-shell-action="account" aria-label="打开账号菜单"><span class="yipex-shell-email">{{email}}</span><span class="yipex-shell-avatar">{{avatar}}</span><span data-antd-icon="DownOutlined" aria-hidden="true"></span></button>
+    </div>
+  </header>
+  <div class="yipex-shell-body">
+    <aside class="yipex-shell-sidebar" aria-label="主导航">
+      <nav class="yipex-shell-nav ant-menu ant-menu-root ant-menu-inline" data-antd-component="Menu">{{navigation}}</nav>
+      <div class="yipex-shell-sidebar-footer"><button class="yipex-shell-toggle ant-btn" type="button" data-shell-action="toggle-sidebar" aria-label="收起导航" title="收起导航" aria-expanded="true"><span data-antd-icon="MenuFoldOutlined" aria-hidden="true"></span><span>收起</span></button></div>
+    </aside>
+    <div class="yipex-shell-workspace">
+      <main id="yipex-page" class="yipex-shell-content">{{content}}</main>
+      <footer class="yipex-shell-footer"><small class="yipex-shell-copyright">{{copyright}}</small></footer>
+    </div>
+  </div>
+</div>

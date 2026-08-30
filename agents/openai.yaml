@@ -1,0 +1,4 @@
+interface:
+  display_name: "YiPex 页面生成技能"
+  short_description: "按 YiPex 规范生成标准化或开放式业务页面"
+  default_prompt: "使用 $yipex-page-skill 根据这段产品需求自动选择标准组合或开放组合，生成 YiPex 页面并按需读取现有设计规范。"
