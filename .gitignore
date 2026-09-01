@@ -1,0 +1,9 @@
+# Local previews and generated page deliveries stay outside the repository.
+changes/
+basic-page-types.html
+preview-index.html
+
+# macOS and local tooling metadata.
+.DS_Store
+.cache/
+node_modules/
