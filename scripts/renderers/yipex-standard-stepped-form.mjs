@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { deriveStandardBreadcrumb, standardBreadcrumbCss } from './yipex-standard-breadcrumb.mjs';
+import { formRuntimeBootstrapSource } from '../lib/yipex-form-runtime.mjs';
 
 const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 function renderNavigation(items) {
@@ -31,10 +32,12 @@ export function renderStandardSteppedForm(pageSpec, { projectRoot, specPath }) {
 (() => {
   const h = React.createElement;
   const { ConfigProvider, Breadcrumb, Card, Form, Input, InputNumber, Select, DatePicker, Switch, Button, Descriptions, Result, Steps, Upload, Modal, message } = antd;
+  ${formRuntimeBootstrapSource()}
   const payload = JSON.parse(document.getElementById('yipex-standard-stepped-form-data').textContent);
   const source = payload.data || {}; const props = payload.props || {}; const initial = payload.initialState || {}; const steps = Array.isArray(source.steps) ? source.steps : [];
   const safe = (value) => String(value == null ? '' : value);
   const allFields = steps.flatMap((item) => item.fields || []);
+  const optionSets = source.optionSets || {};
   const urlParams = new URLSearchParams(window.location.search);
   const mode = urlParams.get('mode') || source.mode || 'create';
   const createConfig = source.create || {};
@@ -51,90 +54,49 @@ export function renderStandardSteppedForm(pageSpec, { projectRoot, specPath }) {
     const savedOverlay = Object.fromEntries(Object.entries(saved || {}).filter(([, value]) => value != null && value !== '' && (!Array.isArray(value) || value.length > 0)));
     return base || saved ? { ...(base || {}), ...savedOverlay } : null;
   })() : null;
-  const toUploadValue = (value) => {
-    if (!value) return [];
-    if (Array.isArray(value)) return value;
-    const text = safe(value);
-    return [{ uid: 'persisted-' + text, name: text.split('/').pop() || text, status: 'done', ...(text.startsWith('http') || text.startsWith('data:') ? { url: text } : {}) }];
-  };
-  const toFormValues = (values) => {
-    const normalized = { ...(values || {}) };
-    for (const field of allFields) {
-      let value = normalized[field.key];
-      if ((field.type === 'date-range' || field.type === 'date-time-range') && !value && (field.startKey || field.endKey)) {
-        value = [normalized[field.startKey], normalized[field.endKey]].filter((item) => item != null && item !== '');
-        if (value.length) normalized[field.key] = value;
-      }
-      if (value == null || value === '') continue;
-      if ((field.type === 'date' || field.type === 'date-time') && !value?.format) normalized[field.key] = dayjs(value);
-      if ((field.type === 'date-range' || field.type === 'date-time-range') && Array.isArray(value)) normalized[field.key] = value.map((item) => item?.format ? item : dayjs(item));
-      if (field.type === 'upload') normalized[field.key] = toUploadValue(value);
+  const rawInitialValues = { ...(source.initialValues || {}), ...(editingRecord || {}) };
+  for (const field of allFields) {
+    if ((field.type === 'date-range' || field.type === 'date-time-range') && !rawInitialValues[field.key] && (field.startKey || field.endKey)) rawInitialValues[field.key] = [rawInitialValues[field.startKey], rawInitialValues[field.endKey]].filter((item) => item != null && item !== '');
+    if (field.type === 'upload' && rawInitialValues[field.key] && !Array.isArray(rawInitialValues[field.key])) {
+      const value = safe(rawInitialValues[field.key]);
+      rawInitialValues[field.key] = [{ uid: 'persisted-' + value, name: value.split('/').pop() || value, status: 'done', ...(value.startsWith('http') || value.startsWith('data:') ? { url: value } : {}) }];
     }
-    return normalized;
-  };
-  const formInitialValues = toFormValues({ ...(source.initialValues || {}), ...(editingRecord || {}) });
-  function UploadField({ value, onChange, field }) {
-    const fileList = Array.isArray(value) ? value : toUploadValue(value);
-    return h(Upload, {
-      accept: field.accept || 'image/*',
-      listType: field.listType || 'picture-card',
-      maxCount: Number(field.maxCount || 1),
-      fileList,
-      beforeUpload: () => false,
-      onChange: (info) => onChange?.(info.fileList.slice(-Number(field.maxCount || 1)))
-    }, fileList.length >= Number(field.maxCount || 1) ? null : h('div', { className: 'standard-upload-trigger' }, [h('span', { key: 'icon', className: 'standard-upload-plus', 'aria-hidden': true }, '+'), h('span', { key: 'label' }, field.uploadLabel || '上传图片')]));
   }
-  function control(field) {
-    if (field.type === 'select') return h(Select, { allowClear: true, placeholder: field.placeholder || '请选择', options: (field.options || []).map((option) => ({ label: option.label, value: option.value })) });
-    if (field.type === 'number' || field.type === 'amount') return h(InputNumber, { style: { width: '100%' }, min: field.min, max: field.max, precision: field.precision, prefix: field.prefix, suffix: field.suffix, placeholder: field.placeholder || '请输入' });
-    if (field.type === 'date-range' || field.type === 'date-time-range') return h(DatePicker.RangePicker, { showTime: field.type === 'date-time-range', format: field.format || (field.type === 'date-time-range' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'), style: { width: '100%' }, placeholder: field.placeholder || ['开始时间', '结束时间'] });
-    if (field.type === 'date' || field.type === 'date-time') return h(DatePicker, { showTime: field.type === 'date-time', format: field.format || (field.type === 'date-time' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'), style: { width: '100%' }, placeholder: field.placeholder || '请选择' });
-    if (field.type === 'upload') return h(UploadField, { field });
-    if (field.type === 'switch') return h(Switch, { checkedChildren: field.checkedLabel || '开启', unCheckedChildren: field.uncheckedLabel || '关闭' });
-    if (field.type === 'textarea') return h(Input.TextArea, { rows: field.rows || 4, maxLength: field.maxLength, showCount: Boolean(field.maxLength), placeholder: field.placeholder || '请输入' });
-    return h(Input, { allowClear: true, maxLength: field.maxLength, placeholder: field.placeholder || '请输入' });
-  }
-  function displayValue(field, value) {
-    if (value === undefined || value === null || value === '') return '-';
-    if (field.type === 'select') return (field.options || []).find((option) => option.value === value)?.label || String(value);
-    if (field.type === 'switch') return value ? (field.checkedLabel || '是') : (field.uncheckedLabel || '否');
-    if (field.type === 'upload') return Array.isArray(value) ? (value[0]?.name || value[0]?.url || '-') : String(value);
-    if ((field.type === 'date-range' || field.type === 'date-time-range') && Array.isArray(value)) return value.map((item) => item?.format ? item.format(field.format || (field.type === 'date-time-range' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD')) : safe(item)).join(' 至 ');
-    if ((field.type === 'date' || field.type === 'date-time') && value?.format) return value.format(field.format || (field.type === 'date-time' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'));
-    return String(value);
-  }
+  const formInitialValues = formRuntime.reconcileFields(allFields, formRuntime.toFormValues(allFields, rawInitialValues), optionSets).values;
   function App() {
     const [form] = Form.useForm(); const [current, setCurrent] = React.useState(Number(initial.step || 0)); const [submitting, setSubmitting] = React.useState(false);
     const [drafting, setDrafting] = React.useState(false); const [previewOpen, setPreviewOpen] = React.useState(false); const [draftRecordId, setDraftRecordId] = React.useState(editingRecord?.[idField] || null);
+    const [runtimeValues, setRuntimeValues] = React.useState(formInitialValues);
     const step = steps[current] || {}; const fields = step.fields || []; const requestedColumns = [1, 2, 3].includes(Number(step.columns)) ? Number(step.columns) : 1;
-    const validateCurrent = async () => { try { await form.validateFields(fields.filter((field) => field.required).map((field) => field.key)); return true; } catch { return false; } };
+    const visibleFields = fields.filter((field) => formRuntime.resolveFieldState(field, runtimeValues, optionSets).visible);
+    const validateCurrent = async () => { try { await form.validateFields(visibleFields.map((field) => field.key)); return true; } catch { return false; } };
     const next = async () => { if (await validateCurrent()) setCurrent((value) => Math.min(value + 1, steps.length - 1)); };
     const previous = () => setCurrent((value) => Math.max(value - 1, 0));
-    const isEmpty = (value) => value == null || value === '' || (Array.isArray(value) && value.length === 0);
     const normalizeSubmissionValues = (values, { draft = false } = {}) => {
       const now = new Date();
       const timestamp = now.toISOString().slice(0, 16).replace('T', ' ');
       const timestampField = createConfig.timestampField || source.timestampField || 'createdAt';
       const id = editingRecord?.[idField] || draftRecordId || values[idField] || ((createConfig.idPrefix || source.createIdPrefix || 'REC') + now.getTime().toString().slice(-12));
-      const normalized = { ...(createConfig.defaults || {}), ...(source.initialValues || {}), ...(editingRecord || {}), ...values, [idField]: id };
+      const normalized = { ...(createConfig.defaults || {}), ...(source.initialValues || {}), ...(editingRecord || {}), ...formRuntime.serializeValues(allFields, values), [idField]: id };
       if (!normalized[timestampField]) normalized[timestampField] = timestamp;
       normalized.updatedAt = timestamp;
       for (const field of allFields) {
         const value = normalized[field.key];
-        if ((field.type === 'date' || field.type === 'date-time') && value?.format) normalized[field.key] = value.format(field.format || (field.type === 'date-time' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'));
         if ((field.type === 'date-range' || field.type === 'date-time-range') && Array.isArray(value)) {
-          const range = value.map((item) => item?.format ? item.format(field.format || (field.type === 'date-time-range' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD')) : safe(item));
+          const range = normalized[field.key];
           normalized[field.key] = range;
           if (field.startKey) normalized[field.startKey] = range[0] || '';
           if (field.endKey) normalized[field.endKey] = range[1] || '';
           if (field.labelKey) normalized[field.labelKey] = range.filter(Boolean).join(' 至 ');
         }
         if (field.type === 'upload') {
-          const file = Array.isArray(value) ? value[0] : value;
-          normalized[field.key] = file?.url || file?.name || safe(file);
+          const maxCount = Number(field.maxCount ?? field.props?.maxCount ?? 1);
+          if (maxCount === 1) {
+            const file = Array.isArray(value) ? value[0] : value;
+            normalized[field.key] = file?.url || file?.name || safe(file);
+          }
         }
-        const option = (field.options || []).find((item) => item.value === normalized[field.key]);
-        if (option && field.labelKey) normalized[field.labelKey] = option.label;
+        if (field.labelKey && !formRuntime.isEmpty(normalized[field.key])) normalized[field.labelKey] = formRuntime.displayValue(field, normalized[field.key], normalized, optionSets);
       }
       const stateConfig = draft ? source.draftSubmission : source.publishAction;
       if (stateConfig?.statusField) normalized[stateConfig.statusField] = stateConfig.statusValue;
@@ -168,10 +130,10 @@ export function renderStandardSteppedForm(pageSpec, { projectRoot, specPath }) {
     const validateAll = async () => {
       const values = form.getFieldsValue(true);
       for (const [stepIndex, item] of steps.entries()) {
-        const missing = (item.fields || []).find((field) => field.required && isEmpty(values[field.key]));
+        const missing = (item.fields || []).find((field) => { const state = formRuntime.resolveFieldState(field, values, optionSets); return state.visible && state.required && formRuntime.isEmpty(values[field.key]); });
         if (missing) { setCurrent(stepIndex); message.warning(missing.requiredMessage || ('请填写' + missing.label)); return false; }
       }
-      try { await form.validateFields(allFields.filter((field) => field.required).map((field) => field.key)); return true; } catch { return false; }
+      try { await form.validateFields(allFields.filter((field) => formRuntime.resolveFieldState(field, values, optionSets).visible).map((field) => field.key)); return true; } catch { return false; }
     };
     const submit = (values) => {
       setSubmitting(true);
@@ -184,17 +146,21 @@ export function renderStandardSteppedForm(pageSpec, { projectRoot, specPath }) {
       }, Number(source.demoSubmission?.latencyMs || 650));
     };
     const publish = async () => { if (await validateAll()) submit(form.getFieldsValue(true)); };
-    const cancel = () => { const returnHref = source.cancelHref || source.entryHref; if (returnHref) { window.location.href = returnHref; return; } form.resetFields(); };
+    const onValuesChange = (_, values) => {
+      const reconciled = formRuntime.reconcileFields(allFields, values, optionSets);
+      if (reconciled.changedKeys.length) form.setFields(reconciled.changedKeys.map((key) => ({ name: key, value: reconciled.values[key], errors: [] })));
+      setRuntimeValues(reconciled.values);
+    };
+    const cancel = () => { const returnHref = source.cancelHref || source.entryHref; if (returnHref) { window.location.href = returnHref; return; } form.resetFields(); setRuntimeValues(formInitialValues); };
     if (initial['permission-denied']) return h(Result, { status: '403', title: '暂无访问权限', subTitle: '请联系管理员开通当前页面的访问权限。' });
     const stepItems = steps.map((item) => ({ title: item.title, description: item.description }));
     const fieldNodes = steps.flatMap((item, stepIndex) => (item.fields || []).map((field) => ({ field, stepIndex }))).map(({ field, stepIndex }) => {
-      const rules = [];
-      if (field.required) rules.push({ required: true, message: field.requiredMessage || ((field.type === 'select' || String(field.type).includes('date') || field.type === 'upload') ? ('请选择' + field.label) : ('请输入' + field.label)) });
-      if (field.pattern) rules.push({ pattern: field.pattern, message: field.patternMessage || (field.label + '格式不正确'), validateTrigger: 'onBlur' });
-      return h(Form.Item, { key: field.key, className: [field.span === 'full' ? 'standard-stepped-span-full' : '', stepIndex === current ? '' : 'standard-stepped-hidden-field'].filter(Boolean).join(' '), label: field.label + '：', name: field.key, valuePropName: field.type === 'switch' ? 'checked' : 'value', extra: field.help, rules }, control(field));
+      const state = formRuntime.resolveFieldState(field, runtimeValues, optionSets);
+      if (!state.visible) return null;
+      return h(Form.Item, { key: field.key, className: [field.span === 'full' ? 'standard-stepped-span-full' : '', stepIndex === current ? '' : 'standard-stepped-hidden-field'].filter(Boolean).join(' '), label: field.label + '：', name: field.key, ...formRuntime.fieldValueProps(field), extra: field.help, rules: formRuntime.buildRules(field, state) }, formRuntime.renderControl(field, runtimeValues, optionSets, state));
     });
     const values = { ...formInitialValues, ...form.getFieldsValue(true) };
-    const previewItems = current === steps.length - 1 ? steps.slice(0, current).flatMap((item) => item.fields || []).map((field) => ({ key: field.key, label: field.label, children: displayValue(field, values[field.key]) })) : [];
+    const previewItems = current === steps.length - 1 ? steps.slice(0, current).flatMap((item) => item.fields || []).filter((field) => formRuntime.resolveFieldState(field, values, optionSets).visible).map((field) => ({ key: field.key, label: field.label, children: formRuntime.displayValue(field, values[field.key], values, optionSets) })) : [];
     const detailColumns = window.innerWidth <= 680 ? 1 : 2;
     const confirmationPreview = previewItems.length ? h('section', { key: 'preview', className: 'standard-stepped-preview', 'aria-label': '已填信息预览' }, [h('h2', { key: 'title' }, source.confirmationTitle || '已填信息'), h(Descriptions, { key: 'details', column: detailColumns, size: 'small', bordered: false, items: previewItems })]) : null;
     const previewModal = source.previewAction ? h(Modal, { key: 'previewModal', className: 'standard-stepped-preview-modal', title: source.previewTitle || '活动预览', open: previewOpen, centered: true, width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 760, onCancel: () => setPreviewOpen(false), footer: h(Button, { onClick: () => setPreviewOpen(false) }, '关闭'), destroyOnHidden: true }, h(Descriptions, { bordered: false, column: detailColumns, size: 'middle', items: previewItems })) : null;
@@ -211,7 +177,7 @@ export function renderStandardSteppedForm(pageSpec, { projectRoot, specPath }) {
       h('div', { key: 'content', className: 'standard-stepped-content' }, [
         h(Card, { key: 'steps', className: 'standard-stepped-card', bordered: false }, h(Steps, { current, items: stepItems, responsive: true })),
         confirmationPreview,
-        h(Card, { key: 'formCard', className: 'standard-stepped-card', bordered: false }, h(Form, { form, layout: 'vertical', colon: false, initialValues: formInitialValues, className: 'standard-stepped-form' }, h('div', { className: 'standard-stepped-grid', style: { '--standard-stepped-columns': requestedColumns }, 'data-columns': requestedColumns }, fieldNodes))),
+        h(Card, { key: 'formCard', className: 'standard-stepped-card', bordered: false }, h(Form, { form, layout: 'vertical', colon: false, initialValues: formInitialValues, className: 'standard-stepped-form', onValuesChange }, h('div', { className: 'standard-stepped-grid', style: { '--standard-stepped-columns': requestedColumns }, 'data-columns': requestedColumns }, fieldNodes))),
         h('div', { key: 'actions', className: 'standard-stepped-actions' }, actionNodes),
         previewModal
       ])

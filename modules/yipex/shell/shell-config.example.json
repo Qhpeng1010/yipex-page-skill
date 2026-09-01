@@ -2,12 +2,8 @@
   "brand": { "name": "Yipex", "logo": "logo.svg", "accent": "#4AA52E" },
   "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true, "navigationMode": "demand-scoped" },
   "navigation": [
-    { "id": "home", "label": "首页", "icon": "HomeOutlined", "active": true },
-    { "id": "trade-background", "label": "贸易背景材料", "icon": "FileTextOutlined" },
-    { "id": "digital-wallet", "label": "数币钱包流水", "icon": "WalletOutlined" },
-    { "id": "fiat-wallet", "label": "法币钱包流水", "icon": "AccountBookOutlined" },
-    { "id": "receiving-account", "label": "收款账户", "icon": "BankOutlined" },
-    { "id": "profile", "label": "个人中心", "icon": "UserOutlined" }
+    { "id": "home", "label": "首页", "icon": "HomeOutlined" },
+    { "id": "merchant-management", "label": "商户管理", "icon": "ShopOutlined", "active": true }
   ],
   "header": { "welcome": "欢迎回来", "userName": "用户", "email": "user@yipex.tech" },
   "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" }

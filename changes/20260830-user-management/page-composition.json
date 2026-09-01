@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "metadata": { "changeId": "20260830-user-management", "pageName": "用户管理流程", "request": "/yipex:page 生成用户管理查询列表页面。页面顶部提供用户名、手机号、用户状态、注册时间查询条件，支持查询和重置。下方展示用户列表，字段包括用户名、手机号、角色、状态、注册时间和操作。操作列提供‘查看详情’和‘编辑’，页面右上角提供‘新增用户’按钮。点击新增进入新增用户表单，保存成功后返回当前列表并刷新数据；点击查看详情进入用户详情页，详情页支持返回列表", "ruleRefs": ["execution/capability-model/page-composition.schema.json", "execution/capability-model/composition-rules.json", "execution/capability-model/data-binding.schema.json", "execution/page-contract-v2.md"] },
+  "ui": { "system": "yipex", "runtime": "yipex-composition", "rendererVersion": 1 },
+  "skeleton": "custom-composition", "recipeId": "user-management.query-form-detail",
+  "regions": [
+    { "id": "user-list", "type": "content", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "navigation.openPage"], "config": { "pageSpec": "user-list/page-spec.json", "preview": "user-list/preview.html" } },
+    { "id": "user-create", "type": "content", "capabilities": ["form.groups", "form.validation", "form.stickyActions", "binding.submissionToResult"], "config": { "pageSpec": "user-create/page-spec.json", "preview": "user-create/preview.html" } },
+    { "id": "user-edit", "type": "content", "capabilities": ["form.groups", "form.validation", "form.stickyActions", "binding.submissionToResult"], "config": { "pageSpec": "user-edit/page-spec.json", "preview": "user-edit/preview.html" } },
+    { "id": "user-detail", "type": "content", "capabilities": ["detail.groups", "navigation.openPage"], "config": { "pageSpec": "user-detail/page-spec.json", "preview": "user-detail/preview.html" } }
+  ],
+  "bindings": [
+    { "id": "list-row-to-detail", "from": "user-list.view-user-detail", "to": "user-detail.record", "path": "id", "transform": "coerce-string" },
+    { "id": "list-row-to-edit", "from": "user-list.edit-user", "to": "user-edit.record", "path": "id", "transform": "coerce-string" },
+    { "id": "create-to-list-records", "from": "user-create.save-user", "to": "user-list.records", "path": "id", "transform": "coerce-string" },
+    { "id": "edit-to-list-records", "from": "user-edit.save-user", "to": "user-list.records", "path": "id", "transform": "coerce-string" }
+  ],
+  "transitions": [
+    { "id": "list-to-create", "from": "user-list.create-user", "event": "openPage", "to": "user-create", "requires": ["navigation.openPage"] },
+    { "id": "list-to-detail", "from": "user-list.view-user-detail", "event": "openPage", "to": "user-detail", "requires": ["navigation.openPage"], "bindingIds": ["list-row-to-detail"] },
+    { "id": "list-to-edit", "from": "user-list.edit-user", "event": "openPage", "to": "user-edit", "requires": ["navigation.openPage"], "bindingIds": ["list-row-to-edit"] },
+    { "id": "create-submit-to-list", "from": "user-create.save-user", "event": "submitted", "to": "user-list", "bindingIds": ["create-to-list-records"] },
+    { "id": "create-cancel-to-list", "from": "user-create.cancel-user-create", "event": "cancelled", "to": "user-list" },
+    { "id": "edit-submit-to-list", "from": "user-edit.save-user", "event": "submitted", "to": "user-list", "bindingIds": ["edit-to-list-records"] },
+    { "id": "edit-cancel-to-list", "from": "user-edit.cancel-user-edit", "event": "cancelled", "to": "user-list" },
+    { "id": "detail-back-to-list", "from": "user-detail.back-user-list", "event": "openPage", "to": "user-list", "requires": ["navigation.openPage"] }
+  ],
+  "states": { "user-list": ["loading", "empty", "error", "permission-denied", "success"], "user-create": ["loading", "submitting", "error", "success", "permission-denied"], "user-edit": ["loading", "submitting", "error", "success", "permission-denied"], "user-detail": ["loading", "error", "permission-denied"] },
+  "entryHtml": "preview.html"
+}

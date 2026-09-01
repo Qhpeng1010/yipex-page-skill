@@ -37,8 +37,27 @@
           "type": "object",
           "properties": {
             "id": { "const": "yipex-default" },
-            "sidebar": { "type": "object" },
-            "navigation": { "type": "array", "items": { "type": "object" } },
+            "sidebar": {
+              "type": "object",
+              "properties": { "navigationMode": { "const": "demand-scoped" } },
+              "additionalProperties": true
+            },
+            "navigation": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 2,
+              "items": {
+                "type": "object",
+                "required": ["id", "label"],
+                "properties": {
+                  "id": { "type": "string", "minLength": 1 },
+                  "label": { "type": "string", "minLength": 1 },
+                  "icon": { "type": "string", "minLength": 1 },
+                  "active": { "type": "boolean" }
+                },
+                "additionalProperties": true
+              }
+            },
             "header": { "type": "object" },
             "footer": { "type": "object" }
           },

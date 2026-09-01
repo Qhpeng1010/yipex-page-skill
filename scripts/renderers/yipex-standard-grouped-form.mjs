@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { deriveStandardBreadcrumb, standardBreadcrumbCss } from './yipex-standard-breadcrumb.mjs';
+import { formRuntimeBootstrapSource } from '../lib/yipex-form-runtime.mjs';
 
 const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -40,12 +41,15 @@ export function renderStandardGroupedForm(pageSpec, { projectRoot, specPath }) {
 (() => {
   const h = React.createElement;
   const { ConfigProvider, Breadcrumb, Card, Form, Input, InputNumber, Select, DatePicker, Switch, Button, Alert, Result, Tooltip, message } = antd;
+  ${formRuntimeBootstrapSource()}
   const { QuestionCircleOutlined } = window.icons;
   const payload = JSON.parse(document.getElementById('yipex-standard-grouped-form-data').textContent);
   const source = payload.data || {};
   const initial = payload.initialState || {};
   const props = payload.props || {};
   const sections = Array.isArray(source.sections) ? source.sections : [];
+  const allFields = sections.flatMap((section) => section.fields || []);
+  const optionSets = source.optionSets || {};
   const initialValues = source.initialValues || {};
   const safe = (value) => String(value == null ? '' : value);
   const recordIdParam = source.recordIdParam || 'id';
@@ -53,25 +57,10 @@ export function renderStandardGroupedForm(pageSpec, { projectRoot, specPath }) {
   const baseRecords = Array.isArray(source.records) ? source.records : [];
   const storedRecords = (() => { if (!source.persistenceKey) return []; try { const value = JSON.parse(window.localStorage.getItem(source.persistenceKey) || '[]'); return Array.isArray(value) ? value : []; } catch (_) { return []; } })();
   const editingRecord = source.mode === 'edit' && recordId ? [...storedRecords, ...baseRecords].find((item) => safe(item.id) === safe(recordId)) : null;
-  const formInitialValues = { ...initialValues, ...(editingRecord || {}) };
+  const formInitialValues = formRuntime.reconcileFields(allFields, formRuntime.toFormValues(allFields, { ...initialValues, ...(editingRecord || {}) }), optionSets).values;
   const navigationEntry = performance.getEntriesByType('navigation')[0];
   const navigationType = navigationEntry?.type || (performance.navigation?.type === 1 ? 'reload' : 'navigate');
   if (source.resetOnRefresh && navigationType === 'reload' && source.entryHref) { window.location.replace(source.entryHref); return; }
-  function fieldControl(field) {
-    if (field.type === 'select') return h(Select, { allowClear: true, showSearch: Boolean(field.searchable), optionFilterProp: 'label', placeholder: field.placeholder || '请选择', options: (field.options || []).map((option) => ({ label: option.label, value: option.value })) });
-    if (field.type === 'number' || field.type === 'amount') return h(InputNumber, { style: { width: '100%' }, min: field.min, max: field.max, precision: field.precision ?? (field.type === 'amount' ? 2 : undefined), prefix: field.prefix, suffix: field.suffix, placeholder: field.placeholder || '请输入' });
-    if (field.type === 'date' || field.type === 'date-time') return h(DatePicker, { showTime: field.type === 'date-time' ? { format: 'HH:mm' } : false, format: field.format || (field.type === 'date-time' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'), style: { width: '100%' }, placeholder: field.placeholder || '请选择' });
-    if (field.type === 'switch') return h(Switch, { checkedChildren: field.checkedLabel || '开启', unCheckedChildren: field.uncheckedLabel || '关闭' });
-    if (field.type === 'textarea') return h(Input.TextArea, { rows: field.rows || 4, maxLength: field.maxLength, showCount: Boolean(field.maxLength), placeholder: field.placeholder || '请输入' });
-    return h(Input, { allowClear: true, maxLength: field.maxLength, placeholder: field.placeholder || '请输入' });
-  }
-  function normalizeInitialValues(values) {
-    return Object.fromEntries(Object.entries(values).map(([key, value]) => {
-      const field = sections.flatMap((section) => section.fields || []).find((item) => item.key === key);
-      if ((field?.type === 'date' || field?.type === 'date-time') && value) return [key, dayjs(value)];
-      return [key, value];
-    }));
-  }
   function fieldLabel(field) {
     const label = h('span', { className: 'standard-form-label-text' }, field.label + '：');
     if (!field.help) return label;
@@ -83,10 +72,12 @@ export function renderStandardGroupedForm(pageSpec, { projectRoot, specPath }) {
   }
   function App() {
     const [form] = Form.useForm();
+    const [runtimeValues, setRuntimeValues] = React.useState(formInitialValues);
     const [submitting, setSubmitting] = React.useState(Boolean(initial.submitting));
     const [submitted, setSubmitted] = React.useState(Boolean(initial.success));
     const [error, setError] = React.useState(Boolean(initial.error));
-    const submit = (values) => {
+    const submit = (rawValues) => {
+      const values = formRuntime.serializeValues(allFields, rawValues);
       setSubmitting(true); setError(false); setSubmitted(false);
       window.setTimeout(() => { setSubmitting(false); if (source.demoSubmission?.mode === 'error') { setError(true); message.error(source.demoSubmission.errorMessage || '保存失败'); return; }
         const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
@@ -97,8 +88,7 @@ export function renderStandardGroupedForm(pageSpec, { projectRoot, specPath }) {
         const timestampField = createConfig.timestampField || source.timestampField || 'createdAt';
         if (!editingRecord && !normalized[timestampField]) normalized[timestampField] = now;
         for (const field of sections.flatMap((section) => section.fields || [])) {
-          const option = (field.options || []).find((item) => item.value === normalized[field.key]);
-          if (option && field.labelKey) normalized[field.labelKey] = option.label;
+          if (field.labelKey && !formRuntime.isEmpty(normalized[field.key])) normalized[field.labelKey] = formRuntime.displayValue(field, normalized[field.key], normalized, optionSets);
         }
         for (const [key, definition] of Object.entries(createConfig.derived || {})) {
           const value = normalized[definition.sourceKey];
@@ -111,21 +101,30 @@ export function renderStandardGroupedForm(pageSpec, { projectRoot, specPath }) {
         setSubmitted(true); message.success(source.demoSubmission?.successMessage || '已保存');
       }, Number(source.demoSubmission?.latencyMs || 500));
     };
-    const reset = () => { if (source.demoSubmission?.returnHref) { window.location.href = source.demoSubmission.returnHref; return; } form.resetFields(); setSubmitted(false); setError(false); message.info('已重置表单'); };
+    const onValuesChange = (_, values) => {
+      const reconciled = formRuntime.reconcileFields(allFields, values, optionSets);
+      if (reconciled.changedKeys.length) form.setFields(reconciled.changedKeys.map((key) => ({ name: key, value: reconciled.values[key], errors: [] })));
+      setRuntimeValues(reconciled.values);
+    };
+    const reset = () => { if (source.demoSubmission?.returnHref) { window.location.href = source.demoSubmission.returnHref; return; } form.resetFields(); setRuntimeValues(formInitialValues); setSubmitted(false); setError(false); message.info('已重置表单'); };
     if (initial['permission-denied']) return h(Result, { status: '403', title: '暂无访问权限', subTitle: '请联系管理员开通当前页面的访问权限。' });
     const sectionNodes = sections.map((section) => {
-      const fieldCount = Math.max(1, (section.fields || []).length);
+      const visibleFields = (section.fields || []).filter((field) => formRuntime.resolveFieldState(field, runtimeValues, optionSets).visible);
+      const fieldCount = Math.max(1, visibleFields.length);
       const gridStyle = {
         '--standard-form-columns': Math.min(3, fieldCount),
         '--standard-form-wide-columns': Math.min(4, fieldCount)
       };
-      return h(Card, { key: section.id, className: 'standard-form-section', bordered: false, title: h('div', { className: 'standard-form-section-title' }, h('span', null, section.title)) }, h('div', { className: 'standard-form-grid', style: gridStyle }, (section.fields || []).map((field) => h(Form.Item, { key: field.key, className: field.span === 'full' ? 'standard-form-span-full' : '', label: fieldLabel(field), name: field.key, valuePropName: field.type === 'switch' ? 'checked' : 'value', rules: [field.required ? { required: true, message: field.requiredMessage || ('请输入' + field.label) } : null, field.min !== undefined && field.type !== 'number' && field.type !== 'amount' ? { min: field.min, message: field.label + '至少为 ' + field.min + ' 个字符' } : null].filter(Boolean) }, fieldControl(field)))));
+      return h(Card, { key: section.id, className: 'standard-form-section', bordered: false, title: h('div', { className: 'standard-form-section-title' }, h('span', null, section.title)) }, h('div', { className: 'standard-form-grid', style: gridStyle }, visibleFields.map((field) => {
+        const state = formRuntime.resolveFieldState(field, runtimeValues, optionSets);
+        return h(Form.Item, { key: field.key, className: field.span === 'full' ? 'standard-form-span-full' : '', label: fieldLabel(field), name: field.key, ...formRuntime.fieldValueProps(field), rules: formRuntime.buildRules(field, state), extra: field.extra }, formRuntime.renderControl(field, runtimeValues, optionSets, state));
+      })));
     });
     return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { fontFamily: 'Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontSize: 14, fontSizeSM: 12, fontSizeLG: 16, fontSizeXL: 20, lineHeight: 22 / 14, lineHeightSM: 20 / 12, lineHeightLG: 24 / 16, fontWeightStrong: 500, borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' } } }, h('div', { className: 'standard-grouped-form-page' }, [
       h(Breadcrumb, { key: 'breadcrumb', className: 'standard-page-breadcrumb', items: payload.breadcrumb || [] }),
       submitted ? h(Alert, { key: 'success', className: 'standard-form-feedback', type: 'success', showIcon: true, message: source.demoSubmission?.successMessage || '保存成功', description: props.successDescription || '演示数据已更新，表单可以继续编辑。', closable: true, onClose: () => setSubmitted(false) }) : null,
       error ? h(Alert, { key: 'error', className: 'standard-form-feedback', type: 'error', showIcon: true, message: source.demoSubmission?.errorMessage || '保存失败', description: '请检查字段后重试。', closable: true, onClose: () => setError(false) }) : null,
-      h(Form, { key: 'form', form, layout: 'vertical', colon: false, initialValues: normalizeInitialValues(formInitialValues), onFinish: submit, requiredMark: true, className: 'standard-grouped-form' }, [sectionNodes, h('div', { key: 'actions', className: 'standard-form-actions' }, [h(Button, { key: 'reset', onClick: reset, disabled: submitting }, props.secondaryActionLabel || '取消'), h(Button, { key: 'submit', type: 'primary', htmlType: 'submit', loading: submitting }, submitting ? '保存中' : (props.primaryActionLabel || '保存'))])])
+      h(Form, { key: 'form', form, layout: 'vertical', colon: false, initialValues: formInitialValues, onValuesChange, onFinish: submit, requiredMark: true, className: 'standard-grouped-form' }, [sectionNodes, h('div', { key: 'actions', className: 'standard-form-actions' }, [h(Button, { key: 'reset', onClick: reset, disabled: submitting }, props.secondaryActionLabel || '取消'), h(Button, { key: 'submit', type: 'primary', htmlType: 'submit', loading: submitting }, submitting ? '保存中' : (props.primaryActionLabel || '保存'))])])
     ]));
   }
   ReactDOM.createRoot(document.getElementById('yipex-standard-grouped-form-app')).render(h(App));

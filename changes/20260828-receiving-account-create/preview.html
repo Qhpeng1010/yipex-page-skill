@@ -1,0 +1,269 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../../modules/yipex/shell/vendor/antd-reset.css"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react-dom.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/antd.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"><title>收款账户 | YiPex</title><style>:root{--yipex-shell-sidebar:200px;--yipex-shell-canvas:#f0f0f0;--yipex-shell-surface:#f0f0f0;--yipex-shell-line:#d9d9d9;--yipex-shell-text:#222;--yipex-shell-muted:rgba(0,0,0,.58);--yipex-shell-brand:#4aa52e;--yipex-shell-radius:10px}
+*,*::before,*::after{box-sizing:border-box;letter-spacing:0!important}
+html,body{height:100%;overflow:hidden}
+body{margin:0;min-width:320px;background:var(--yipex-shell-canvas);color:var(--yipex-shell-text);font-family:Roboto,"PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:400;line-height:22px;letter-spacing:0;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.yipex-shell{height:100vh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--yipex-shell-canvas)}
+.yipex-shell-topbar{height:52px;flex:0 0 52px;padding:0 28px 0 32px;border-bottom:1px solid var(--yipex-shell-line);background:var(--yipex-shell-canvas);display:flex;align-items:center;justify-content:space-between;gap:18px}.yipex-shell-topbar-brand{height:100%;display:flex;align-items:center}.yipex-shell-logo{width:85px;height:auto;display:block}.yipex-shell-topbar-actions{display:flex;align-items:center;gap:6px}.yipex-shell-topbar-button{position:relative;height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--yipex-shell-muted);display:inline-flex;align-items:center;gap:7px}.yipex-shell-topbar-button:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-notification-button{padding-right:10px}.yipex-shell-account{height:40px;padding:0 0 0 12px;border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--yipex-shell-text)}.yipex-shell-account:hover{background:#e7e7e7}.yipex-shell-email{font-size:14px}.yipex-shell-avatar{width:34px;height:34px;border-radius:50%;background:#f59c16;color:#fff;display:grid;place-items:center;font-weight:500}.yipex-shell-account>[data-antd-icon]{display:inline-flex;color:var(--yipex-shell-muted)}
+.yipex-shell-body{min-height:0;overflow:hidden;flex:1;display:grid;grid-template-columns:var(--yipex-shell-sidebar) minmax(0,1fr)}.yipex-shell-sidebar{min-height:0;padding:12px 10px 12px;background:var(--yipex-shell-surface);border-right:1px solid var(--yipex-shell-line);display:flex;flex-direction:column;z-index:10}.yipex-shell-nav{flex:1;display:grid;align-content:start;gap:6px;border:0;background:transparent}.yipex-shell-nav-item{min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;text-decoration:none;font-size:14px;font-weight:400}.yipex-shell-nav-item:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-nav-item.active{background:#e3f2df;color:#357d21;font-weight:400}.yipex-shell-nav-item .nav-icon{width:20px;display:inline-flex;align-items:center;justify-content:center}.yipex-shell-sidebar-footer{margin-top:auto;padding-top:12px}.yipex-shell-toggle{width:100%;height:40px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;font-size:14px;font-weight:400}.yipex-shell-toggle:hover{background:#e7e7e7;color:var(--yipex-shell-text)}
+.yipex-shell-workspace{min-width:0;min-height:0;padding:12px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;display:flex;flex-direction:column}.yipex-shell-content{min-width:0;min-height:0;flex:1 0 auto;padding:24px;background:#fff;border-radius:var(--yipex-shell-radius);overflow:visible}.yipex-shell-footer{flex:0 0 auto;min-height:32px;padding:8px 4px 0;text-align:center}.yipex-shell-copyright{color:var(--yipex-shell-muted);font-size:12px;font-weight:400;line-height:20px}
+.yipex-shell.is-collapsed{--yipex-shell-sidebar:72px}
+@media(max-width:760px){.yipex-shell-topbar{padding:0 14px}.yipex-shell-topbar-button>span:last-child{display:none}.yipex-shell-topbar-button{padding:0 8px}.yipex-shell-account{padding-left:4px}.yipex-shell-email{display:none}.yipex-shell-body{display:block}.yipex-shell-sidebar{display:none}.yipex-shell-workspace{padding:12px}.yipex-shell-content{padding:24px 16px}.yipex-shell-footer{text-align:center}}
+.yipex-shell-topbar-button{width:36px;height:36px;padding:0;display:inline-grid;place-items:center}.yipex-shell-topbar-button>span:not([data-antd-icon]){display:none}
+.yipex-shell.is-collapsed .yipex-shell-nav-item>span:not(.nav-icon),.yipex-shell.is-collapsed .yipex-shell-toggle>span:last-child{display:none}.yipex-shell.is-collapsed .yipex-shell-nav-item,.yipex-shell.is-collapsed .yipex-shell-toggle{justify-content:center;padding-left:0;padding-right:0}
+.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon,.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon span,.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon],.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon] span{display:inline-flex}
+.yipex-shell-empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}.yipex-shell-empty-title{margin:0 0 24px;color:var(--yipex-shell-text);font-size:20px;line-height:28px;font-weight:500}.yipex-shell-empty-content{min-height:120px;display:flex;align-items:center;justify-content:center}.yipex-shell-empty-content .ant-empty{margin:0}
+
+    :root{--receiving-ink:#222;--receiving-text:rgba(0,0,0,.85);--receiving-muted:rgba(0,0,0,.65);--receiving-faint:rgba(0,0,0,.45);--receiving-line:#e7e8e8;--receiving-border:#d9d9d9;--receiving-brand:#4aa52e}
+    .yipex-modal .ant-modal-content{padding:0;border-radius:8px;overflow:hidden}.yipex-modal .ant-modal-header{margin:0;padding:16px 24px;border-bottom:1px solid var(--receiving-line)}.yipex-modal .ant-modal-body{padding:24px}.yipex-modal .ant-modal-footer{margin:0;padding:16px 24px;border-top:1px solid var(--receiving-line);text-align:right}
+    #receiving-account-app{min-height:100%}.receiving-initial-loading{min-height:420px;display:grid;place-content:center;justify-items:center;gap:12px;color:var(--receiving-muted);font-size:14px}.receiving-loading-spinner{width:22px;height:22px;border:2px solid var(--receiving-border);border-top-color:var(--receiving-brand);border-radius:50%;animation:receiving-spin .8s linear infinite}@keyframes receiving-spin{to{transform:rotate(360deg)}}
+    .receiving-page{width:100%;max-width:1440px;margin:0 auto}.receiving-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.receiving-title-row{display:flex;align-items:center;gap:10px}.receiving-title{margin:0;color:var(--receiving-ink);font-size:20px;font-weight:500;line-height:28px}.receiving-filter-section{padding-bottom:16px;border-bottom:1px solid var(--receiving-line)}.receiving-filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:end}.receiving-filter-grid .ant-form-item{margin-bottom:0}.receiving-filter-actions{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px}
+    .receiving-results{padding-top:16px}.receiving-results-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.receiving-results-title{display:flex;align-items:baseline;gap:8px;color:var(--receiving-text);font-size:16px;font-weight:500}.receiving-results-count{color:var(--receiving-faint);font-size:12px;font-weight:400}.receiving-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.receiving-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.receiving-card-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.receiving-card-holder{margin:16px 0 4px;color:var(--receiving-text);font-size:16px;font-weight:500;line-height:24px;overflow-wrap:anywhere}.receiving-card-id{color:var(--receiving-faint);font:400 12px/20px Roboto,-apple-system,sans-serif}.receiving-account-number{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:16px 0;padding-bottom:16px;border-bottom:1px solid var(--receiving-line)}.receiving-account-number span{color:var(--receiving-faint);font-size:12px}.receiving-account-number strong{color:var(--receiving-ink);font:500 16px/24px Roboto,-apple-system,sans-serif}.receiving-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0}.receiving-detail-item{min-width:0}.receiving-detail-item dt{margin:0 0 4px;color:var(--receiving-faint);font-size:12px;line-height:20px}.receiving-detail-item dd{margin:0;color:var(--receiving-text);font-size:14px;line-height:22px;overflow-wrap:anywhere}.receiving-card-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:16px}.receiving-card-update{color:var(--receiving-faint);font-size:12px;line-height:20px}.receiving-rejection{margin-top:12px;color:#ff4d4f;font-size:12px;line-height:20px}.receiving-state{min-height:340px;display:grid;place-items:center}.receiving-skeleton-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.receiving-skeleton-item{padding:16px;border:1px solid var(--receiving-line);border-radius:8px}
+    .receiving-type-group{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.receiving-type-card.ant-card{width:100%;height:100%;cursor:pointer;transition:border-color .2s,background-color .2s,box-shadow .2s}.receiving-type-card.ant-card:hover{background:var(--yipex-selection-hover,#ededed)}.receiving-type-card.ant-card:has(.ant-radio-checked){border-color:var(--receiving-ink);background:var(--yipex-selection,#f5f5f5);box-shadow:0 0 0 1px var(--receiving-ink)}.receiving-type-card.ant-card:focus-within{outline:2px solid var(--receiving-ink);outline-offset:2px}.receiving-type-radio.ant-radio-wrapper{width:100%;margin-inline-end:0;align-items:flex-start}.receiving-type-radio .ant-radio{margin-top:3px}.receiving-type-content{display:block;min-width:0}.receiving-type-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.receiving-type-heading strong{color:var(--receiving-text);font-size:14px;font-weight:500;line-height:22px}.receiving-type-description{display:block;margin-top:8px;color:var(--receiving-muted);font-size:12px;line-height:20px}.receiving-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}.receiving-span-full{grid-column:1 / -1}.receiving-form-grid .ant-form-item{margin-bottom:16px}
+    @media(max-width:1040px){.receiving-card-grid,.receiving-skeleton-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:820px){.receiving-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:680px){.receiving-header{align-items:flex-start;flex-direction:column}.receiving-header .ant-btn{align-self:flex-end}.receiving-filter-grid,.receiving-card-grid,.receiving-skeleton-grid,.receiving-type-group,.receiving-form-grid{grid-template-columns:1fr}.receiving-filter-actions,.receiving-span-full{grid-column:auto}.receiving-detail-grid{grid-template-columns:1fr}}
+  </style></head><body><div class="yipex-shell" data-shell="yipex-default">
+  <header class="yipex-shell-topbar">
+    <div class="yipex-shell-topbar-brand"><img class="yipex-shell-logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzkiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA3OSAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy4xMTU0IDAuMDE5ODM2NEgyMC43OTg1QzIwLjI5OSAwLjAxOTgzNjQgMTkuODIwOCAwLjIxOTY1NCAxOS40Njc5IDAuNTczMzMyQzE5LjExNCAwLjkyODA3OCAxOC45MTY0IDEuNDA3ODQgMTguOTE2NCAxLjkwODk3VjE1Ljk3OTJIMjMuMTE1NFYwLjAxOTgzNjRaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNS42NDg2NiA4LjM0MTI0QzUuNjQ4NjYgOC4zNDEyNCAzLjIwODUyIDUuODkzMDIgMi4wODcyOSA0Ljc2ODA4QzEuNzM0NDUgNC40MTQwNyAxLjI1NTE1IDQuMjE0NjggMC43NTU2NDUgNC4yMTQ2OEMwLjM3NjIzNCA0LjIxNDY4IDAgNC4yMTQ2OCAwIDQuMjE0NjhWMC4wMDA2NzkwMTZIMi41MTEzNEMzLjAxMTkxIDAuMDAwNjc5MDE2IDMuNDkxMjMgMC4yMDExMzggMy44NDUxMyAwLjU1NjIxNUM1LjA2NTIgMS43ODU2NSA3Ljg4NDc0IDQuNjI1MiA3Ljg4NDc0IDQuNjI1MkM3Ljg4NDc0IDQuNjI1MiAxMC43MDQzIDEuNzg1NjUgMTEuOTI0NCAwLjU1NjIxNUMxMi4yNzgzIDAuMjAxMTM4IDEyLjc1NzYgMC4wMDA2NzkwMTYgMTMuMjU4MSAwLjAwMDY3OTAxNkgxNS43Njk1VjQuMjE0NjhIMTQuODk4QzE0LjQ3MjkgNC4yMTQ2OCAxNC4wNjQ4IDQuMzg0MjEgMTMuNzY0IDQuNjg1OTdDMTIuNjMyMiA1LjgyMTU4IDkuODQ4NzUgOC42MTQyMiA5Ljg0ODc1IDguNjE0MjJWMTUuOTgwMkg1LjY0ODY2VjguMzQxMjRaIiBmaWxsPSIjOEZENjI5Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjYuMjg3OCAxNS45OFYxLjkxMDE4QzI2LjI4NzggMC44NjYyNzkgMjcuMTMwNiAwLjAyMDcxIDI4LjE3MSAwLjAyMDcxQzMwLjk3MjUgMC4wMjA3MSAzNS45MTQ0IDAuMDIwNzEgMzUuOTE0NCAwLjAyMDcxVjQuMjM0NzFIMzAuNDg3OVY1Ljc4NTExSDM3LjYzMDhWMC4wMjA3MUg0MS45NjU5VjkuOTk5MTFIMzAuNDg3OVYxNS45OEgyNi4yODc4WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4LjQ2NzkgMTAuMjMyNFYxMS43ODZINTkuODEwOVYxNkg0NC4xMzM5VjcuOTA3ODlDNDQuMTMzOSA2Ljg2NTA1IDQ0Ljk3NjcgNi4wMTg0MSA0Ni4wMTYxIDYuMDE4NDFDNTAuMTgyMiA2LjAxODQxIDU5LjgxMDkgNi4wMTg0MSA1OS44MTA5IDYuMDE4NDFWMTAuMjMyNEg0OC40Njc5WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTU5LjgxMTUgNC4yMzQwNlYwLjAyMTEzOTFMNDYuMDE1OCAwLjAyMTEzOTFDNDQuOTc2NiAwLjAyMTEzOTEgNDQuMTMzNyAwLjg2NjcwNyA0NC4xMzM3IDEuOTA5NTRWNC4yMzQwNkw1OS44MTE1IDQuMjM0MDZaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNzMuNzMzNyA3Ljk5OTMyTDc3LjQyMDUgMTEuNzY1Nkg3OVYxNS45NzkySDc2LjQzN0M3NS45MzYxIDE1Ljk3OTIgNzUuNDU0NiAxNS43Nzg4IDc1LjEwMTUgMTUuNDIyNEM3Mi43ODc5IDEzLjA4NyA2My45OTIzIDQuMjExNDMgNjMuOTkyMyA0LjIxMTQzSDYyLjQzMTJMNjIuNDMzNCAwSDY0Ljk5NjRDNjUuNDk3MyAwIDY1Ljk3NzcgMC4yMDAzOSA2Ni4zMzA4IDAuNTU1Njc1QzY3LjYxODcgMS44NTMzMyA3MC43MTcyIDQuOTcyODkgNzAuNzE3MiA0Ljk3Mjg5QzcwLjcxNzIgNC45NzI4OSA3My44MTQ2IDEuODUzMzMgNzUuMTAzNyAwLjU1NTY3NUM3NS40NTY3IDAuMjAwMzkgNzUuOTM2MSAwIDc2LjQzNyAwSDc5TDc4Ljk5ODkgNC4yMTE0M0g3Ny40Mzg5TDczLjczMzcgNy45OTkzMlpNNjkuMjIwOSAxMi41OTQyQzY5LjIyMDkgMTIuNTk0MiA2Ny4zMDAzIDE0LjQ4MzMgNjYuMzI4NiAxNS40Mzk3QzY1Ljk3NjcgMTUuNzg1MyA2NS41MDM4IDE1Ljk3OTIgNjUuMDEwNCAxNS45NzkySDYyLjQzMzRWMTEuNzY1Nkg2NC4wMTI4TDY2LjIwNDQgOS41MDA2Mkw2OS4yMjA5IDEyLjU5NDJaIiBmaWxsPSIjMjMxRjIwIi8+Cjwvc3ZnPgo=" alt="Yipex"></div>
+    <div class="yipex-shell-topbar-actions">
+      <button class="yipex-shell-topbar-button ant-btn" type="button" data-shell-action="tools" aria-label="功能" title="功能"><span data-antd-icon="AppstoreOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-topbar-button yipex-shell-notification-button ant-btn" type="button" data-shell-action="notifications" aria-label="消息" title="消息"><span data-antd-icon="BellOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-account ant-btn" type="button" data-shell-action="account" aria-label="打开账号菜单"><span class="yipex-shell-email">operations@yipex.tech</span><span class="yipex-shell-avatar">运</span><span data-antd-icon="DownOutlined" aria-hidden="true"></span></button>
+    </div>
+  </header>
+  <div class="yipex-shell-body">
+    <aside class="yipex-shell-sidebar" aria-label="主导航">
+      <nav class="yipex-shell-nav ant-menu ant-menu-root ant-menu-inline" data-antd-component="Menu"><a class="yipex-shell-nav-item" data-antd-component="Menu.Item" data-menu-key="home" href="#home" title="首页" ><span class="nav-icon anticon" data-antd-icon="HomeOutlined" aria-hidden="true"></span><span>首页</span></a><a class="yipex-shell-nav-item active" data-antd-component="Menu.Item" data-menu-key="receiving-account" href="#receiving-account" title="收款账户" aria-current="page"><span class="nav-icon anticon" data-antd-icon="BankOutlined" aria-hidden="true"></span><span>收款账户</span></a></nav>
+      <div class="yipex-shell-sidebar-footer"><button class="yipex-shell-toggle ant-btn" type="button" data-shell-action="toggle-sidebar" aria-label="收起导航" title="收起导航" aria-expanded="true"><span data-antd-icon="MenuFoldOutlined" aria-hidden="true"></span><span>收起</span></button></div>
+    </aside>
+    <div class="yipex-shell-workspace">
+      <main id="yipex-page" class="yipex-shell-content"><div id="receiving-account-app" data-antd-component="ReceivingAccountCreateApp"><div class="receiving-initial-loading" role="status" aria-live="polite"><span class="receiving-loading-spinner" aria-hidden="true"></span><span>正在加载收款账户</span></div></div></main>
+      <footer class="yipex-shell-footer"><small class="yipex-shell-copyright">Copyright Somei E-Commerce Limited 2025. All rights reserved</small></footer>
+    </div>
+  </div>
+</div>
+<script id="receiving-account-data" type="application/json">{"data":{"demo":true,"accountTypes":[{"value":"SWIFT","label":"新建收款订单","tag":"SWIFT 电汇","description":"覆盖全球银行网络，适合多币种跨境收款"},{"value":"LOCAL","label":"本地收款账户","tag":"本地清算","description":"使用特定国家/地区本地清算网络，到账快、费用低"}],"accountStatuses":[{"value":"ALL","label":"全部状态"},{"value":"SUCCESS","label":"成功"},{"value":"REJECTED","label":"驳回"},{"value":"REVIEWING","label":"审核中"}],"orderStatuses":[{"value":"ALL","label":"全部状态"},{"value":"PROCESSING","label":"处理中"},{"value":"COMPLETED","label":"已完成"},{"value":"CLOSED","label":"已关闭"}],"openingLocations":[{"value":"HK","label":"中国香港"},{"value":"SG","label":"新加坡"},{"value":"US","label":"美国"},{"value":"GB","label":"英国"},{"value":"DE","label":"德国"},{"value":"JP","label":"日本"}],"banks":[{"value":"HSBC_HK","label":"汇丰银行（香港）"},{"value":"DBS_SG","label":"星展银行（新加坡）"},{"value":"JPM_US","label":"摩根大通银行（美国）"},{"value":"BARCLAYS_GB","label":"巴克莱银行（英国）"},{"value":"DB_DE","label":"德意志银行（德国）"},{"value":"MUFG_JP","label":"三菱日联银行（日本）"}],"currencies":[{"value":"USD","label":"USD - 美元"},{"value":"EUR","label":"EUR - 欧元"},{"value":"GBP","label":"GBP - 英镑"},{"value":"JPY","label":"JPY - 日元"},{"value":"SGD","label":"SGD - 新加坡元"},{"value":"HKD","label":"HKD - 港币"}],"tradeRegions":[{"value":"US","label":"美国"},{"value":"EU","label":"欧盟"},{"value":"GB","label":"英国"},{"value":"SEA","label":"东南亚"},{"value":"JP","label":"日本"},{"value":"AU","label":"澳大利亚"}],"goodsCategories":[{"value":"APPAREL","label":"服饰鞋包"},{"value":"ELECTRONICS","label":"数码电子"},{"value":"HOME","label":"家居用品"},{"value":"OUTDOOR","label":"户外用品"},{"value":"FOOD","label":"食品饮料"}],"records":[{"id":"RA202608001","type":"SWIFT","typeLabel":"新建收款订单","typeTag":"SWIFT 电汇","accountHolder":"深圳远山户外贸易有限公司","openingLocation":"中国香港","bankName":"汇丰银行（香港）","currency":"USD","tradeRegions":["美国","英国"],"goodsCategory":"户外用品","accountStatus":"SUCCESS","accountStatusLabel":"成功","orderStatus":"COMPLETED","orderStatusLabel":"已完成","accountNumber":"**** 6821","updatedAt":"2026-08-27 16:20"},{"id":"RA202608002","type":"LOCAL","typeLabel":"本地收款账户","typeTag":"本地清算","accountHolder":"杭州松果家居有限公司","openingLocation":"美国","bankName":"摩根大通银行（美国）","currency":"USD","tradeRegions":["美国"],"goodsCategory":"家居用品","accountStatus":"REVIEWING","accountStatusLabel":"审核中","orderStatus":"PROCESSING","orderStatusLabel":"处理中","accountNumber":"待分配","updatedAt":"2026-08-27 14:08"},{"id":"RA202608003","type":"LOCAL","typeLabel":"本地收款账户","typeTag":"本地清算","accountHolder":"上海北屿服饰有限公司","openingLocation":"德国","bankName":"德意志银行（德国）","currency":"EUR","tradeRegions":["欧盟","英国"],"goodsCategory":"服饰鞋包","accountStatus":"REJECTED","accountStatusLabel":"驳回","orderStatus":"CLOSED","orderStatusLabel":"已关闭","accountNumber":"未分配","rejectionReason":"贸易资料不完整","updatedAt":"2026-08-26 11:32"},{"id":"RA202608004","type":"SWIFT","typeLabel":"新建收款订单","typeTag":"SWIFT 电汇","accountHolder":"广州辰星科技有限公司","openingLocation":"新加坡","bankName":"星展银行（新加坡）","currency":"SGD","tradeRegions":["东南亚","澳大利亚"],"goodsCategory":"数码电子","accountStatus":"SUCCESS","accountStatusLabel":"成功","orderStatus":"COMPLETED","orderStatusLabel":"已完成","accountNumber":"**** 1936","updatedAt":"2026-08-25 09:46"},{"id":"RA202608005","type":"SWIFT","typeLabel":"新建收款订单","typeTag":"SWIFT 电汇","accountHolder":"苏州沐光食品有限公司","openingLocation":"英国","bankName":"巴克莱银行（英国）","currency":"GBP","tradeRegions":["英国","欧盟"],"goodsCategory":"食品饮料","accountStatus":"REVIEWING","accountStatusLabel":"审核中","orderStatus":"PROCESSING","orderStatusLabel":"处理中","accountNumber":"待分配","updatedAt":"2026-08-24 18:15"}]},"initialState":{"loading":false,"empty":false,"error":false,"permission-denied":false,"creating":false,"success":false,"modalOpen":false},"pageName":"收款账户"}</script><script defer src="../../modules/yipex/shell/vendor/react.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/react-dom.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"></script><script defer src="../../modules/yipex/shell/vendor/antd.min.js"></script><script defer src="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"></script><script>(() => {
+  const shell = document.querySelector('[data-shell="yipex-default"]');
+  if (!shell) return;
+  const page = shell.querySelector('#yipex-page');
+  const navItems = [...shell.querySelectorAll('.yipex-shell-nav-item')];
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const initialKey = navItems.find((item) => item.classList.contains('active') || item.getAttribute('aria-current') === 'page')?.dataset.menuKey || '';
+  const setActive = (key) => navItems.forEach((item) => {
+    const active = item.dataset.menuKey === key;
+    item.classList.toggle('active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+  const renderEmptyState = (item) => {
+    if (!page || !item) return;
+    page.dataset.shellEmpty = 'true';
+    const label = item.getAttribute('title') || item.textContent.trim();
+    page.innerHTML = '<div class="yipex-shell-empty" data-shell-empty="true" role="status" aria-live="polite"><h1 class="yipex-shell-empty-title">' + escapeHtml(label) + '</h1><div class="yipex-shell-empty-content" data-shell-empty-mount></div></div>';
+    const mount = () => {
+      const Empty = window.antd?.Empty;
+      const target = page.querySelector('[data-shell-empty-mount]');
+      if (!Empty || !target || !window.React || !window.ReactDOM) { window.setTimeout(mount, 16); return; }
+      const element = window.React.createElement(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' });
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(target).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, target);
+    };
+    mount();
+  };
+  shell.querySelectorAll('[data-shell-action="toggle-sidebar"]').forEach((button) => button.addEventListener('click', () => {
+    const collapsed = shell.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.setAttribute('aria-label', collapsed ? '展开导航' : '收起导航');
+    button.setAttribute('title', collapsed ? '展开导航' : '收起导航');
+  }));
+  navItems.forEach((item) => item.addEventListener('click', (event) => {
+    const key = item.dataset.menuKey || '';
+    setActive(key);
+    if (key === initialKey && page?.dataset.shellEmpty) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      window.location.reload();
+      return;
+    }
+    if (key && key !== initialKey) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      renderEmptyState(item);
+    }
+  }));
+  shell.querySelectorAll('[data-shell-action]').forEach((button) => {
+    if (button.dataset.shellAction === 'toggle-sidebar') return;
+    button.addEventListener('click', () => button.dispatchEvent(new CustomEvent('yipex-shell-action', { bubbles: true, detail: { action: button.dataset.shellAction } })));
+  });
+  const renderIcons = () => {
+    const iconLibrary = window.icons;
+    if (!iconLibrary || !window.React || !window.ReactDOM) { window.setTimeout(renderIcons, 16); return; }
+    shell.querySelectorAll('[data-antd-icon]').forEach((node) => {
+      if (node.dataset.iconMounted) return;
+      const Icon = iconLibrary[node.dataset.antdIcon];
+      if (!Icon) return;
+      const element = window.React.createElement(Icon);
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(node).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, node);
+      node.dataset.iconMounted = 'true';
+    });
+  };
+  renderIcons();
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('.ant-breadcrumb a, .standard-page-breadcrumb a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(href);
+  });
+})();
+</script><script>(() => { const start = () => { if (window.React && window.ReactDOM && window.antd && window.dayjs) { 
+    (() => {
+      const h = React.createElement;
+      const { ConfigProvider, Form, Select, Input, Button, Card, Tag, Modal, Radio, Empty, Result, Skeleton, message } = antd;
+      const { PlusOutlined } = window.icons || {};
+      const payload = JSON.parse(document.getElementById('receiving-account-data').textContent);
+      const source = payload.data || {};
+      const initial = payload.initialState || {};
+      const previewState = new URLSearchParams(window.location.search).get('state') || '';
+      const allValue = 'ALL';
+      const accountStatusColors = { SUCCESS: 'green', REJECTED: 'red', REVIEWING: 'blue' };
+      const orderStatusColors = { COMPLETED: 'green', PROCESSING: 'blue', CLOSED: 'default' };
+      const lookup = (items, value, field = 'label') => items.find((item) => item.value === value)?.[field] || value;
+      const wait = (milliseconds) => new Promise((resolveWait) => window.setTimeout(resolveWait, milliseconds));
+      function App() {
+        const [filterForm] = Form.useForm();
+        const [createForm] = Form.useForm();
+        const initialRecords = Boolean(initial.empty) || previewState === 'empty' ? [] : (source.records || []);
+        const [records, setRecords] = React.useState(initialRecords);
+        const [filters, setFilters] = React.useState({ type: allValue, accountStatus: allValue, orderStatus: allValue });
+        const [loading, setLoading] = React.useState(Boolean(initial.loading) || previewState === 'loading');
+        const [error, setError] = React.useState(Boolean(initial.error) || previewState === 'error');
+        const [modalOpen, setModalOpen] = React.useState(Boolean(initial.modalOpen));
+        const [creating, setCreating] = React.useState(Boolean(initial.creating));
+        const permissionDenied = Boolean(initial['permission-denied']) || previewState === 'permission-denied';
+        React.useEffect(() => {
+          if (!loading) return undefined;
+          const timer = window.setTimeout(() => setLoading(false), 900);
+          return () => window.clearTimeout(timer);
+        }, []);
+        const filtered = records.filter((record) => (filters.type === allValue || record.type === filters.type) && (filters.accountStatus === allValue || record.accountStatus === filters.accountStatus) && (filters.orderStatus === allValue || record.orderStatus === filters.orderStatus));
+        const typeFilterOptions = [{ value: allValue, label: '全部类型' }, ...(source.accountTypes || []).map((item) => ({ value: item.value, label: item.label }))];
+        const applyFilters = async (values) => {
+          setLoading(true);
+          await wait(360);
+          setFilters({ type: values.type || allValue, accountStatus: values.accountStatus || allValue, orderStatus: values.orderStatus || allValue });
+          setLoading(false);
+          message.success('查询条件已应用');
+        };
+        const resetFilters = () => {
+          filterForm.resetFields();
+          setFilters({ type: allValue, accountStatus: allValue, orderStatus: allValue });
+          message.info('已重置查询条件');
+        };
+        const closeModal = () => {
+          if (creating) return;
+          setModalOpen(false);
+          createForm.resetFields();
+        };
+        const createAccount = async (values) => {
+          setCreating(true);
+          await wait(850);
+          const type = source.accountTypes.find((item) => item.value === values.type);
+          const created = {
+            id: 'RA-DEMO-' + String(Date.now()).slice(-6),
+            type: values.type,
+            typeLabel: type?.label || values.type,
+            typeTag: type?.tag || '',
+            accountHolder: String(values.accountHolder || '').trim(),
+            openingLocation: lookup(source.openingLocations || [], values.openingLocation),
+            bankName: lookup(source.banks || [], values.bankName),
+            currency: values.currency,
+            tradeRegions: (values.tradeRegions || []).map((value) => lookup(source.tradeRegions || [], value)),
+            goodsCategory: lookup(source.goodsCategories || [], values.goodsCategory),
+            accountStatus: 'REVIEWING',
+            accountStatusLabel: '审核中',
+            orderStatus: 'PROCESSING',
+            orderStatusLabel: '处理中',
+            accountNumber: '待分配',
+            updatedAt: dayjs().format('YYYY-MM-DD HH:mm'),
+            isNew: true
+          };
+          setRecords((current) => [created, ...current]);
+          setFilters({ type: allValue, accountStatus: allValue, orderStatus: allValue });
+          filterForm.resetFields();
+          createForm.resetFields();
+          setCreating(false);
+          setModalOpen(false);
+          message.success('收款账户创建申请已提交，当前状态为审核中');
+        };
+        const retry = async () => { setError(false); setLoading(true); await wait(650); setLoading(false); message.success('收款账户已重新加载'); };
+        if (permissionDenied) return h('main', { className: 'receiving-page receiving-state' }, h(Result, { status: '403', title: '暂无收款账户权限', subTitle: '请联系管理员开通收款账户查看与新增权限。', extra: h(Button, { onClick: () => { window.location.hash = 'overview'; } }, '返回经营概览') }));
+        const headerNode = h('header', { key: 'header', id: 'receiving-account-header', className: 'receiving-header' }, [
+          h('div', { key: 'title', className: 'receiving-title-row' }, [h('h1', { key: 'text', className: 'receiving-title' }, payload.pageName), h(Tag, { key: 'demo' }, '演示数据')]),
+          h(Button, { key: 'create', id: 'open-create-account', type: 'primary', icon: PlusOutlined ? h(PlusOutlined) : null, onClick: () => setModalOpen(true) }, '新增收款账户')
+        ]);
+        const filterNode = h('section', { key: 'filters', id: 'receiving-account-filters', className: 'receiving-filter-section', 'aria-label': '收款账户查询条件' }, h(Form, { form: filterForm, layout: 'vertical', size: 'middle', initialValues: { type: allValue, accountStatus: allValue, orderStatus: allValue }, onFinish: applyFilters }, h('div', { className: 'receiving-filter-grid' }, [
+          h(Form.Item, { key: 'type', label: '账户类型', name: 'type' }, h(Select, { options: typeFilterOptions })),
+          h(Form.Item, { key: 'accountStatus', label: '账户状态', name: 'accountStatus' }, h(Select, { options: source.accountStatuses || [] })),
+          h(Form.Item, { key: 'orderStatus', label: '订单状态', name: 'orderStatus' }, h(Select, { options: source.orderStatuses || [] })),
+          h('div', { key: 'actions', className: 'receiving-filter-actions' }, [h(Button, { key: 'reset', id: 'reset-account-filters', onClick: resetFilters }, '重置'), h(Button, { key: 'query', id: 'query-accounts', type: 'primary', htmlType: 'submit', loading }, '查询')])
+        ])));
+        const cardNodes = filtered.map((record) => h(Card, { key: record.id, bordered: true }, [
+          h('div', { key: 'top', className: 'receiving-card-top' }, [
+            h('div', { key: 'tags', className: 'receiving-card-tags' }, [h(Tag, { key: 'type' }, record.typeTag), record.isNew ? h(Tag, { key: 'new', color: 'green' }, '刚刚创建') : null]),
+            h(Tag, { key: 'status', color: accountStatusColors[record.accountStatus] }, record.accountStatusLabel)
+          ]),
+          h('h3', { key: 'holder', className: 'receiving-card-holder' }, record.accountHolder),
+          h('span', { key: 'id', className: 'receiving-card-id' }, record.id),
+          h('div', { key: 'number', className: 'receiving-account-number' }, [h('span', { key: 'label' }, '收款账户'), h('strong', { key: 'value' }, record.currency + ' · ' + record.accountNumber)]),
+          h('dl', { key: 'details', className: 'receiving-detail-grid' }, [
+            h('div', { key: 'location', className: 'receiving-detail-item' }, [h('dt', null, '开户地'), h('dd', null, record.openingLocation)]),
+            h('div', { key: 'bank', className: 'receiving-detail-item' }, [h('dt', null, '开户行'), h('dd', null, record.bankName)]),
+            h('div', { key: 'region', className: 'receiving-detail-item' }, [h('dt', null, '贸易国家/地区'), h('dd', null, record.tradeRegions.join('、'))]),
+            h('div', { key: 'category', className: 'receiving-detail-item' }, [h('dt', null, '商品大类'), h('dd', null, record.goodsCategory)])
+          ]),
+          record.rejectionReason ? h('div', { key: 'rejection', className: 'receiving-rejection' }, '驳回原因：' + record.rejectionReason) : null,
+          h('div', { key: 'footer', className: 'receiving-card-footer' }, [h(Tag, { key: 'order', color: orderStatusColors[record.orderStatus] }, '订单' + record.orderStatusLabel), h('span', { key: 'updated', className: 'receiving-card-update' }, '更新于 ' + record.updatedAt)])
+        ]));
+        let resultBody;
+        if (error) {
+          resultBody = h('div', { className: 'receiving-state' }, h(Result, { status: 'error', title: '收款账户加载失败', subTitle: '演示数据暂时无法读取，请重试。', extra: h(Button, { type: 'primary', onClick: retry }, '重新加载') }));
+        } else if (loading) {
+          resultBody = h('div', { className: 'receiving-skeleton-grid', role: 'status', 'aria-live': 'polite' }, [0, 1, 2].map((index) => h('div', { key: index, className: 'receiving-skeleton-item' }, h(Skeleton, { active: true, paragraph: { rows: 6 } }))));
+        } else if (!filtered.length) {
+          resultBody = h('div', { className: 'receiving-state' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: records.length ? '没有符合条件的收款账户' : '暂无收款账户' }));
+        } else {
+          resultBody = h('div', { className: 'receiving-card-grid' }, cardNodes);
+        }
+        const resultsNode = h('section', { key: 'results', id: 'receiving-account-results', className: 'receiving-results', 'aria-labelledby': 'receiving-results-title' }, [
+          h('div', { key: 'head', className: 'receiving-results-head' }, h('div', { id: 'receiving-results-title', className: 'receiving-results-title' }, ['账户结果', h('span', { key: 'count', className: 'receiving-results-count' }, '共 ' + filtered.length + ' 个')])),
+          resultBody
+        ]);
+        const typeRadios = (source.accountTypes || []).map((item) => h(Card, { key: item.value, size: 'small', hoverable: true, className: 'receiving-type-card', onClick: () => createForm.setFieldValue('type', item.value) }, h(Radio, { value: item.value, className: 'receiving-type-radio' }, h('span', { className: 'receiving-type-content' }, [h('span', { key: 'heading', className: 'receiving-type-heading' }, [h('strong', { key: 'label' }, item.label), h(Tag, { key: 'tag' }, item.tag)]), h('span', { key: 'description', className: 'receiving-type-description' }, item.description)]))));
+        const modalNode = h(Modal, {
+          key: 'modal',
+          className: 'receiving-modal yipex-modal',
+          title: '新增收款账户',
+          open: modalOpen,
+          closable: !creating,
+          maskClosable: !creating,
+          keyboard: !creating,
+          onCancel: closeModal,
+          footer: [h(Button, { key: 'cancel', id: 'cancel-create-account', disabled: creating, onClick: closeModal }, '取消'), h(Button, { key: 'create', id: 'create-account', type: 'primary', loading: creating, onClick: () => createForm.submit() }, creating ? '创建中' : '创建账户')]
+        }, h(Form, { form: createForm, layout: 'vertical', size: 'middle', preserve: false, onFinish: createAccount, scrollToFirstError: true }, h('div', { className: 'receiving-form-grid' }, [
+          h(Form.Item, { key: 'type', className: 'receiving-span-full', label: '账户类型', name: 'type', rules: [{ required: true, message: '请选择一种账户类型' }] }, h(Radio.Group, { className: 'receiving-type-group' }, typeRadios)),
+          h(Form.Item, { key: 'holder', className: 'receiving-span-full', label: '账户持有人', name: 'accountHolder', rules: [{ required: true, message: '请输入账户持有人' }, { max: 80, message: '账户持有人不能超过 80 个字符' }] }, h(Input, { allowClear: true, maxLength: 80, placeholder: '请输入企业或个人持有人名称' })),
+          h(Form.Item, { key: 'location', label: '开户地', name: 'openingLocation', rules: [{ required: true, message: '请选择开户地' }] }, h(Select, { showSearch: true, optionFilterProp: 'label', placeholder: '请选择开户地', options: source.openingLocations || [] })),
+          h(Form.Item, { key: 'bank', label: '开户行', name: 'bankName', rules: [{ required: true, message: '请选择开户行' }] }, h(Select, { showSearch: true, optionFilterProp: 'label', placeholder: '请选择开户行', options: source.banks || [] })),
+          h(Form.Item, { key: 'currency', label: '账户币种', name: 'currency', rules: [{ required: true, message: '请选择账户币种' }] }, h(Select, { showSearch: true, optionFilterProp: 'label', placeholder: '请选择账户币种', options: source.currencies || [] })),
+          h(Form.Item, { key: 'category', label: '商品大类', name: 'goodsCategory', rules: [{ required: true, message: '请选择商品大类' }] }, h(Select, { placeholder: '请选择商品大类', options: source.goodsCategories || [] })),
+          h(Form.Item, { key: 'regions', className: 'receiving-span-full', label: '贸易国家/地区', name: 'tradeRegions', rules: [{ required: true, type: 'array', min: 1, message: '请至少选择一个贸易国家/地区' }] }, h(Select, { mode: 'multiple', allowClear: true, optionFilterProp: 'label', maxTagCount: 'responsive', placeholder: '请选择贸易国家/地区', options: source.tradeRegions || [] }))
+        ])));
+        return h('main', { className: 'receiving-page' }, [headerNode, filterNode, resultsNode, modalNode]);
+      }
+      ReactDOM.createRoot(document.getElementById('receiving-account-app')).render(h(ConfigProvider, { autoInsertSpaceInButton: false, theme: { token: { borderRadius: 8, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' }, components: { Table: { rowSelectedBg: '#F5F5F5', rowSelectedHoverBg: '#EDEDED' }, Select: { optionSelectedBg: '#F5F5F5', optionActiveBg: '#FAFAFA' } } } }, h(App)));
+    })();
+   } else { window.requestAnimationFrame(start); } }; start(); })();</script></body></html>

@@ -1,0 +1,411 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../modules/yipex/shell/vendor/antd-reset.css"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react-dom.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/antd.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"><title>订单查询 | YiPex</title><style>:root{--yipex-shell-sidebar:200px;--yipex-shell-canvas:#f0f0f0;--yipex-shell-surface:#f0f0f0;--yipex-shell-line:#d9d9d9;--yipex-shell-text:#222;--yipex-shell-muted:rgba(0,0,0,.58);--yipex-shell-brand:#4aa52e;--yipex-shell-radius:10px;--yipex-overlay-padding:24px;--yipex-overlay-divider:#e7e8e8}
+*,*::before,*::after{box-sizing:border-box;letter-spacing:0!important}
+html,body{height:100%;overflow:hidden}
+body{margin:0;min-width:320px;background:var(--yipex-shell-canvas);color:var(--yipex-shell-text);font-family:Roboto,"PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:400;line-height:22px;letter-spacing:0;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.yipex-shell{height:100vh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--yipex-shell-canvas)}
+.yipex-shell-topbar{height:52px;flex:0 0 52px;padding:0 28px 0 32px;border-bottom:1px solid var(--yipex-shell-line);background:var(--yipex-shell-canvas);display:flex;align-items:center;justify-content:space-between;gap:18px}.yipex-shell-topbar-brand{height:100%;display:flex;align-items:center}.yipex-shell-logo{width:85px;height:auto;display:block}.yipex-shell-topbar-actions{display:flex;align-items:center;gap:6px}.yipex-shell-topbar-button{position:relative;height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--yipex-shell-muted);display:inline-flex;align-items:center;gap:7px}.yipex-shell-topbar-button:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-notification-button{padding-right:10px}.yipex-shell-account{height:40px;padding:0 0 0 12px;border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--yipex-shell-text)}.yipex-shell-account:hover{background:#e7e7e7}.yipex-shell-email{font-size:14px}.yipex-shell-avatar{width:34px;height:34px;border-radius:50%;background:#f59c16;color:#fff;display:grid;place-items:center;font-weight:500}.yipex-shell-account>[data-antd-icon]{display:inline-flex;color:var(--yipex-shell-muted)}
+.yipex-shell-body{min-height:0;overflow:hidden;flex:1;display:grid;grid-template-columns:var(--yipex-shell-sidebar) minmax(0,1fr)}.yipex-shell-sidebar{min-height:0;padding:12px 10px 12px;background:var(--yipex-shell-surface);border-right:1px solid var(--yipex-shell-line);display:flex;flex-direction:column;z-index:10}.yipex-shell-nav{flex:1;display:grid;align-content:start;gap:6px;border:0;background:transparent}.yipex-shell-nav-item{min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;text-decoration:none;font-size:14px;font-weight:400}.yipex-shell-nav-item:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-nav-item.active{background:#e3f2df;color:#357d21;font-weight:400}.yipex-shell-nav-item .nav-icon{width:20px;display:inline-flex;align-items:center;justify-content:center}.yipex-shell-sidebar-footer{margin-top:auto;padding-top:12px}.yipex-shell-toggle{width:100%;height:40px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;font-size:14px;font-weight:400}.yipex-shell-toggle:hover{background:#e7e7e7;color:var(--yipex-shell-text)}
+.yipex-shell-workspace{min-width:0;min-height:0;padding:12px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;display:flex;flex-direction:column}.yipex-shell-content{width:100%;min-width:0;min-height:0;flex:1 0 auto;padding:24px;background:#fff;border-radius:var(--yipex-shell-radius);overflow:visible}.yipex-shell-footer{flex:0 0 auto;min-height:32px;padding:8px 4px 0;text-align:center}.yipex-shell-copyright{color:var(--yipex-shell-muted);font-size:12px;font-weight:400;line-height:20px}
+.yipex-shell.is-collapsed{--yipex-shell-sidebar:72px}
+@media(max-width:760px){.yipex-shell-topbar{padding:0 14px}.yipex-shell-topbar-button>span:last-child{display:none}.yipex-shell-topbar-button{padding:0 8px}.yipex-shell-account{padding-left:4px}.yipex-shell-email{display:none}.yipex-shell-body{display:block}.yipex-shell-sidebar{display:none}.yipex-shell-workspace{padding:12px}.yipex-shell-content{padding:24px 16px}.yipex-shell-footer{text-align:center}}
+.yipex-shell-topbar-button{width:36px;height:36px;padding:0;display:inline-grid;place-items:center}.yipex-shell-topbar-button>span:not([data-antd-icon]){display:none}
+.yipex-shell.is-collapsed .yipex-shell-nav-item>span:not(.nav-icon),.yipex-shell.is-collapsed .yipex-shell-toggle>span:last-child{display:none}.yipex-shell.is-collapsed .yipex-shell-nav-item,.yipex-shell.is-collapsed .yipex-shell-toggle{justify-content:center;padding-left:0;padding-right:0}
+.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon,.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon span,.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon],.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon] span{display:inline-flex}
+.yipex-shell-empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}.yipex-shell-empty-title{margin:0 0 24px;color:var(--yipex-shell-text);font-size:20px;line-height:28px;font-weight:500}.yipex-shell-empty-content{min-height:120px;display:flex;align-items:center;justify-content:center}.yipex-shell-empty-content .ant-empty{margin:0}
+.ant-modal:not(.ant-modal-confirm) .ant-modal-content{padding:0;overflow:hidden}.ant-modal:not(.ant-modal-confirm) .ant-modal-header{margin:0;padding:16px 48px 16px 24px;border-bottom:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-body{padding:var(--yipex-overlay-padding)}.ant-modal:not(.ant-modal-confirm) .ant-modal-footer{margin:0;padding:16px 24px;border-top:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-close{top:12px;inset-inline-end:16px}
+
+    .yipex-confirm-modal .yipex-confirm-primary{background:#222222;border-color:#222222;color:#FFFFFF;box-shadow:0 2px 0 rgba(0,0,0,.04)}.yipex-confirm-modal .yipex-confirm-primary:hover,.yipex-confirm-modal .yipex-confirm-primary:focus{background:#3A3A3A;border-color:#3A3A3A;color:#FFFFFF}.yipex-confirm-modal .yipex-confirm-cancel:focus,.yipex-confirm-modal .yipex-confirm-cancel:focus-visible{border-color:#4AA52E;color:#222222;box-shadow:0 0 0 2px rgba(74,165,46,.16)}
+    .standard-query-page{width:100%;min-width:0;margin:0;letter-spacing:0}.standard-query-header{margin-bottom:16px}.standard-query-title-row{display:flex;align-items:center}.standard-query-title-row h1{margin:0;color:#222;font-size:20px;font-weight:500;line-height:28px}.standard-query-header p{margin:6px 0 0;color:rgba(0,0,0,.58);font-size:14px;font-weight:400;line-height:22px}.standard-query-filter-panel{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #E7E8E8}.standard-query-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}.standard-query-metric{border:0!important;box-shadow:none!important;background:#fafafa}.standard-query-metric .ant-card-body{padding:16px}.standard-query-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:end}.standard-query-field{display:flex;min-width:0;flex-direction:column;gap:6px;color:rgba(0,0,0,.85);font-size:14px;font-weight:400;line-height:22px}.standard-query-field>span:first-child{font-weight:400}.standard-query-field .ant-input,.standard-query-field .ant-select,.standard-query-field .ant-picker{width:100%}.standard-query-actions{grid-column:4;grid-row:var(--standard-action-row-desktop);display:flex;justify-content:flex-end;gap:8px}.standard-result-panel{margin-bottom:16px}.standard-result-header{min-height:32px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px}.standard-result-title{display:flex;align-items:baseline;gap:8px}.standard-result-title h2{margin:0;font-size:16px;font-weight:500;line-height:24px}.standard-result-count{color:rgba(0,0,0,.42);font-size:12px;font-weight:400;line-height:20px}.standard-result-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.standard-result-panel .ant-table-thead>tr>th{font-weight:500;line-height:22px}.standard-result-panel .ant-table-tbody>tr>td,.standard-result-panel .ant-table-tbody .ant-btn{font-size:14px;font-weight:400;line-height:22px}.standard-result-panel .standard-row-action.ant-btn-link{padding-inline:0}.standard-row-actions{display:flex;align-items:center;gap:8px;white-space:nowrap}.standard-cancel-action.ant-btn-link:disabled{color:rgba(0,0,0,.25)}.standard-query-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;color:rgba(0,0,0,.58);font-size:12px;font-weight:400;line-height:20px}.standard-query-pagination .ant-pagination{margin-left:auto}.standard-query-clickable-row{cursor:pointer}.standard-query-clickable-row:hover>td{background:#FAFAFA!important}.standard-detail-drawer .ant-drawer-header-title,.standard-create-drawer .ant-drawer-header-title{display:flex;align-items:center;width:100%}.standard-detail-drawer .ant-drawer-title,.standard-create-drawer .ant-drawer-title{order:1;flex:1;min-width:0}.standard-detail-drawer .ant-drawer-close,.standard-create-drawer .ant-drawer-close{order:2;margin-inline:16px 0}.standard-detail-overlay-footer,.standard-drawer-footer{display:flex;justify-content:flex-end;gap:8px}.standard-create-sections{display:flex;flex-direction:column;gap:20px}.standard-create-section+.standard-create-section{padding-top:20px;border-top:1px solid #E7E8E8}.standard-create-section h3{margin:0 0 12px;color:#222;font-size:14px;font-weight:500;line-height:22px}.standard-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.standard-create-field{display:flex;min-width:0;flex-direction:column;gap:6px;color:rgba(0,0,0,.85);font-size:14px;line-height:22px}.standard-create-field:nth-last-child(1){grid-column:1/-1}.standard-create-sections .standard-create-field:nth-last-child(1){grid-column:auto}.standard-create-field .ant-input,.standard-create-field .ant-select{width:100%}.standard-create-radio-list{display:flex;flex-direction:column;gap:10px}.standard-create-radio-option{display:flex;align-items:flex-start;margin-inline:0;padding:10px 12px;border:1px solid #e7e8e8;border-radius:6px}.standard-create-radio-option .ant-radio{margin-top:2px}.standard-create-radio-copy{display:flex;flex-direction:column;gap:2px;line-height:20px}.standard-create-radio-copy strong{font-weight:500}.standard-create-radio-copy small{color:rgba(0,0,0,.58);font-size:12px;line-height:18px}@media(max-width:900px){.standard-query-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.standard-query-actions{grid-column:2;grid-row:var(--standard-action-row-tablet)}.standard-query-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.standard-create-form{grid-template-columns:1fr}.standard-create-field:nth-last-child(1){grid-column:auto}.standard-query-grid{grid-template-columns:1fr}.standard-query-metrics{grid-template-columns:1fr}.standard-query-actions{grid-column:1;grid-row:var(--standard-action-row-narrow);justify-content:flex-end}.standard-result-header{align-items:flex-start}.standard-query-pagination{align-items:flex-start;flex-direction:column}.standard-query-pagination .ant-pagination{margin-left:0;align-self:flex-end}}
+  </style></head><body><div class="yipex-shell" data-shell="yipex-default">
+  <header class="yipex-shell-topbar">
+    <div class="yipex-shell-topbar-brand"><img class="yipex-shell-logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzkiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA3OSAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy4xMTU0IDAuMDE5ODM2NEgyMC43OTg1QzIwLjI5OSAwLjAxOTgzNjQgMTkuODIwOCAwLjIxOTY1NCAxOS40Njc5IDAuNTczMzMyQzE5LjExNCAwLjkyODA3OCAxOC45MTY0IDEuNDA3ODQgMTguOTE2NCAxLjkwODk3VjE1Ljk3OTJIMjMuMTE1NFYwLjAxOTgzNjRaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNS42NDg2NiA4LjM0MTI0QzUuNjQ4NjYgOC4zNDEyNCAzLjIwODUyIDUuODkzMDIgMi4wODcyOSA0Ljc2ODA4QzEuNzM0NDUgNC40MTQwNyAxLjI1NTE1IDQuMjE0NjggMC43NTU2NDUgNC4yMTQ2OEMwLjM3NjIzNCA0LjIxNDY4IDAgNC4yMTQ2OCAwIDQuMjE0NjhWMC4wMDA2NzkwMTZIMi41MTEzNEMzLjAxMTkxIDAuMDAwNjc5MDE2IDMuNDkxMjMgMC4yMDExMzggMy44NDUxMyAwLjU1NjIxNUM1LjA2NTIgMS43ODU2NSA3Ljg4NDc0IDQuNjI1MiA3Ljg4NDc0IDQuNjI1MkM3Ljg4NDc0IDQuNjI1MiAxMC43MDQzIDEuNzg1NjUgMTEuOTI0NCAwLjU1NjIxNUMxMi4yNzgzIDAuMjAxMTM4IDEyLjc1NzYgMC4wMDA2NzkwMTYgMTMuMjU4MSAwLjAwMDY3OTAxNkgxNS43Njk1VjQuMjE0NjhIMTQuODk4QzE0LjQ3MjkgNC4yMTQ2OCAxNC4wNjQ4IDQuMzg0MjEgMTMuNzY0IDQuNjg1OTdDMTIuNjMyMiA1LjgyMTU4IDkuODQ4NzUgOC42MTQyMiA5Ljg0ODc1IDguNjE0MjJWMTUuOTgwMkg1LjY0ODY2VjguMzQxMjRaIiBmaWxsPSIjOEZENjI5Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjYuMjg3OCAxNS45OFYxLjkxMDE4QzI2LjI4NzggMC44NjYyNzkgMjcuMTMwNiAwLjAyMDcxIDI4LjE3MSAwLjAyMDcxQzMwLjk3MjUgMC4wMjA3MSAzNS45MTQ0IDAuMDIwNzEgMzUuOTE0NCAwLjAyMDcxVjQuMjM0NzFIMzAuNDg3OVY1Ljc4NTExSDM3LjYzMDhWMC4wMjA3MUg0MS45NjU5VjkuOTk5MTFIMzAuNDg3OVYxNS45OEgyNi4yODc4WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4LjQ2NzkgMTAuMjMyNFYxMS43ODZINTkuODEwOVYxNkg0NC4xMzM5VjcuOTA3ODlDNDQuMTMzOSA2Ljg2NTA1IDQ0Ljk3NjcgNi4wMTg0MSA0Ni4wMTYxIDYuMDE4NDFDNTAuMTgyMiA2LjAxODQxIDU5LjgxMDkgNi4wMTg0MSA1OS44MTA5IDYuMDE4NDFWMTAuMjMyNEg0OC40Njc5WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTU5LjgxMTUgNC4yMzQwNlYwLjAyMTEzOTFMNDYuMDE1OCAwLjAyMTEzOTFDNDQuOTc2NiAwLjAyMTEzOTEgNDQuMTMzNyAwLjg2NjcwNyA0NC4xMzM3IDEuOTA5NTRWNC4yMzQwNkw1OS44MTE1IDQuMjM0MDZaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNzMuNzMzNyA3Ljk5OTMyTDc3LjQyMDUgMTEuNzY1Nkg3OVYxNS45NzkySDc2LjQzN0M3NS45MzYxIDE1Ljk3OTIgNzUuNDU0NiAxNS43Nzg4IDc1LjEwMTUgMTUuNDIyNEM3Mi43ODc5IDEzLjA4NyA2My45OTIzIDQuMjExNDMgNjMuOTkyMyA0LjIxMTQzSDYyLjQzMTJMNjIuNDMzNCAwSDY0Ljk5NjRDNjUuNDk3MyAwIDY1Ljk3NzcgMC4yMDAzOSA2Ni4zMzA4IDAuNTU1Njc1QzY3LjYxODcgMS44NTMzMyA3MC43MTcyIDQuOTcyODkgNzAuNzE3MiA0Ljk3Mjg5QzcwLjcxNzIgNC45NzI4OSA3My44MTQ2IDEuODUzMzMgNzUuMTAzNyAwLjU1NTY3NUM3NS40NTY3IDAuMjAwMzkgNzUuOTM2MSAwIDc2LjQzNyAwSDc5TDc4Ljk5ODkgNC4yMTE0M0g3Ny40Mzg5TDczLjczMzcgNy45OTkzMlpNNjkuMjIwOSAxMi41OTQyQzY5LjIyMDkgMTIuNTk0MiA2Ny4zMDAzIDE0LjQ4MzMgNjYuMzI4NiAxNS40Mzk3QzY1Ljk3NjcgMTUuNzg1MyA2NS41MDM4IDE1Ljk3OTIgNjUuMDEwNCAxNS45NzkySDYyLjQzMzRWMTEuNzY1Nkg2NC4wMTI4TDY2LjIwNDQgOS41MDA2Mkw2OS4yMjA5IDEyLjU5NDJaIiBmaWxsPSIjMjMxRjIwIi8+Cjwvc3ZnPgo=" alt="Yipex"></div>
+    <div class="yipex-shell-topbar-actions">
+      <button class="yipex-shell-topbar-button ant-btn" type="button" data-shell-action="tools" aria-label="功能" title="功能"><span data-antd-icon="AppstoreOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-topbar-button yipex-shell-notification-button ant-btn" type="button" data-shell-action="notifications" aria-label="消息" title="消息"><span data-antd-icon="BellOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-account ant-btn" type="button" data-shell-action="account" aria-label="打开账号菜单"><span class="yipex-shell-email">运营工作台</span><span class="yipex-shell-avatar">运</span><span data-antd-icon="DownOutlined" aria-hidden="true"></span></button>
+    </div>
+  </header>
+  <div class="yipex-shell-body">
+    <aside class="yipex-shell-sidebar" aria-label="主导航">
+      <nav class="yipex-shell-nav ant-menu ant-menu-root ant-menu-inline" data-antd-component="Menu"><a class="yipex-shell-nav-item" data-antd-component="Menu.Item" data-menu-key="home" href="#home" title="首页" ><span class="nav-icon anticon" data-antd-icon="HomeOutlined" aria-hidden="true"></span><span>首页</span></a><a class="yipex-shell-nav-item active" data-antd-component="Menu.Item" data-menu-key="orders" href="#orders" title="订单查询" aria-current="page"><span class="nav-icon anticon" data-antd-icon="ReceiptOutlined" aria-hidden="true"></span><span>订单查询</span></a></nav>
+      <div class="yipex-shell-sidebar-footer"><button class="yipex-shell-toggle ant-btn" type="button" data-shell-action="toggle-sidebar" aria-label="收起导航" title="收起导航" aria-expanded="true"><span data-antd-icon="MenuFoldOutlined" aria-hidden="true"></span><span>收起</span></button></div>
+    </aside>
+    <div class="yipex-shell-workspace">
+      <main id="yipex-page" class="yipex-shell-content"><div id="yipex-standard-query-table-app" data-component="standard-query-table"></div></main>
+      <footer class="yipex-shell-footer"><small class="yipex-shell-copyright">Copyright Somei E-Commerce Limited 2025. All rights reserved</small></footer>
+    </div>
+  </div>
+</div>
+<script id="yipex-standard-query-table-data" type="application/json">{"pageName":"订单查询","props":{"title":"订单查询","resultTitle":"订单结果","exportLabel":"导出","exportFileName":"yipex-order-list"},"data":{"demo":true,"filters":[{"id":"order-keyword","key":"query","label":"关键词","type":"text","matchKeys":["id","merchant","customer"],"placeholder":"请输入订单号、商户或客户"},{"id":"order-created-range","key":"createdAt","label":"下单时间","type":"date-range","placeholder":["开始日期","结束日期"],"format":"YYYY-MM-DD"},{"id":"order-status","key":"status","label":"订单状态","type":"select","placeholder":"请选择订单状态","options":[{"value":"ALL","label":"全部状态"},{"value":"PENDING","label":"待支付"},{"value":"PROCESSING","label":"处理中"},{"value":"SUCCESS","label":"已完成"},{"value":"CLOSED","label":"已关闭"}]},{"id":"order-channel","key":"channel","label":"支付渠道","type":"select","placeholder":"请选择支付渠道","options":[{"value":"ALL","label":"全部渠道"},{"value":"微信支付","label":"微信支付"},{"value":"支付宝","label":"支付宝"},{"value":"银行卡","label":"银行卡"}]}],"columns":[{"key":"id","label":"订单号","width":180,"displayLabel":"订单号","unitPlacement":"none"},{"key":"merchant","label":"商户","width":180,"displayLabel":"商户","unitPlacement":"none"},{"key":"customer","label":"客户","width":100,"displayLabel":"客户","unitPlacement":"none"},{"key":"amount","label":"订单金额 (元)","width":130,"format":"amount","displayLabel":"订单金额 (元)","displayUnit":"元","unitPlacement":"title"},{"key":"status","label":"订单状态","width":110,"format":"status","labelKey":"statusLabel","displayLabel":"订单状态","unitPlacement":"none"},{"key":"channel","label":"支付渠道","width":110,"displayLabel":"支付渠道","unitPlacement":"none"},{"key":"items","label":"商品数","width":90,"format":"integer","displayLabel":"商品数","unitPlacement":"none"},{"key":"createdAt","label":"下单时间","width":160,"displayLabel":"下单时间","unitPlacement":"none"},{"key":"owner","label":"负责人","width":100,"displayLabel":"负责人","unitPlacement":"none"},{"key":"detailAction","label":"操作","format":"detail-action","actionLabel":"详情","fixed":"right","width":90,"displayLabel":"操作","unitPlacement":"none"}],"detailFields":[{"key":"id","label":"订单号","displayLabel":"订单号","unitPlacement":"none"},{"key":"merchant","label":"商户","displayLabel":"商户","unitPlacement":"none"},{"key":"customer","label":"客户","displayLabel":"客户","unitPlacement":"none"},{"key":"amount","label":"订单金额 (元)","format":"amount","displayLabel":"订单金额 (元)","displayUnit":"元","unitPlacement":"title"},{"key":"status","label":"订单状态","format":"status","labelKey":"statusLabel","displayLabel":"订单状态","unitPlacement":"none"},{"key":"channel","label":"支付渠道","displayLabel":"支付渠道","unitPlacement":"none"},{"key":"items","label":"商品数","format":"integer","displayLabel":"商品数","unitPlacement":"none"},{"key":"createdAt","label":"下单时间","displayLabel":"下单时间","unitPlacement":"none"},{"key":"owner","label":"负责人","displayLabel":"负责人","unitPlacement":"none"}],"pageSize":5,"defaultSort":{"key":"createdAt","order":"descend"},"records":[{"id":"YP2026082700186","createdAt":"2026-08-27 15:42","merchant":"海岸咖啡（静安店）","customer":"林女士","amount":1280,"status":"PROCESSING","statusLabel":"处理中","channel":"银行卡","items":3,"owner":"陈路"},{"id":"YP2026082700172","createdAt":"2026-08-27 14:58","merchant":"松果生活馆","customer":"周先生","amount":869.5,"status":"PENDING","statusLabel":"待支付","channel":"微信支付","items":2,"owner":"王一"},{"id":"YP2026082700149","createdAt":"2026-08-27 13:26","merchant":"北屿餐厅","customer":"赵女士","amount":326,"status":"SUCCESS","statusLabel":"已完成","channel":"银行卡","items":5,"owner":"徐安"},{"id":"YP2026082601397","createdAt":"2026-08-26 21:17","merchant":"原野户外用品","customer":"吴先生","amount":2450,"status":"CLOSED","statusLabel":"已关闭","channel":"支付宝","items":1,"owner":"陈路"},{"id":"YP2026082601264","createdAt":"2026-08-26 18:43","merchant":"白塔书店","customer":"沈女士","amount":158.8,"status":"SUCCESS","statusLabel":"已完成","channel":"微信支付","items":4,"owner":"王一"},{"id":"YP2026082601091","createdAt":"2026-08-26 16:11","merchant":"南山运动中心","customer":"梁先生","amount":3600,"status":"PROCESSING","statusLabel":"处理中","channel":"银行卡","items":2,"owner":"徐安"},{"id":"YP2026082500875","createdAt":"2026-08-25 12:08","merchant":"沐光烘焙","customer":"钱女士","amount":498,"status":"PENDING","statusLabel":"待支付","channel":"支付宝","items":6,"owner":"陈路"},{"id":"YP2026082400653","createdAt":"2026-08-24 10:52","merchant":"青禾花房","customer":"冯女士","amount":288,"status":"SUCCESS","statusLabel":"已完成","channel":"微信支付","items":2,"owner":"徐安"},{"id":"YP2026082300517","createdAt":"2026-08-23 09:15","merchant":"山茶家居","customer":"顾先生","amount":1899,"status":"SUCCESS","statusLabel":"已完成","channel":"支付宝","items":1,"owner":"王一"},{"id":"YP2026082200441","createdAt":"2026-08-22 19:28","merchant":"拾光数码","customer":"唐女士","amount":5299,"status":"PROCESSING","statusLabel":"处理中","channel":"银行卡","items":2,"owner":"陈路"},{"id":"YP2026082100386","createdAt":"2026-08-21 11:06","merchant":"禾木超市","customer":"魏先生","amount":76.5,"status":"CLOSED","statusLabel":"已关闭","channel":"微信支付","items":8,"owner":"徐安"}]},"initialState":{"loading":false,"empty":false,"error":false,"permission-denied":false,"success":false,"filters":{"query":"","createdAt":[],"status":"ALL","channel":"ALL"},"page":1},"filters":[{"id":"order-keyword","key":"query","label":"关键词","type":"text","matchKeys":["id","merchant","customer"],"placeholder":"请输入订单号、商户或客户"},{"id":"order-created-range","key":"createdAt","label":"下单时间","type":"date-range","placeholder":["开始日期","结束日期"],"format":"YYYY-MM-DD"},{"id":"order-status","key":"status","label":"订单状态","type":"select","placeholder":"请选择订单状态","options":[{"value":"ALL","label":"全部状态"},{"value":"PENDING","label":"待支付"},{"value":"PROCESSING","label":"处理中"},{"value":"SUCCESS","label":"已完成"},{"value":"CLOSED","label":"已关闭"}]},{"id":"order-channel","key":"channel","label":"支付渠道","type":"select","placeholder":"请选择支付渠道","options":[{"value":"ALL","label":"全部渠道"},{"value":"微信支付","label":"微信支付"},{"value":"支付宝","label":"支付宝"},{"value":"银行卡","label":"银行卡"}]}],"columns":[{"key":"id","label":"订单号","width":180,"displayLabel":"订单号","unitPlacement":"none"},{"key":"merchant","label":"商户","width":180,"displayLabel":"商户","unitPlacement":"none"},{"key":"customer","label":"客户","width":100,"displayLabel":"客户","unitPlacement":"none"},{"key":"amount","label":"订单金额 (元)","width":130,"format":"amount","displayLabel":"订单金额 (元)","displayUnit":"元","unitPlacement":"title"},{"key":"status","label":"订单状态","width":110,"format":"status","labelKey":"statusLabel","displayLabel":"订单状态","unitPlacement":"none"},{"key":"channel","label":"支付渠道","width":110,"displayLabel":"支付渠道","unitPlacement":"none"},{"key":"items","label":"商品数","width":90,"format":"integer","displayLabel":"商品数","unitPlacement":"none"},{"key":"createdAt","label":"下单时间","width":160,"displayLabel":"下单时间","unitPlacement":"none"},{"key":"owner","label":"负责人","width":100,"displayLabel":"负责人","unitPlacement":"none"},{"key":"detailAction","label":"操作","format":"detail-action","actionLabel":"详情","fixed":"right","width":90,"displayLabel":"操作","unitPlacement":"none"}],"detailOverlay":"drawer","createOverlay":"modal","generation":{"mode":"auto","strategy":"standard","recipeId":"list.query-table","skeleton":"query-workbench","capabilities":["query.basic","query.dateRange","table.flat","table.pagination","table.export","detail.overlay"],"policyVersion":1,"modelVersion":"2026.08.30.5","rendererId":"yipex-standard-query-table-v1"}}</script><script defer src="../../modules/yipex/shell/vendor/react.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/react-dom.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"></script><script defer src="../../modules/yipex/shell/vendor/antd.min.js"></script><script defer src="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"></script><script>(() => {
+  const shell = document.querySelector('[data-shell="yipex-default"]');
+  if (!shell) return;
+  const page = shell.querySelector('#yipex-page');
+  const navItems = [...shell.querySelectorAll('.yipex-shell-nav-item')];
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const initialKey = navItems.find((item) => item.classList.contains('active') || item.getAttribute('aria-current') === 'page')?.dataset.menuKey || '';
+  const setActive = (key) => navItems.forEach((item) => {
+    const active = item.dataset.menuKey === key;
+    item.classList.toggle('active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+  const renderEmptyState = (item) => {
+    if (!page || !item) return;
+    page.dataset.shellEmpty = 'true';
+    const label = item.getAttribute('title') || item.textContent.trim();
+    page.innerHTML = '<div class="yipex-shell-empty" data-shell-empty="true" role="status" aria-live="polite"><h1 class="yipex-shell-empty-title">' + escapeHtml(label) + '</h1><div class="yipex-shell-empty-content" data-shell-empty-mount></div></div>';
+    const mount = () => {
+      const Empty = window.antd?.Empty;
+      const target = page.querySelector('[data-shell-empty-mount]');
+      if (!Empty || !target || !window.React || !window.ReactDOM) { window.setTimeout(mount, 16); return; }
+      const element = window.React.createElement(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' });
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(target).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, target);
+    };
+    mount();
+  };
+  shell.querySelectorAll('[data-shell-action="toggle-sidebar"]').forEach((button) => button.addEventListener('click', () => {
+    const collapsed = shell.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.setAttribute('aria-label', collapsed ? '展开导航' : '收起导航');
+    button.setAttribute('title', collapsed ? '展开导航' : '收起导航');
+  }));
+  navItems.forEach((item) => item.addEventListener('click', (event) => {
+    const key = item.dataset.menuKey || '';
+    setActive(key);
+    if (key === initialKey && page?.dataset.shellEmpty) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      window.location.reload();
+      return;
+    }
+    if (key && key !== initialKey) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      renderEmptyState(item);
+    }
+  }));
+  shell.querySelectorAll('[data-shell-action]').forEach((button) => {
+    if (button.dataset.shellAction === 'toggle-sidebar') return;
+    button.addEventListener('click', () => button.dispatchEvent(new CustomEvent('yipex-shell-action', { bubbles: true, detail: { action: button.dataset.shellAction } })));
+  });
+  const renderIcons = () => {
+    const iconLibrary = window.icons;
+    if (!iconLibrary || !window.React || !window.ReactDOM) { window.setTimeout(renderIcons, 16); return; }
+    shell.querySelectorAll('[data-antd-icon]').forEach((node) => {
+      if (node.dataset.iconMounted) return;
+      const Icon = iconLibrary[node.dataset.antdIcon];
+      if (!Icon) return;
+      const element = window.React.createElement(Icon);
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(node).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, node);
+      node.dataset.iconMounted = 'true';
+    });
+  };
+  renderIcons();
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('.ant-breadcrumb a, .standard-page-breadcrumb a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(href);
+  });
+})();
+</script><script>(() => { const start = () => { if (window.React && window.ReactDOM && window.antd && window.dayjs) { 
+(() => {
+  const h = React.createElement;
+  const { ConfigProvider, Card, Input, Select, Radio, Button, Table, Pagination, Empty, Result, Badge, Drawer, Descriptions, DatePicker, Statistic, Modal, Tabs, message } = antd;
+  const payload = JSON.parse(document.getElementById('yipex-standard-query-table-data').textContent);
+  const source = payload.data || {};
+  const filterDefs = payload.filters || [];
+  const columnDefs = payload.columns || [];
+  const initial = payload.initialState || {};
+  const initialFilters = initial.filters || {};
+  const tabDefs = Array.isArray(source.tabs) ? source.tabs : [];
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get(source.tabParam || 'tab') || source.defaultTab || tabDefs[0]?.key || 'ALL';
+  const urlFilters = filterDefs.reduce((result, definition) => {
+    const raw = urlParams.get(definition.key);
+    if (raw == null) return result;
+    result[definition.key] = definition.type === 'date-range' ? raw.split(',') : raw;
+    return result;
+  }, {});
+  const hydratedInitialFilters = { ...initialFilters, ...urlFilters };
+  const capabilities = new Set(payload.generation?.capabilities || []);
+  const supportsSelection = capabilities.has('table.selection');
+  const supportsExport = capabilities.has('table.export');
+  const supportsDetail = capabilities.has('detail.drawer') || capabilities.has('detail.overlay');
+  const supportsDateRange = capabilities.has('query.dateRange');
+  const supportsSummary = capabilities.has('summary.metrics') || capabilities.has('summary.aggregate');
+  const detailFieldDefs = Array.isArray(source.detailFields) ? source.detailFields : columnDefs;
+  const detailPresentation = payload.detailOverlay || 'modal';
+  const createPresentation = payload.createOverlay || 'modal';
+  const supportsCreate = capabilities.has('form.overlay') && Array.isArray(source.createFields) && source.createFields.length > 0 && createPresentation !== 'page';
+  const supportsCreatePage = Boolean(source.createPageHref) && (!source.createOverlay || createPresentation === 'page');
+  const detailDrawerSize = source.detailDrawerSize === 'large' || source.detailDrawerSize === 'default' ? source.detailDrawerSize : (detailFieldDefs.length > 8 ? 'large' : 'default');
+  const createDrawerSize = source.createDrawerSize === 'large' || source.createDrawerSize === 'default' ? source.createDrawerSize : ((source.createFields || []).length > 6 ? 'large' : 'default');
+  const actionDefinitions = (column) => Array.isArray(column.actions) ? column.actions : column.format === 'detail-action' ? [{ type: 'detail', label: column.actionLabel || '详情' }] : [];
+  const allActions = columnDefs.flatMap(actionDefinitions);
+  const safe = (value) => String(value == null ? '' : value);
+  const formatMoney = (value, unit) => (value == null || value === '' ? '-' : Number(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (unit ? ' ' + unit : ''));
+  const statusTone = { ACTIVE: 'success', INACTIVE: 'default', ENABLED: 'success', DISABLED: 'default', SUCCESS: 'success', FAILED: 'error', PROCESSING: 'processing', PENDING: 'warning', OPERATING: 'success', PAUSED: 'warning', CLOSED: 'default', ON_SALE: 'success', OFF_SALE: 'default', DRAFT: 'warning', AVAILABLE: 'success', UNAVAILABLE: 'default', COMPLETED: 'success', CANCELLED: 'default', REJECTED: 'error', EXPIRED: 'default' };
+  const resolveStatusTone = (value, column) => {
+    const key = String(value == null ? '' : value).toUpperCase();
+    return column.statusTone?.[value] || column.statusTone?.[key] || source.statusTone?.[value] || source.statusTone?.[key] || statusTone[key] || 'default';
+  };
+  const isActionColumn = (column) => Array.isArray(column.actions) || column.format === 'detail-action' || column.role === 'action' || column.key === 'action' || column.key === 'actions' || column.label === '操作';
+  function formatCell(value, record, column) {
+    if (column.format === 'amount' || column.format === 'currency') return formatMoney(value, column.unitPlacement === 'value' && column.unitKey ? record[column.unitKey] : undefined);
+    if (column.format === 'integer') return value == null ? '-' : Number(value).toLocaleString('zh-CN');
+    if (column.format === 'status') {
+      const text = record[column.labelKey || 'statusLabel'] || value || '-';
+      const tone = resolveStatusTone(value, column);
+      return column.color ? h(Badge, { color: column.color, text }) : h(Badge, { status: tone, text });
+    }
+    return safe(value) || '-';
+  }
+  function App() {
+    const [draft, setDraft] = React.useState(hydratedInitialFilters);
+    const [applied, setApplied] = React.useState(hydratedInitialFilters);
+    const [activeTab, setActiveTab] = React.useState(initialTab);
+    const [page, setPage] = React.useState(Number(urlParams.get('page') || initial.page || 1));
+    const [loading, setLoading] = React.useState(Boolean(initial.loading));
+    const [error, setError] = React.useState(Boolean(initial.error));
+    const [selectedKeys, setSelectedKeys] = React.useState(initial.selectedMerchantIds || initial.selectedIds || []);
+    const [drawerRecord, setDrawerRecord] = React.useState(null);
+    const [createOpen, setCreateOpen] = React.useState(false);
+    const [createValues, setCreateValues] = React.useState({});
+    const [editingRecord, setEditingRecord] = React.useState(null);
+    const orderRecords = (items) => {
+      const sort = source.defaultSort || { key: 'createdAt', order: 'descend' };
+      if (!sort.key) return items;
+      return [...items].sort((a, b) => {
+        const left = String(a?.[sort.key] ?? '');
+        const right = String(b?.[sort.key] ?? '');
+        return sort.order === 'ascend' ? left.localeCompare(right) : right.localeCompare(left);
+      });
+    };
+    const [records, setRecords] = React.useState(() => {
+      const base = initial.empty ? [] : (Array.isArray(source.records) ? source.records : []);
+      if (!source.persistenceKey) return orderRecords(base);
+      try { const saved = JSON.parse(window.localStorage.getItem(source.persistenceKey) || '[]'); return orderRecords([...saved, ...base.filter((item) => !saved.some((savedItem) => savedItem.id === item.id))]); } catch (_) { return orderRecords(base); }
+    });
+    const returned = new URLSearchParams(window.location.search).get('saved');
+    React.useEffect(() => {
+      if (!returned) return;
+      message.success(source.returnMessage || '保存成功');
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState(null, '', cleanUrl);
+    }, []);
+    const pageSize = Number(source.pageSize || initial.pageSize || 10);
+    const updateDraft = (key, value) => setDraft((current) => ({ ...current, [key]: value }));
+    const syncLocation = (nextFilters, nextTab, nextPage) => {
+      if (!source.syncQueryState) return;
+      const params = new URLSearchParams();
+      const defaultTab = source.defaultTab || tabDefs[0]?.key || 'ALL';
+      if (nextTab && nextTab !== defaultTab) params.set(source.tabParam || 'tab', nextTab);
+      for (const definition of filterDefs) {
+        const value = nextFilters?.[definition.key];
+        if (Array.isArray(value) ? value.some(Boolean) : value != null && value !== '' && value !== 'ALL') params.set(definition.key, Array.isArray(value) ? value.join(',') : value);
+      }
+      if (nextPage && Number(nextPage) > 1) params.set('page', String(nextPage));
+      const query = params.toString();
+      window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : '') + window.location.hash);
+    };
+    const apply = () => { setLoading(true); setError(false); window.setTimeout(() => { setApplied({ ...draft }); setPage(1); syncLocation(draft, activeTab, 1); setLoading(false); message.success('查询条件已应用'); }, 180); };
+    const reset = () => { setDraft({}); setApplied({}); setPage(1); setSelectedKeys([]); setError(false); syncLocation({}, activeTab, 1); message.info('已重置查询条件'); };
+    const changeTab = (key) => { setActiveTab(key); setPage(1); syncLocation(applied, key, 1); };
+    const retry = () => { setError(false); setLoading(true); window.setTimeout(() => setLoading(false), 180); };
+    const persistRecords = (items) => {
+      if (!source.persistenceKey) return;
+      try { window.localStorage.setItem(source.persistenceKey, JSON.stringify(items)); } catch (_) { /* local demo persistence is best effort */ }
+    };
+    const runStatusTransition = (action, record) => {
+      const allowed = Array.isArray(action.from) ? action.from.includes(record.status) : action.from == null || record.status === action.from;
+      if (!allowed) { message.warning(action.unavailableMessage || '当前状态不可执行此操作'); return; }
+      const interpolate = (value) => safe(value).replace(/{id}/g, safe(record.id));
+      const applyTransition = () => {
+        setRecords((current) => { const next = current.map((item) => item.id === record.id ? { ...item, status: action.to || item.status, ...(action.toLabel ? { statusLabel: action.toLabel } : {}) } : item); persistRecords(next); return next; });
+        message.success(action.successMessage || '操作成功');
+      };
+      if (action.confirmTitle || action.confirmContent) {
+        const confirmTone = action.confirmTone || (action.type === 'status-transition' ? 'danger' : 'primary');
+        Modal.confirm({
+          className: 'yipex-confirm-modal',
+          title: interpolate(action.confirmTitle || action.label || '确认操作'),
+          content: interpolate(action.confirmContent || '确认执行此操作？'),
+          okText: action.confirmOkText || '确认',
+          cancelText: action.confirmCancelText || '取消',
+          okButtonProps: confirmTone === 'danger' ? { danger: true } : { className: 'yipex-confirm-primary' },
+          cancelButtonProps: { className: 'yipex-confirm-cancel' },
+          onOk: applyTransition
+        });
+      }
+      else applyTransition();
+    };
+    const runRowAction = (action, record) => {
+      if (action.type === 'detail') {
+        if (detailPresentation === 'page' && (action.href || source.detailPageHref)) {
+          const target = new URL((action.href || source.detailPageHref).replace(/{id}/g, encodeURIComponent(safe(record.id))), window.location.href);
+          if (action.preserveQuery !== false) target.searchParams.set(action.returnParam || 'return', window.location.href);
+          window.location.href = target.href;
+        } else setDrawerRecord(record);
+      }
+      else if (action.type === 'edit') { setEditingRecord(record); setCreateValues(record); setCreateOpen(true); }
+      else if (action.type === 'status-transition') runStatusTransition(action, record);
+      else if (action.href) {
+        const target = new URL(action.href.replace(/{id}/g, encodeURIComponent(safe(record.id))), window.location.href);
+        if (action.preserveQuery) target.searchParams.set(action.returnParam || 'return', window.location.href);
+        window.location.href = target.href;
+      }
+    };
+    const submitCreate = () => {
+      const fields = source.createFields || [];
+      const missing = fields.find((field) => field.required && (createValues[field.key] == null || String(createValues[field.key]).trim() === ''));
+      if (missing) { message.warning(missing.requiredMessage || ('请填写' + missing.label)); return; }
+      const normalizedValues = { ...createValues };
+      for (const field of fields) {
+        const value = createValues[field.key];
+        if (value == null || value === '') continue;
+        if (field.type === 'number' || field.type === 'amount') {
+          const numberValue = Number(value);
+          if (!Number.isFinite(numberValue)) { message.warning(field.invalidMessage || ('请输入有效的' + field.label)); return; }
+          const validation = field.validation || {};
+          if (validation.min !== undefined && numberValue < validation.min) { message.warning(validation.minMessage || (field.label + '不能小于 ' + validation.min)); return; }
+          if (validation.max !== undefined && numberValue > validation.max) { message.warning(validation.maxMessage || (field.label + '不能大于 ' + validation.max)); return; }
+          normalizedValues[field.key] = numberValue;
+        }
+        const option = (field.options || []).find((item) => item.value === value);
+        if (option) normalizedValues[field.labelKey || (field.key + 'Label')] = option.label;
+      }
+      const createConfig = source.create || {};
+      for (const [key, definition] of Object.entries(createConfig.derived || {})) {
+        const value = normalizedValues[definition.sourceKey];
+        if (value != null && definition.map && definition.map[value] != null) normalizedValues[key] = definition.map[value];
+      }
+      const now = new Date();
+      const timestampField = createConfig.timestampField || 'createdAt';
+      const timestamp = now.toISOString().slice(0, 16).replace('T', ' ');
+      if (editingRecord) {
+        const updated = { ...editingRecord, ...normalizedValues, id: editingRecord.id };
+        setRecords((current) => { const next = orderRecords(current.map((item) => item.id === editingRecord.id ? updated : item)); if (source.persistenceKey) window.localStorage.setItem(source.persistenceKey, JSON.stringify(next.filter((item) => !source.records?.some((base) => base.id === item.id)))); return next; });
+        setCreateValues({}); setEditingRecord(null); setCreateOpen(false); message.success(createConfig.editSuccessMessage || source.editSuccessMessage || '记录已更新'); return;
+      }
+      const prefix = createConfig.idPrefix || source.createIdPrefix || 'REC';
+      const id = createValues.id || prefix + now.getTime().toString().slice(-10);
+      const record = { ...(createConfig.defaults || {}), ...normalizedValues, id, ...(createConfig.idField || source.createIdField ? { [createConfig.idField || source.createIdField]: id } : {}), [timestampField]: timestamp };
+      setRecords((current) => { const next = orderRecords([record, ...current]); if (source.persistenceKey) window.localStorage.setItem(source.persistenceKey, JSON.stringify(next.filter((item) => !source.records?.some((base) => base.id === item.id)))); return next; }); setCreateValues({}); setCreateOpen(false); setPage(1); message.success(createConfig.successMessage || source.createSuccessMessage || '记录已新增');
+    };
+    const activeTabDef = tabDefs.find((tab) => tab.key === activeTab);
+    const filtered = records.filter((record) => {
+      const tabMatches = !activeTabDef || activeTabDef.value === 'ALL' || record[activeTabDef.filterKey || 'status'] === activeTabDef.value;
+      return tabMatches && filterDefs.every((definition) => {
+      const value = applied[definition.key];
+      if (value == null || value === '' || value === 'ALL' || (Array.isArray(value) && value.length === 0)) return true;
+      if (definition.type === 'date-range') {
+        const [start, end] = Array.isArray(value) ? value : [];
+        const recordValue = safe(record[definition.recordKey || definition.key]);
+        return (!start || recordValue >= start) && (!end || recordValue <= end);
+      }
+      const recordValue = safe(record[definition.recordKey || definition.key]);
+      const compareValue = Array.isArray(definition.matchKeys)
+        ? definition.matchKeys.map((key) => safe(record[key])).join(' ')
+        : definition.matchKey ? safe(record[definition.matchKey]) : recordValue;
+      return compareValue.toLowerCase().includes(safe(value).toLowerCase());
+      });
+    });
+    const visible = filtered.slice((page - 1) * pageSize, page * pageSize);
+    const tableColumns = columnDefs.map((column) => ({
+      title: column.displayLabel || column.label || column.key,
+      dataIndex: column.key,
+      key: column.key,
+      width: column.width || (isActionColumn(column) ? 96 : undefined),
+      fixed: column.fixed || (isActionColumn(column) ? 'right' : undefined),
+      align: column.format === 'amount' || column.format === 'currency' || column.format === 'integer' ? 'right' : 'left',
+      render: (value, record) => {
+        const actions = actionDefinitions(column);
+        if (!actions.length) return formatCell(value, record, column);
+        return h('div', { className: 'standard-row-actions' }, actions.map((action) => h(Button, { key: action.id || action.type || action.label, type: 'link', className: 'standard-row-action' + (action.type === 'status-transition' ? ' standard-cancel-action' : ''), disabled: action.from != null && (Array.isArray(action.from) ? !action.from.includes(record.status) : record.status !== action.from), onClick: (event) => { event.stopPropagation(); runRowAction(action, record); } }, action.label || action.type)));
+      }
+    }));
+    const exportRows = selectedKeys.length ? records.filter((record) => selectedKeys.includes(record.id)) : filtered;
+    const exportCsv = () => {
+      if (!supportsExport) return;
+      const exportColumns = columnDefs.filter((column) => !actionDefinitions(column).length);
+      const header = exportColumns.map((column) => column.displayLabel || column.label || column.key).join(',');
+      const lines = exportRows.map((record) => exportColumns.map((column) => { const value = safe(record[column.key]).replace(/"/g, '""'); return '"' + value + '"'; }).join(','));
+      const blob = new Blob(['\ufeff' + [header, ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
+      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = (payload.props.exportFileName || payload.pageName || 'yipex-export') + '.csv'; link.click(); URL.revokeObjectURL(link.href);
+      message.success('已导出 ' + exportRows.length + ' 条记录');
+    };
+    if (initial['permission-denied']) return h(Result, { status: '403', title: '暂无访问权限', subTitle: '请联系管理员开通当前页面的访问权限。' });
+    if (error) return h(Result, { status: 'error', title: '查询失败', subTitle: '演示数据暂时无法读取，请重试。', extra: h(Button, { type: 'primary', onClick: retry }, '重新查询') });
+    const filterNodes = filterDefs.map((definition) => {
+      const value = draft[definition.key] || '';
+      let control;
+      if (definition.type === 'select') control = h(Select, { key: definition.id || definition.key, value: value || undefined, allowClear: true, placeholder: definition.placeholder || '请选择', options: (definition.options || []).map((option) => ({ label: option.label, value: option.value })), onChange: (next) => updateDraft(definition.key, next) });
+      else if (definition.type === 'date-range' && supportsDateRange && DatePicker?.RangePicker) control = h(DatePicker.RangePicker, { key: definition.id || definition.key, value: Array.isArray(value) ? value.map((item) => item ? dayjs(item) : null) : undefined, allowEmpty: [true, true], allowClear: true, placeholder: definition.placeholder || ['开始日期', '结束日期'], format: definition.format || 'YYYY-MM-DD', onChange: (dates) => updateDraft(definition.key, dates ? dates.map((item) => item ? item.format('YYYY-MM-DD') : '') : []) });
+      else control = h(Input, { key: definition.id || definition.key, value: Array.isArray(value) ? '' : value, allowClear: true, placeholder: definition.placeholder || '请输入', onChange: (event) => updateDraft(definition.key, event.target.value) });
+      return h('label', { key: definition.id || definition.key, className: 'standard-query-field' }, [h('span', { key: 'label' }, (definition.label || definition.key) + '：'), control]);
+    });
+    const actionGridStyle = {
+      '--standard-action-row-desktop': Math.ceil((filterDefs.length + 1) / 4),
+      '--standard-action-row-tablet': Math.ceil((filterDefs.length + 1) / 2),
+      '--standard-action-row-narrow': filterDefs.length + 1
+    };
+    const filterPanel = h('section', { className: 'standard-query-filter-panel', 'aria-label': '查询条件' }, h('div', { className: 'standard-query-grid' }, [filterNodes, h('div', { key: 'actions', className: 'standard-query-actions', style: actionGridStyle }, [h(Button, { key: 'reset', onClick: reset }, '重置'), h(Button, { key: 'query', type: 'primary', onClick: apply }, '查询')])]));
+    const tabsNode = tabDefs.length ? h(Tabs, { key: 'tabs', activeKey: activeTab, items: tabDefs.map((tab) => ({ key: tab.key, label: tab.label })), onChange: changeTab, className: 'standard-query-tabs' }) : null;
+    const rowSelection = supportsSelection ? { selectedRowKeys: selectedKeys, onChange: (keys) => setSelectedKeys(keys) } : undefined;
+    const detailFields = detailFieldDefs;
+    const detailColumnCount = window.innerWidth <= 680 ? 1 : Number(source.detailColumns || 2);
+    const detailOverlayMode = detailPresentation === 'drawer' ? 'drawer' : 'modal';
+    const detailTitle = drawerRecord ? (drawerRecord.name || drawerRecord.id || '详情') : '详情';
+    const detailBody = drawerRecord ? h(Descriptions, { className: 'standard-detail-descriptions', bordered: false, column: detailColumnCount, size: 'middle' }, detailFields.map((field) => h(Descriptions.Item, { key: field.key, label: field.displayLabel || field.label, span: field.span === 'full' ? detailColumnCount : 1 }, formatCell(drawerRecord[field.key], drawerRecord, field)))) : null;
+    const detailFooter = h('div', { className: 'standard-detail-overlay-footer' }, h(Button, { onClick: () => setDrawerRecord(null) }, '关闭'));
+    const detailOverlay = supportsDetail ? detailOverlayMode === 'drawer'
+      ? h(Drawer, { className: 'standard-detail-drawer', title: detailTitle, open: Boolean(drawerRecord), placement: 'right', size: detailDrawerSize, width: window.innerWidth <= 680 ? 'calc(100vw - 16px)' : undefined, onClose: () => setDrawerRecord(null), footer: detailFooter }, detailBody)
+      : h(Modal, { className: 'standard-detail-modal', title: detailTitle, open: Boolean(drawerRecord), width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: () => setDrawerRecord(null), footer: detailFooter, centered: true, destroyOnHidden: true }, detailBody)
+      : null;
+    const renderCreateField = (field) => {
+      const value = createValues[field.key] || '';
+      const update = (next) => setCreateValues((current) => ({ ...current, [field.key]: next }));
+      let control;
+      if (field.type === 'select') control = h(Select, { value: value || undefined, placeholder: field.placeholder, options: (field.options || []).map((option) => ({ label: option.label, value: option.value })), onChange: update });
+      else if (field.type === 'radio' || field.type === 'radio-group') control = h(Radio.Group, { value: value || undefined, onChange: (event) => update(event.target.value) }, h('div', { className: 'standard-create-radio-list' }, (field.options || []).map((option) => h(Radio, { key: option.value, value: option.value, className: 'standard-create-radio-option' }, h('span', { className: 'standard-create-radio-copy' }, [h('strong', { key: 'label' }, option.label), option.description ? h('small', { key: 'description' }, option.description) : null])))));
+      else if (field.type === 'textarea') control = h(Input.TextArea, { value, rows: 3, placeholder: field.placeholder, onChange: (event) => update(event.target.value) });
+      else control = h(Input, { value, type: field.type === 'number' ? 'number' : 'text', placeholder: field.placeholder, onChange: (event) => update(event.target.value) });
+      return h('label', { key: field.key, className: 'standard-create-field' }, [h('span', { key: 'label' }, field.label + (field.required ? '：' : '：')), control]);
+    };
+    const createFieldDefs = supportsCreate ? (source.createFields || []) : [];
+    const createSections = Array.isArray(source.createSections) ? source.createSections : [];
+    const groupedFieldKeys = new Set(createSections.flatMap((section) => section.fieldKeys || []));
+    const ungroupedFields = createFieldDefs.filter((field) => !groupedFieldKeys.has(field.key));
+    const openCreate = () => { setEditingRecord(null); setCreateValues({}); setCreateOpen(true); };
+    const closeCreate = () => { setCreateOpen(false); setCreateValues({}); setEditingRecord(null); };
+    const createFooter = h('div', { className: 'standard-drawer-footer' }, [h(Button, { key: 'cancel', onClick: closeCreate }, '取消'), h(Button, { key: 'submit', type: 'primary', onClick: submitCreate }, editingRecord ? '保存' : '提交')]);
+    const createBody = createSections.length
+      ? h('div', { className: 'standard-create-sections' }, [
+          ...createSections.map((section) => h('section', { key: section.id || section.title, className: 'standard-create-section', 'aria-label': section.title }, [
+            h('h3', { key: 'title' }, section.title),
+            h('div', { key: 'fields', className: 'standard-create-form' }, createFieldDefs.filter((field) => (section.fieldKeys || []).includes(field.key)).map(renderCreateField))
+          ])),
+          ungroupedFields.length ? h('div', { key: 'ungrouped', className: 'standard-create-form' }, ungroupedFields.map(renderCreateField)) : null
+        ])
+      : h('div', { className: 'standard-create-form' }, createFieldDefs.map(renderCreateField));
+    const createOverlay = supportsCreate
+      ? createPresentation === 'drawer'
+        ? h(Drawer, { className: 'standard-create-drawer', title: editingRecord ? (source.editLabel || '编辑记录') : (payload.props.createLabel || '新增记录'), open: createOpen, placement: 'right', size: createDrawerSize, width: window.innerWidth <= 680 ? 'calc(100vw - 16px)' : undefined, onClose: closeCreate, footer: createFooter }, createBody)
+        : h(Modal, { className: 'standard-create-modal', title: editingRecord ? (source.editLabel || '编辑记录') : (payload.props.createLabel || '新增记录'), open: createOpen, width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: closeCreate, footer: createFooter, centered: true, destroyOnHidden: true }, createBody)
+      : null;
+    const resultTitle = h('div', { className: 'standard-result-title' }, [h('h2', { key: 'title' }, payload.props.resultTitle || '查询列表'), h('span', { key: 'count', className: 'standard-result-count', 'aria-live': 'polite' }, '共 ' + filtered.length + ' 条')]);
+    const summaryMetrics = supportsSummary && Array.isArray(source.metrics) ? h('div', { key: 'metrics', className: 'standard-query-metrics' }, source.metrics.map((metric) => h(Card, { key: metric.id || metric.label, className: 'standard-query-metric', bordered: false }, h(Statistic, { title: metric.displayLabel || metric.label, value: metric.value, precision: metric.format === 'currency' || metric.format === 'amount' ? 2 : undefined })))) : null;
+    const resultActions = [supportsCreatePage ? h(Button, { key: 'create-page', type: 'primary', onClick: () => { window.location.href = source.createPageHref; } }, payload.props.createLabel || '新增记录') : null, supportsCreate ? h(Button, { key: 'create', type: 'primary', onClick: openCreate }, payload.props.createLabel || '新增记录') : null, supportsExport ? h(Button, { key: 'export', onClick: exportCsv }, (payload.props.exportLabel || '导出') + (selectedKeys.length ? ' (' + selectedKeys.length + ')' : '')) : null].filter(Boolean);
+    const resultExtra = resultActions.length ? h('div', { className: 'standard-result-actions' }, resultActions) : null;
+    const resultPanel = h('section', { className: 'standard-result-panel', 'aria-label': payload.props.resultTitle || '查询列表' }, [h('div', { key: 'header', className: 'standard-result-header' }, [resultTitle, resultExtra]), h(Table, { key: 'table', rowKey: (record) => record.id || JSON.stringify(record), rowSelection, columns: tableColumns, dataSource: visible, loading, pagination: false, size: 'middle', scroll: { x: Math.max(720, tableColumns.length * 140) }, onRow: supportsDetail && detailPresentation !== 'page' ? (record) => ({ onClick: () => setDrawerRecord(record), className: 'standard-query-clickable-row' }) : undefined, locale: { emptyText: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' }) } }), h('div', { key: 'footer', className: 'standard-query-pagination' }, [h('span', { key: 'summary' }, filtered.length ? '显示 ' + ((page - 1) * pageSize + 1) + '-' + Math.min(page * pageSize, filtered.length) + ' 条，共 ' + filtered.length + ' 条' : '显示 0 条，共 0 条'), h(Pagination, { key: 'pagination', current: page, pageSize, total: filtered.length, showSizeChanger: false, showTotal: false, onChange: (nextPage) => { setPage(nextPage); syncLocation(applied, activeTab, nextPage); } })]), detailOverlay, createOverlay]);
+    return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { fontFamily: 'Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontSize: 14, fontSizeSM: 12, fontSizeLG: 16, fontSizeXL: 20, lineHeight: 22 / 14, lineHeightSM: 20 / 12, lineHeightLG: 24 / 16, fontWeightStrong: 500, borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' } } }, h('div', { className: 'standard-query-page' }, [h('header', { key: 'header', className: 'standard-query-header' }, [h('div', { key: 'titleWrap' }, [h('div', { key: 'titleRow', className: 'standard-query-title-row' }, h('h1', { key: 'title' }, payload.props.title || payload.pageName)), payload.props.subtitle ? h('p', { key: 'subtitle' }, payload.props.subtitle) : null])]), tabsNode, summaryMetrics, filterPanel, resultPanel]));
+  }
+  ReactDOM.createRoot(document.getElementById('yipex-standard-query-table-app')).render(h(App));
+})();
+   } else { window.requestAnimationFrame(start); } }; start(); })();</script></body></html>

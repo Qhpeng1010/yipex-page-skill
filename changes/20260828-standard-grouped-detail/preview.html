@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../modules/yipex/shell/vendor/antd-reset.css"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react-dom.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/antd.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"><title>商户详情 | YiPex</title><style>:root{--yipex-shell-sidebar:200px;--yipex-shell-canvas:#f0f0f0;--yipex-shell-surface:#f0f0f0;--yipex-shell-line:#d9d9d9;--yipex-shell-text:#222;--yipex-shell-muted:rgba(0,0,0,.58);--yipex-shell-brand:#4aa52e;--yipex-shell-radius:10px;--yipex-overlay-padding:24px;--yipex-overlay-divider:#e7e8e8}
+*,*::before,*::after{box-sizing:border-box;letter-spacing:0!important}
+html,body{height:100%;overflow:hidden}
+body{margin:0;min-width:320px;background:var(--yipex-shell-canvas);color:var(--yipex-shell-text);font-family:Roboto,"PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:400;line-height:22px;letter-spacing:0;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.yipex-shell{height:100vh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--yipex-shell-canvas)}
+.yipex-shell-topbar{height:52px;flex:0 0 52px;padding:0 28px 0 32px;border-bottom:1px solid var(--yipex-shell-line);background:var(--yipex-shell-canvas);display:flex;align-items:center;justify-content:space-between;gap:18px}.yipex-shell-topbar-brand{height:100%;display:flex;align-items:center}.yipex-shell-logo{width:85px;height:auto;display:block}.yipex-shell-topbar-actions{display:flex;align-items:center;gap:6px}.yipex-shell-topbar-button{position:relative;height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--yipex-shell-muted);display:inline-flex;align-items:center;gap:7px}.yipex-shell-topbar-button:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-notification-button{padding-right:10px}.yipex-shell-account{height:40px;padding:0 0 0 12px;border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--yipex-shell-text)}.yipex-shell-account:hover{background:#e7e7e7}.yipex-shell-email{font-size:14px}.yipex-shell-avatar{width:34px;height:34px;border-radius:50%;background:#f59c16;color:#fff;display:grid;place-items:center;font-weight:500}.yipex-shell-account>[data-antd-icon]{display:inline-flex;color:var(--yipex-shell-muted)}
+.yipex-shell-body{min-height:0;overflow:hidden;flex:1;display:grid;grid-template-columns:var(--yipex-shell-sidebar) minmax(0,1fr)}.yipex-shell-sidebar{min-height:0;padding:12px 10px 12px;background:var(--yipex-shell-surface);border-right:1px solid var(--yipex-shell-line);display:flex;flex-direction:column;z-index:10}.yipex-shell-nav{flex:1;display:grid;align-content:start;gap:6px;border:0;background:transparent}.yipex-shell-nav-item{min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;text-decoration:none;font-size:14px;font-weight:400}.yipex-shell-nav-item:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-nav-item.active{background:#e3f2df;color:#357d21;font-weight:400}.yipex-shell-nav-item .nav-icon{width:20px;display:inline-flex;align-items:center;justify-content:center}.yipex-shell-sidebar-footer{margin-top:auto;padding-top:12px}.yipex-shell-toggle{width:100%;height:40px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;font-size:14px;font-weight:400}.yipex-shell-toggle:hover{background:#e7e7e7;color:var(--yipex-shell-text)}
+.yipex-shell-workspace{min-width:0;min-height:0;padding:12px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;display:flex;flex-direction:column}.yipex-shell-content{width:100%;min-width:0;min-height:0;flex:1 0 auto;padding:24px;background:#fff;border-radius:var(--yipex-shell-radius);overflow:visible}.yipex-shell-footer{flex:0 0 auto;min-height:32px;padding:8px 4px 0;text-align:center}.yipex-shell-copyright{color:var(--yipex-shell-muted);font-size:12px;font-weight:400;line-height:20px}
+.yipex-shell.is-collapsed{--yipex-shell-sidebar:72px}
+@media(max-width:760px){.yipex-shell-topbar{padding:0 14px}.yipex-shell-topbar-button>span:last-child{display:none}.yipex-shell-topbar-button{padding:0 8px}.yipex-shell-account{padding-left:4px}.yipex-shell-email{display:none}.yipex-shell-body{display:block}.yipex-shell-sidebar{display:none}.yipex-shell-workspace{padding:12px}.yipex-shell-content{padding:24px 16px}.yipex-shell-footer{text-align:center}}
+.yipex-shell-topbar-button{width:36px;height:36px;padding:0;display:inline-grid;place-items:center}.yipex-shell-topbar-button>span:not([data-antd-icon]){display:none}
+.yipex-shell.is-collapsed .yipex-shell-nav-item>span:not(.nav-icon),.yipex-shell.is-collapsed .yipex-shell-toggle>span:last-child{display:none}.yipex-shell.is-collapsed .yipex-shell-nav-item,.yipex-shell.is-collapsed .yipex-shell-toggle{justify-content:center;padding-left:0;padding-right:0}
+.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon,.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon span,.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon],.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon] span{display:inline-flex}
+.yipex-shell-empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}.yipex-shell-empty-title{margin:0 0 24px;color:var(--yipex-shell-text);font-size:20px;line-height:28px;font-weight:500}.yipex-shell-empty-content{min-height:120px;display:flex;align-items:center;justify-content:center}.yipex-shell-empty-content .ant-empty{margin:0}
+.ant-modal:not(.ant-modal-confirm) .ant-modal-content{padding:0;overflow:hidden}.ant-modal:not(.ant-modal-confirm) .ant-modal-header{margin:0;padding:16px 48px 16px 24px;border-bottom:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-body{padding:var(--yipex-overlay-padding)}.ant-modal:not(.ant-modal-confirm) .ant-modal-footer{margin:0;padding:16px 24px;border-top:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-close{top:12px;inset-inline-end:16px}
+.ant-btn-default:not(:disabled):hover{color:#222!important;border-color:#d9d9d9!important;background:#f5f5f5!important;box-shadow:none}.ant-btn-default:not(:disabled):focus{color:#222!important;border-color:#d9d9d9!important;background:#fff!important;box-shadow:none}.ant-btn-default:not(:disabled):active{color:#222!important;border-color:#bfbfbf!important;background:#ededed!important}.ant-btn-link:not(:disabled):hover,.ant-btn-link:not(:disabled):focus{color:#357d21!important}.ant-btn:focus-visible{outline:0;box-shadow:0 0 0 2px rgba(74,165,46,.16)!important}
+
+    .standard-page-breadcrumb{margin:0 0 16px 8px}#yipex-page.yipex-shell-content{padding:0;background:transparent;border-radius:0}.standard-grouped-detail-page{width:100%;min-width:0;margin:0;padding-top:8px;letter-spacing:0}.standard-detail-content{padding:24px;background:#fff;border-radius:10px}.standard-detail-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}.standard-detail-metric{border:0!important;box-shadow:none!important;background:#fafafa}.standard-detail-metric .ant-card-body{padding:16px}.standard-detail-groups{margin-bottom:20px}.standard-detail-section{margin-bottom:20px;border:0!important;box-shadow:none!important}.standard-detail-group{margin-bottom:0}.standard-detail-groups-divided .standard-detail-group:not(:last-child){padding-bottom:20px;border-bottom:1px solid #F0F0F0!important}.standard-detail-groups-divided .standard-detail-group+.standard-detail-group{padding-top:20px}.standard-detail-section .ant-card-head{padding:0;min-height:40px;border-bottom:0}.standard-detail-section .ant-card-head-title{padding:0}.standard-detail-section .ant-card-body{padding:0}.standard-detail-section-title{display:flex;align-items:baseline;gap:10px}.standard-detail-section-title span{font-size:16px;font-weight:500;line-height:24px;color:#222}.standard-detail-section-title small{font-size:12px;color:rgba(0,0,0,.45);font-weight:400;line-height:20px}.standard-detail-actions{display:flex;justify-content:flex-end;padding-top:4px;border-top:1px solid #f0f0f0}@media(max-width:1200px){.standard-detail-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.standard-detail-content{padding:16px}.standard-detail-metrics{grid-template-columns:1fr}.standard-detail-section .ant-descriptions-view{overflow-x:auto}.standard-detail-section .ant-descriptions-item-label{white-space:nowrap}}
+  </style></head><body><div class="yipex-shell" data-shell="yipex-default">
+  <header class="yipex-shell-topbar">
+    <div class="yipex-shell-topbar-brand"><img class="yipex-shell-logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzkiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA3OSAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy4xMTU0IDAuMDE5ODM2NEgyMC43OTg1QzIwLjI5OSAwLjAxOTgzNjQgMTkuODIwOCAwLjIxOTY1NCAxOS40Njc5IDAuNTczMzMyQzE5LjExNCAwLjkyODA3OCAxOC45MTY0IDEuNDA3ODQgMTguOTE2NCAxLjkwODk3VjE1Ljk3OTJIMjMuMTE1NFYwLjAxOTgzNjRaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNS42NDg2NiA4LjM0MTI0QzUuNjQ4NjYgOC4zNDEyNCAzLjIwODUyIDUuODkzMDIgMi4wODcyOSA0Ljc2ODA4QzEuNzM0NDUgNC40MTQwNyAxLjI1NTE1IDQuMjE0NjggMC43NTU2NDUgNC4yMTQ2OEMwLjM3NjIzNCA0LjIxNDY4IDAgNC4yMTQ2OCAwIDQuMjE0NjhWMC4wMDA2NzkwMTZIMi41MTEzNEMzLjAxMTkxIDAuMDAwNjc5MDE2IDMuNDkxMjMgMC4yMDExMzggMy44NDUxMyAwLjU1NjIxNUM1LjA2NTIgMS43ODU2NSA3Ljg4NDc0IDQuNjI1MiA3Ljg4NDc0IDQuNjI1MkM3Ljg4NDc0IDQuNjI1MiAxMC43MDQzIDEuNzg1NjUgMTEuOTI0NCAwLjU1NjIxNUMxMi4yNzgzIDAuMjAxMTM4IDEyLjc1NzYgMC4wMDA2NzkwMTYgMTMuMjU4MSAwLjAwMDY3OTAxNkgxNS43Njk1VjQuMjE0NjhIMTQuODk4QzE0LjQ3MjkgNC4yMTQ2OCAxNC4wNjQ4IDQuMzg0MjEgMTMuNzY0IDQuNjg1OTdDMTIuNjMyMiA1LjgyMTU4IDkuODQ4NzUgOC42MTQyMiA5Ljg0ODc1IDguNjE0MjJWMTUuOTgwMkg1LjY0ODY2VjguMzQxMjRaIiBmaWxsPSIjOEZENjI5Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjYuMjg3OCAxNS45OFYxLjkxMDE4QzI2LjI4NzggMC44NjYyNzkgMjcuMTMwNiAwLjAyMDcxIDI4LjE3MSAwLjAyMDcxQzMwLjk3MjUgMC4wMjA3MSAzNS45MTQ0IDAuMDIwNzEgMzUuOTE0NCAwLjAyMDcxVjQuMjM0NzFIMzAuNDg3OVY1Ljc4NTExSDM3LjYzMDhWMC4wMjA3MUg0MS45NjU5VjkuOTk5MTFIMzAuNDg3OVYxNS45OEgyNi4yODc4WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4LjQ2NzkgMTAuMjMyNFYxMS43ODZINTkuODEwOVYxNkg0NC4xMzM5VjcuOTA3ODlDNDQuMTMzOSA2Ljg2NTA1IDQ0Ljk3NjcgNi4wMTg0MSA0Ni4wMTYxIDYuMDE4NDFDNTAuMTgyMiA2LjAxODQxIDU5LjgxMDkgNi4wMTg0MSA1OS44MTA5IDYuMDE4NDFWMTAuMjMyNEg0OC40Njc5WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTU5LjgxMTUgNC4yMzQwNlYwLjAyMTEzOTFMNDYuMDE1OCAwLjAyMTEzOTFDNDQuOTc2NiAwLjAyMTEzOTEgNDQuMTMzNyAwLjg2NjcwNyA0NC4xMzM3IDEuOTA5NTRWNC4yMzQwNkw1OS44MTE1IDQuMjM0MDZaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNzMuNzMzNyA3Ljk5OTMyTDc3LjQyMDUgMTEuNzY1Nkg3OVYxNS45NzkySDc2LjQzN0M3NS45MzYxIDE1Ljk3OTIgNzUuNDU0NiAxNS43Nzg4IDc1LjEwMTUgMTUuNDIyNEM3Mi43ODc5IDEzLjA4NyA2My45OTIzIDQuMjExNDMgNjMuOTkyMyA0LjIxMTQzSDYyLjQzMTJMNjIuNDMzNCAwSDY0Ljk5NjRDNjUuNDk3MyAwIDY1Ljk3NzcgMC4yMDAzOSA2Ni4zMzA4IDAuNTU1Njc1QzY3LjYxODcgMS44NTMzMyA3MC43MTcyIDQuOTcyODkgNzAuNzE3MiA0Ljk3Mjg5QzcwLjcxNzIgNC45NzI4OSA3My44MTQ2IDEuODUzMzMgNzUuMTAzNyAwLjU1NTY3NUM3NS40NTY3IDAuMjAwMzkgNzUuOTM2MSAwIDc2LjQzNyAwSDc5TDc4Ljk5ODkgNC4yMTE0M0g3Ny40Mzg5TDczLjczMzcgNy45OTkzMlpNNjkuMjIwOSAxMi41OTQyQzY5LjIyMDkgMTIuNTk0MiA2Ny4zMDAzIDE0LjQ4MzMgNjYuMzI4NiAxNS40Mzk3QzY1Ljk3NjcgMTUuNzg1MyA2NS41MDM4IDE1Ljk3OTIgNjUuMDEwNCAxNS45NzkySDYyLjQzMzRWMTEuNzY1Nkg2NC4wMTI4TDY2LjIwNDQgOS41MDA2Mkw2OS4yMjA5IDEyLjU5NDJaIiBmaWxsPSIjMjMxRjIwIi8+Cjwvc3ZnPgo=" alt="Yipex"></div>
+    <div class="yipex-shell-topbar-actions">
+      <button class="yipex-shell-topbar-button ant-btn" type="button" data-shell-action="tools" aria-label="功能" title="功能"><span data-antd-icon="AppstoreOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-topbar-button yipex-shell-notification-button ant-btn" type="button" data-shell-action="notifications" aria-label="消息" title="消息"><span data-antd-icon="BellOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-account ant-btn" type="button" data-shell-action="account" aria-label="打开账号菜单"><span class="yipex-shell-email">operations@yipex.tech</span><span class="yipex-shell-avatar">运</span><span data-antd-icon="DownOutlined" aria-hidden="true"></span></button>
+    </div>
+  </header>
+  <div class="yipex-shell-body">
+    <aside class="yipex-shell-sidebar" aria-label="主导航">
+      <nav class="yipex-shell-nav ant-menu ant-menu-root ant-menu-inline" data-antd-component="Menu"><a class="yipex-shell-nav-item" data-antd-component="Menu.Item" data-menu-key="home" href="#home" title="首页" ><span class="nav-icon anticon" data-antd-icon="HomeOutlined" aria-hidden="true"></span><span>首页</span></a><a class="yipex-shell-nav-item active" data-antd-component="Menu.Item" data-menu-key="merchant-management" href="#merchant-management" title="商户管理" aria-current="page"><span class="nav-icon anticon" data-antd-icon="ShopOutlined" aria-hidden="true"></span><span>商户管理</span></a></nav>
+      <div class="yipex-shell-sidebar-footer"><button class="yipex-shell-toggle ant-btn" type="button" data-shell-action="toggle-sidebar" aria-label="收起导航" title="收起导航" aria-expanded="true"><span data-antd-icon="MenuFoldOutlined" aria-hidden="true"></span><span>收起</span></button></div>
+    </aside>
+    <div class="yipex-shell-workspace">
+      <main id="yipex-page" class="yipex-shell-content"><div id="yipex-standard-grouped-detail-app" data-component="standard-grouped-detail"></div></main>
+      <footer class="yipex-shell-footer"><small class="yipex-shell-copyright">Copyright Somei E-Commerce Limited 2025. All rights reserved</small></footer>
+    </div>
+  </div>
+</div>
+<script id="yipex-standard-grouped-detail-data" type="application/json">{"pageName":"商户详情","breadcrumb":[{"title":"商户管理","href":"#merchant-management"},{"title":"商户详情"}],"props":{},"data":{"demo":true,"record":{"id":"M10086","name":"海岸咖啡（静安店）","industry":"餐饮","contact":"张敏","phone":"138****2086","status":"OPERATING","statusLabel":"营业中","signedAt":"2026-01-22","createdAt":"2026-01-18 10:26","owner":"陈路","city":"上海市","address":"静安区愚园路 218 号"},"metrics":[{"id":"amount","label":"近30日交易金额 (元)","value":1286430.5,"format":"currency","unit":"元","displayLabel":"近30日交易金额 (元)","displayUnit":"元","unitPlacement":"title"},{"id":"orders","label":"近30日订单数 (笔)","value":4826,"format":"integer","unit":"笔","displayLabel":"近30日订单数 (笔)","displayUnit":"笔","unitPlacement":"title"},{"id":"average","label":"平均客单价 (元)","value":266.56,"format":"currency","unit":"元","displayLabel":"平均客单价 (元)","displayUnit":"元","unitPlacement":"title"},{"id":"activeDays","label":"活跃天数 (天)","value":28,"format":"integer","unit":"天","displayLabel":"活跃天数 (天)","displayUnit":"天","unitPlacement":"title"}],"sections":[{"id":"basic","title":"基础信息","fields":[{"key":"id","label":"商户编号","displayLabel":"商户编号","unitPlacement":"none"},{"key":"name","label":"商户名称","displayLabel":"商户名称","unitPlacement":"none"},{"key":"industry","label":"所属行业","displayLabel":"所属行业","unitPlacement":"none"},{"key":"status","label":"经营状态","format":"status","displayLabel":"经营状态","unitPlacement":"none"},{"key":"signedAt","label":"签约日期","displayLabel":"签约日期","unitPlacement":"none"},{"key":"createdAt","label":"创建时间","displayLabel":"创建时间","unitPlacement":"none"}]},{"id":"owner","title":"负责人信息","fields":[{"key":"contact","label":"联系人","displayLabel":"联系人","unitPlacement":"none"},{"key":"phone","label":"联系电话","displayLabel":"联系电话","unitPlacement":"none"},{"key":"owner","label":"负责人","displayLabel":"负责人","unitPlacement":"none"},{"key":"city","label":"所在城市","displayLabel":"所在城市","unitPlacement":"none"},{"key":"address","label":"经营地址","span":2,"displayLabel":"经营地址","unitPlacement":"none"}]}],"relatedTables":[{"id":"recent","title":"最近交易记录","description":"近 30 日演示数据","columns":[{"key":"id","label":"交易单号","displayLabel":"交易单号","unitPlacement":"none"},{"key":"date","label":"交易时间","displayLabel":"交易时间","unitPlacement":"none"},{"key":"amount","label":"交易金额 (元)","format":"currency","unit":"元","displayLabel":"交易金额 (元)","displayUnit":"元","unitPlacement":"title"},{"key":"status","label":"状态","format":"status","displayLabel":"状态","unitPlacement":"none"}],"records":[{"id":"TX-20260828-001","date":"2026-08-28 09:42","amount":268,"status":"SUCCESS","statusLabel":"交易成功"},{"id":"TX-20260827-018","date":"2026-08-27 18:16","amount":1280,"status":"SUCCESS","statusLabel":"交易成功"},{"id":"TX-20260826-093","date":"2026-08-26 12:08","amount":88,"status":"PENDING","statusLabel":"处理中"}]}]},"initialState":{"loading":false,"error":false,"permission-denied":false},"generation":{"mode":"auto","strategy":"standard","recipeId":"detail.grouped","skeleton":"detail-workbench","capabilities":["detail.groups","detail.metrics","detail.embeddedTable"],"policyVersion":1,"modelVersion":"2026.08.30.2","rendererId":"yipex-standard-grouped-detail-v1"}}</script><script defer src="../../modules/yipex/shell/vendor/react.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/react-dom.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"></script><script defer src="../../modules/yipex/shell/vendor/antd.min.js"></script><script defer src="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"></script><script>(() => {
+  const shell = document.querySelector('[data-shell="yipex-default"]');
+  if (!shell) return;
+  const page = shell.querySelector('#yipex-page');
+  const navItems = [...shell.querySelectorAll('.yipex-shell-nav-item')];
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const initialKey = navItems.find((item) => item.classList.contains('active') || item.getAttribute('aria-current') === 'page')?.dataset.menuKey || '';
+  const setActive = (key) => navItems.forEach((item) => {
+    const active = item.dataset.menuKey === key;
+    item.classList.toggle('active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+  const renderEmptyState = (item) => {
+    if (!page || !item) return;
+    page.dataset.shellEmpty = 'true';
+    const label = item.getAttribute('title') || item.textContent.trim();
+    page.innerHTML = '<div class="yipex-shell-empty" data-shell-empty="true" role="status" aria-live="polite"><h1 class="yipex-shell-empty-title">' + escapeHtml(label) + '</h1><div class="yipex-shell-empty-content" data-shell-empty-mount></div></div>';
+    const mount = () => {
+      const Empty = window.antd?.Empty;
+      const target = page.querySelector('[data-shell-empty-mount]');
+      if (!Empty || !target || !window.React || !window.ReactDOM) { window.setTimeout(mount, 16); return; }
+      const element = window.React.createElement(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' });
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(target).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, target);
+    };
+    mount();
+  };
+  shell.querySelectorAll('[data-shell-action="toggle-sidebar"]').forEach((button) => button.addEventListener('click', () => {
+    const collapsed = shell.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.setAttribute('aria-label', collapsed ? '展开导航' : '收起导航');
+    button.setAttribute('title', collapsed ? '展开导航' : '收起导航');
+  }));
+  navItems.forEach((item) => item.addEventListener('click', (event) => {
+    const key = item.dataset.menuKey || '';
+    setActive(key);
+    if (key === initialKey && page?.dataset.shellEmpty) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      window.location.reload();
+      return;
+    }
+    if (key && key !== initialKey) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      renderEmptyState(item);
+    }
+  }));
+  shell.querySelectorAll('[data-shell-action]').forEach((button) => {
+    if (button.dataset.shellAction === 'toggle-sidebar') return;
+    button.addEventListener('click', () => button.dispatchEvent(new CustomEvent('yipex-shell-action', { bubbles: true, detail: { action: button.dataset.shellAction } })));
+  });
+  const renderIcons = () => {
+    const iconLibrary = window.icons;
+    if (!iconLibrary || !window.React || !window.ReactDOM) { window.setTimeout(renderIcons, 16); return; }
+    shell.querySelectorAll('[data-antd-icon]').forEach((node) => {
+      if (node.dataset.iconMounted) return;
+      const Icon = iconLibrary[node.dataset.antdIcon];
+      if (!Icon) return;
+      const element = window.React.createElement(Icon);
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(node).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, node);
+      node.dataset.iconMounted = 'true';
+    });
+  };
+  renderIcons();
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('.ant-breadcrumb a, .standard-page-breadcrumb a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(href);
+  });
+})();
+</script><script>(() => { const start = () => { if (window.React && window.ReactDOM && window.antd && window.dayjs) { 
+(() => {
+  const h = React.createElement;
+  const { ConfigProvider, Breadcrumb, Card, Statistic, Descriptions, Tag, Table, Empty, Button, Result, Space } = antd;
+  const payload = JSON.parse(document.getElementById('yipex-standard-grouped-detail-data').textContent);
+  const source = payload.data || {};
+  const props = payload.props || {};
+  const safe = (value) => String(value == null ? '' : value);
+  const statusColor = { ACTIVE: 'green', INACTIVE: 'default', ENABLED: 'green', DISABLED: 'default', SUCCESS: 'green', FAILED: 'red', PROCESSING: 'blue', PENDING: 'orange', OPERATING: 'green', PAUSED: 'orange', CLOSED: 'default', COMPLETED: 'green', CANCELLED: 'default' };
+  const money = (value, unit) => value == null || value === '' ? '-' : Number(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (unit ? ' ' + unit : '');
+  function formatValue(value, field, record) {
+    if (field.format === 'amount' || field.format === 'currency') return money(value, field.unitPlacement === 'value' && field.unitKey ? record[field.unitKey] : undefined);
+    if (field.format === 'integer') return value == null ? '-' : Number(value).toLocaleString('zh-CN');
+    if (field.format === 'status') return h(Tag, { color: statusColor[value] || field.color || 'default' }, record[field.labelKey || 'statusLabel'] || value || '-');
+    return safe(value) || '-';
+  }
+  function App() {
+    const returnHref = new URLSearchParams(window.location.search).get(source.returnParam || 'return') || source.entryHref || '';
+    const recordId = new URLSearchParams(window.location.search).get(source.recordIdParam || 'id');
+    let record = source.record || {};
+    if (recordId) {
+      try {
+        const saved = source.persistenceKey ? JSON.parse(window.localStorage.getItem(source.persistenceKey) || '[]') : [];
+        const candidates = [...(Array.isArray(saved) ? saved : []), ...(Array.isArray(source.records) ? source.records : [])];
+        record = candidates.find((item) => safe(item.id) === safe(recordId)) || record;
+      } catch (_) { /* local demo persistence is best effort */ }
+    }
+    const sections = Array.isArray(source.sections) ? source.sections : [];
+    const metrics = Array.isArray(source.metrics) ? source.metrics : [];
+    const relatedTables = Array.isArray(source.relatedTables) ? source.relatedTables : [];
+    if (source.permissionDenied) return h(Result, { status: '403', title: '暂无访问权限', subTitle: '请联系管理员开通当前页面的访问权限。' });
+    const metricNodes = metrics.length ? h('div', { className: 'standard-detail-metrics' }, metrics.map((metric) => h(Card, { key: metric.id || metric.label, className: 'standard-detail-metric', bordered: false }, h(Statistic, { title: metric.displayLabel || metric.label, value: metric.value, precision: metric.format === 'amount' || metric.format === 'currency' ? 2 : metric.format === 'integer' ? 0 : undefined })))) : null;
+    const sectionNodes = sections.map((section) => h(Card, { key: section.id, className: 'standard-detail-section standard-detail-group', bordered: false, title: h('div', { className: 'standard-detail-section-title' }, [h('span', { key: 'title' }, section.title), section.description ? h('small', { key: 'description' }, section.description) : null]) }, h(Descriptions, { column: section.columns || { xs: 1, sm: 2, md: 3 }, bordered: false }, (section.fields || []).map((field) => h(Descriptions.Item, { key: field.key, label: field.displayLabel || field.label, span: field.span || 1 }, formatValue(record[field.key], field, record))))));
+    const detailGroups = sectionNodes.length ? h('div', { className: 'standard-detail-groups' + (sectionNodes.length >= 2 ? ' standard-detail-groups-divided' : '') }, sectionNodes) : null;
+    const tableNodes = relatedTables.map((table) => h(Card, { key: table.id, className: 'standard-detail-section', bordered: false, title: h('div', { className: 'standard-detail-section-title' }, [h('span', { key: 'title' }, table.title), table.description ? h('small', { key: 'description' }, table.description) : null]) }, h(Table, { columns: (table.columns || []).map((column) => ({ title: column.displayLabel || column.label || column.key, dataIndex: column.key, key: column.key, align: column.format === 'amount' || column.format === 'currency' || column.format === 'integer' ? 'right' : 'left', render: (value, row) => formatValue(value, column, row) })), dataSource: table.records || [], rowKey: (row) => row.id || JSON.stringify(row), pagination: false, size: 'middle', scroll: { x: Math.max(640, (table.columns || []).length * 140) }, locale: { emptyText: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无记录' }) } })));
+    return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { fontFamily: 'Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontSize: 14, fontSizeSM: 12, fontSizeLG: 16, fontSizeXL: 20, lineHeight: 22 / 14, lineHeightSM: 20 / 12, lineHeightLG: 24 / 16, fontWeightStrong: 500, borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' } } }, h('div', { className: 'standard-grouped-detail-page' }, [
+      h(Breadcrumb, { key: 'breadcrumb', className: 'standard-page-breadcrumb', items: payload.breadcrumb || [] }),
+      h('div', { key: 'content', className: 'standard-detail-content' }, [
+        metricNodes,
+        detailGroups,
+        tableNodes,
+        props.footerActionLabel ? h('div', { key: 'actions', className: 'standard-detail-actions' }, h(Button, { type: 'primary', onClick: () => returnHref && (window.location.href = returnHref) }, props.footerActionLabel)) : null
+      ])
+    ]));
+  }
+  ReactDOM.createRoot(document.getElementById('yipex-standard-grouped-detail-app')).render(h(App));
+})();
+   } else { window.requestAnimationFrame(start); } }; start(); })();</script></body></html>

@@ -24,6 +24,8 @@ Skill 提供完整页面、快速页面和产品需求三种快捷入口：
 ## 核心原则
 
 - 用户明确的功能目标优先；YiPex 规范约束视觉一致性、交互质量、响应式和可访问性，不限制业务功能。
+- 页面标题区只显示主标题和必要操作，始终不生成、推断、改写或补充副标题、页面描述、场景摘要、引导语或标题下说明。表单帮助、校验错误、结果原因和任务区域内明确要求的必要业务文案不属于标题区副描述。
+- Shell 导航必须按当前需求裁剪。单页面只声明“首页 + 当前业务菜单”，当前业务菜单处于激活状态；首页类页面只声明并激活“首页”。不得把 Shell 示例目录、历史页面菜单或与本次需求无关的菜单全量复制进 `page.shell.navigation`。组合页面的每个子页面仍只显示首页和它所属的业务菜单，页面间转场由 Page Composition 负责，不靠堆叠侧栏菜单表达。
 - 默认使用 Ant Design 官方组件、API、语义和状态。具体视觉、页面方案和交互规则分别读取导演规则 01–03，页面族特有结构再读取一个命中的 Page Pattern；入口不重复维护这些规则。
 - 状态列默认使用 Ant Design `Badge` 的官方语义色（`success`、`processing`、`warning`、`error`、`default`）；业务状态值应在 Page Spec 的列配置中通过 `statusTone` 映射，未声明时仅使用渲染器的通用语义兜底，不得随意生成自定义颜色。
 - 二次确认默认沿用 YiPex 主操作色 `#222222`；危险或不可逆操作的确认按钮使用 Ant Design `danger` 语义色，取消按钮使用官方中性按钮色并保留规范焦点态，不得回退为默认蓝色。
@@ -37,8 +39,9 @@ Skill 提供完整页面、快速页面和产品需求三种快捷入口：
 - 多页面需求必须提供明确入口和可追踪的相对链接或声明式转场；取消、面包屑与提交结果返回 Contract 声明的目标，刷新非入口页时保持组合关系可恢复。
 - 页面生成完成并构建 `preview.html` 后，默认提供预览路径；只有用户明确要求浏览器验收、截图或自动交互测试时才打开浏览器。多页面需求仍只交付 `entryHtml` 指向的入口。
 - 载体和 Page Composition 判断必须先于 Spec 编写，并复用 dispatch 返回的 `strategy.presentationIntent`。具体矩阵与冲突处理读取导演规则 02；组件外观与详情列数读取 01，不在入口复制数值。
-- 默认只实现固定 Shell 的 `content` 插槽，不重绘框架；Shell 规则与导航行为只在构建预览或修改 Shell 时读取 `modules/yipex/shell/`。
+- 默认只实现固定 Shell 的 `content` 插槽，不重绘框架；编写 Page Spec 时必须落实按需求裁剪的导航，只有构建预览或修改框架视觉与运行时时才读取 `modules/yipex/shell/` 的其余细节。
 - 标准渲染器不得把具体业务字段、金额等特定校验、状态文案或操作组合写死；新增字段的类型、必填/范围校验、选项、默认值、成功反馈和记录派生规则，以及操作列动作，必须从 Page Spec 的声明式配置读取。已有旧格式只能作为兼容回退，新页面不得依赖业务专用 `format`。
+- 表单需要 Select 多选、Cascader、Checkbox、Switch、TreeSelect、Upload、日期/时间、数字、`component + props`、条件显隐/禁用/必填、动态枚举、依赖清值或保留既有 Modal 时，读取 `references/form-capabilities.md` 并使用共享声明式表单运行时，不得在单个页面重复实现条件引擎。
 - 不虚构后端接口或业务事实。不确定内容写入 `metadata.assumptions`；演示数据属性保留在规格、交付说明或必要反馈中。
 - 自动验收只声明实际执行过的静态检查；浏览器视觉、交互体验和业务口径未经明确验收时标记为待人工验收。
 
@@ -80,6 +83,10 @@ node scripts/check-yipex-page.mjs changes/{change-id} --with-design-record
 node scripts/build-yipex-composition.mjs changes/{composition-id}
 node scripts/test-yipex-capability-model.mjs
 node scripts/test-yipex-capability-policy.mjs
+node scripts/test-yipex-form-runtime.mjs
+node scripts/test-yipex-form-renderers.mjs
+node scripts/test-yipex-page-header-copy.mjs
+node scripts/test-yipex-navigation.mjs
 ```
 
 页面实现默认接入目标项目已有的 Ant Design 依赖；skill 不携带本地组件库。脚本只负责基础能力检查，完成后直接交付预览和人工验收清单。

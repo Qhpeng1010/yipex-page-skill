@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "changeId": "20260830-employee-management",
+    "pageName": "员工管理流程",
+    "request": "/yipex:page 生成员工管理流程，包含员工查询列表和员工信息分组表单。查询列表支持按姓名、部门和状态筛选，展示姓名、工号、部门、岗位和状态，提供新增员工和查看详情操作。点击新增员工进入分组表单，表单分为基本信息和工作信息两组，包含姓名、工号、手机号、部门、岗位和状态字段，支持取消和保存。保存成功后返回员工列表并刷新数据",
+    "ruleRefs": [
+      "execution/capability-model/page-composition.schema.json",
+      "execution/capability-model/composition-rules.json",
+      "execution/capability-model/data-binding.schema.json"
+    ]
+  },
+  "ui": { "system": "yipex", "runtime": "yipex-composition", "rendererVersion": 1 },
+  "skeleton": "custom-composition",
+  "regions": [
+    {
+      "id": "employee-list",
+      "type": "content",
+      "capabilities": ["query.basic", "table.flat", "table.pagination", "detail.overlay", "form.overlay"],
+      "config": { "pageSpec": "employee-list/page-spec.json", "preview": "employee-list/preview.html" }
+    }
+  ],
+  "bindings": [],
+  "transitions": [],
+  "states": {
+    "employee-list": ["loading", "empty", "error", "permission-denied", "submitting", "success"]
+  },
+  "entryHtml": "preview.html"
+}

@@ -4,6 +4,8 @@ import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
 import { getRendererDefinition } from './lib/yipex-renderer-registry.mjs';
+import { validateFormFieldDefinitions } from './lib/yipex-form-runtime.mjs';
+import { validateDemandScopedNavigation } from './lib/yipex-navigation.mjs';
 
 const startedAt = performance.now();
 const file = process.argv[2];
@@ -18,22 +20,55 @@ const retiredRuleRefs = rulesIndex.retiredRuleRefs || {};
 const spec = JSON.parse(readFileSync(resolve(process.cwd(), file), 'utf8'));
 const errors = [];
 const components = new Map();
+const pageHeaderDescriptionKeys = ['subtitle', 'description', 'pageDescription', 'intro'];
 
 if (![1, 2].includes(spec.schemaVersion)) errors.push('schemaVersion must be 1 or 2');
 if (!spec.metadata?.changeId || !/^[0-9]{8}-[a-z0-9-]+$/.test(spec.metadata.changeId)) errors.push('metadata.changeId must use YYYYMMDD-slug');
 if (!spec.metadata?.pageName) errors.push('metadata.pageName is required');
 if (!spec.metadata?.pageType) errors.push('metadata.pageType is required');
 if (!spec.page?.root || typeof spec.page.root !== 'object') errors.push('page.root is required');
+errors.push(...validateDemandScopedNavigation(spec.page?.shell?.navigation, {
+  request: spec.metadata?.request,
+  pageName: spec.metadata?.pageName,
+  changeId: spec.metadata?.changeId,
+  primaryTask: spec.contract?.hierarchy?.primary
+}));
 
-function visit(node) {
+function rejectPageHeaderDescriptions(container, location) {
+  if (!container || typeof container !== 'object' || Array.isArray(container)) return;
+  for (const key of pageHeaderDescriptionKeys) {
+    if (Object.hasOwn(container, key)) errors.push(`${location}.${key} is not allowed; page headers must contain only the primary title and necessary actions`);
+  }
+}
+
+function visit(node, location = 'page.root') {
   if (!node || typeof node !== 'object') return;
   if (!node.id) errors.push('every component needs id');
   else if (components.has(node.id)) errors.push(`duplicate component id: ${node.id}`);
   else components.set(node.id, node);
+  if (node === spec.page?.root) rejectPageHeaderDescriptions(node.props, 'page.root.props');
+  if (node.type === 'page-header') {
+    rejectPageHeaderDescriptions(node, location);
+    if (node !== spec.page?.root) rejectPageHeaderDescriptions(node.props, `${location}.props`);
+  }
   if (node.children && !Array.isArray(node.children)) errors.push(`children must be an array: ${node.id || 'unknown'}`);
-  for (const child of node.children || []) visit(child);
+  for (const [index, child] of (node.children || []).entries()) visit(child, `${location}.children[${index}]`);
 }
 visit(spec.page?.root);
+
+const formData = spec.page?.data || {};
+const groupedFields = Array.isArray(formData.sections) ? formData.sections.flatMap((section) => section?.fields || []) : [];
+const steppedFields = Array.isArray(formData.steps) ? formData.steps.flatMap((step) => step?.fields || []) : [];
+for (const [fields, scope] of [[groupedFields, 'page.data.sections fields'], [steppedFields, 'page.data.steps fields'], [formData.createFields, 'page.data.createFields']]) {
+  if (Array.isArray(fields) && fields.length) errors.push(...validateFormFieldDefinitions(fields, { scope }));
+}
+for (const [value, label] of [
+  [formData.preserveStructure, 'page.data.preserveStructure'],
+  [formData.create?.preserveStructure, 'page.data.create.preserveStructure'],
+  [spec.page?.root?.props?.preserveStructure, 'page.root.props.preserveStructure']
+]) {
+  if (value !== undefined && typeof value !== 'boolean') errors.push(`${label} must be boolean`);
+}
 
 function hasText(value) {
   return typeof value === 'string' && value.trim().length > 0;

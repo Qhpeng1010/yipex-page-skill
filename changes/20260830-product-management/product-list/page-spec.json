@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-product-management-list",
+    "pageName": "商品管理",
+    "pageType": "product-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "/yipex:page 生成商品管理流程。商品列表支持按名称和状态查询，点击“新增商品”进入分步表单。表单分为“基本信息”“销售信息”“确认提交”三步，提交成功后返回列表并刷新数据。",
+    "assumptions": [
+      "未提供后端接口，列表和新增商品使用浏览器 localStorage 演示持久化。",
+      "商品示例包含名称、编码、分类、销售价格、状态和创建时间，新增商品编号与创建时间由浏览器生成。"
+    ],
+    "ruleRefs": [
+      "execution/context-packs/core.md",
+      "design-system/director-rules/01-visual-constitution.md",
+      "design-system/director-rules/02-template-application-rules.md",
+      "design-system/director-rules/03-interaction-acceptance-rules.md",
+      "design-system/page-patterns/list.md",
+      "execution/page-contract-v2.md",
+      "execution/capability-model/capability-model.md"
+    ],
+    "generation": { "mode": "standard", "strategy": "standard", "recipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "table.flat", "table.pagination"], "policyVersion": 2, "modelVersion": "2026.08.30.6", "rendererId": "yipex-standard-query-table-v1" }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "product-list-header", "role": "page-header", "purpose": "标识商品管理任务" },
+      { "id": "product-filters", "role": "query-controls", "purpose": "按商品名称和状态筛选商品" },
+      { "id": "product-results", "role": "result-list", "purpose": "浏览商品并进入新增流程" }
+    ],
+    "hierarchy": { "primary": "快速定位并管理商品", "secondary": ["从列表进入新增商品分步表单"] },
+    "operations": { "primary": { "id": "query-products", "label": "查询", "placement": "查询条件区末列", "outcome": "按名称和状态筛选并回到第一页" }, "secondary": [{ "id": "reset-product-filters", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选条件并恢复全部商品" }, { "id": "create-product", "label": "新增商品", "placement": "列表标题工具区最右侧", "outcome": "进入新增商品分步表单" }] },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied", "success"],
+    "responsive": { "desktop": "名称和状态使用查询网格，商品表格保留核心字段，新增入口位于结果标题工具区。", "narrow": "筛选条件改为单列，表格保留横向滚动，新增入口保持可操作。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true }, "brand": { "name": "Yipex", "logo": "logo.svg" }, "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "product-management", "label": "商品管理", "icon": "ShoppingOutlined", "active": true }], "header": { "welcome": "商品管理", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "商" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" }, "floatingTools": { "show": false } },
+    "root": { "id": "product-list-page", "type": "standard-query-table-page", "props": { "title": "商品管理", "resultTitle": "商品列表", "createLabel": "新增商品" }, "children": [{ "id": "product-list-header", "type": "page-header", "label": "商品管理" }, { "id": "product-filters", "type": "query-form", "children": [{ "id": "product-name-filter", "type": "input", "label": "商品名称", "events": { "change": "editProductFilters" } }, { "id": "product-status-filter", "type": "select", "label": "状态", "events": { "change": "editProductFilters" } }, { "id": "reset-product-filters", "type": "button", "label": "重置", "events": { "click": "resetProductFilters" } }, { "id": "query-products", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryProducts" } }] }, { "id": "product-results", "type": "data-table", "label": "商品列表", "events": { "pageChange": "paginateProducts" }, "children": [{ "id": "create-product", "type": "button", "label": "新增商品", "events": { "click": "openCreateProduct" } }] }] },
+    "data": {
+      "demo": true,
+      "persistenceKey": "yipex-product-management-demo",
+      "createPageHref": "../product-create/preview.html",
+      "returnMessage": "商品新增成功",
+      "defaultSort": { "key": "createdAt", "order": "descend" },
+      "pageSize": 6,
+      "filters": [{ "id": "product-name", "key": "name", "label": "商品名称", "type": "text", "recordKey": "name", "placeholder": "请输入商品名称" }, { "id": "product-status", "key": "status", "label": "状态", "type": "select", "placeholder": "请选择状态", "options": [{ "value": "ALL", "label": "全部状态" }, { "value": "ON_SALE", "label": "在售" }, { "value": "OFF_SALE", "label": "已下架" }, { "value": "DRAFT", "label": "草稿" }] }],
+      "columns": [{ "key": "name", "label": "商品名称", "width": 220 }, { "key": "productCode", "label": "商品编码", "width": 160 }, { "key": "categoryLabel", "label": "商品分类", "width": 150 }, { "key": "price", "label": "销售价格 (元)", "width": 140, "format": "amount" }, { "key": "status", "label": "状态", "width": 110, "format": "status", "labelKey": "statusLabel", "statusTone": { "ON_SALE": "success", "OFF_SALE": "default", "DRAFT": "warning" } }, { "key": "createdAt", "label": "创建时间", "width": 168 }],
+      "records": [{ "id": "PR20260830018", "name": "跨境收款服务包", "productCode": "P-COLLECT-001", "category": "SERVICE", "categoryLabel": "服务类", "price": 2999, "status": "ON_SALE", "statusLabel": "在售", "createdAt": "2026-08-30 09:42" }, { "id": "PR20260830012", "name": "企业风控增值包", "productCode": "P-RISK-002", "category": "SERVICE", "categoryLabel": "服务类", "price": 899, "status": "ON_SALE", "statusLabel": "在售", "createdAt": "2026-08-29 16:18" }, { "id": "PR20260830007", "name": "海外仓库存同步", "productCode": "P-WMS-003", "category": "SOFTWARE", "categoryLabel": "软件类", "price": 680, "status": "DRAFT", "statusLabel": "草稿", "createdAt": "2026-08-29 11:06" }, { "id": "PR20260829096", "name": "多币种结算账户", "productCode": "P-ACCOUNT-004", "category": "SERVICE", "categoryLabel": "服务类", "price": 1280, "status": "OFF_SALE", "statusLabel": "已下架", "createdAt": "2026-08-28 18:32" }, { "id": "PR20260829084", "name": "订单智能对账", "productCode": "P-RECON-005", "category": "SOFTWARE", "categoryLabel": "软件类", "price": 1680, "status": "ON_SALE", "statusLabel": "在售", "createdAt": "2026-08-27 14:20" }, { "id": "PR20260829063", "name": "营销活动配置服务", "productCode": "P-MARKET-006", "category": "SERVICE", "categoryLabel": "服务类", "price": 520, "status": "DRAFT", "statusLabel": "草稿", "createdAt": "2026-08-26 10:48" }]
+    },
+    "states": { "loading": false, "empty": false, "error": false, "permission-denied": false, "success": false, "filters": {} },
+    "interactions": [{ "id": "editProductFilters", "source": "product-filters", "event": "change", "outcome": "更新待提交筛选条件，不立即刷新结果" }, { "id": "queryProducts", "source": "query-products", "event": "click", "outcome": "应用名称和状态筛选并回到第一页" }, { "id": "resetProductFilters", "source": "reset-product-filters", "event": "click", "outcome": "清空筛选条件并恢复全部商品" }, { "id": "paginateProducts", "source": "product-results", "event": "pageChange", "outcome": "保留筛选条件并切换商品结果页" }, { "id": "openCreateProduct", "source": "create-product", "event": "click", "outcome": "进入新增商品三步分步表单" }],
+    "extensions": { "presentationDecisions": { "product-results": { "mode": "table", "confidence": "explicit", "evidence": ["用户明确要求商品列表"], "baseComponent": "Table + Pagination", "requiresDeviation": false }, "create-product": { "mode": "form-page", "confidence": "explicit", "evidence": ["用户明确要求三步分步表单"], "baseComponent": "Steps + Form", "requiresDeviation": false } }, "renderer": "yipex-standard-query-table-v1", "generation": { "strategy": "standard", "recipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "table.flat", "table.pagination"], "rendererId": "yipex-standard-query-table-v1" } }
+  }
+}

@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260828-receiving-account-create",
+    "pageName": "收款账户",
+    "pageType": "receiving-account-list-create",
+    "componentLibrary": {
+      "name": "antd",
+      "source": "official"
+    },
+    "request": "创建一个收款账户的新增页面，有新增按钮，点击后弹窗展示内容。内容：可以选择2个类型（唯一的）。页面查询条件有：账户类型、账户状态、订单状态。1：新建收款订单（支持SWIFT电汇,覆盖全球银行网络,适合多币种跨境收款）。2：本地收款账户（特定国家/地区本地清算网络,到账快、费用低）。表单项：账户持有人、开户地、开户行、账户币种、贸易国家/地区、商品大类、开户行。创建完成后在页面以卡片的形态展示，状态有：成功、驳回、审核中。",
+    "assumptions": [
+      "需求中“开户行”重复出现两次，合并为一个必填字段。",
+      "两种账户类型必须唯一选择，使用 Radio.Group 实现互斥单选。",
+      "账户状态使用成功、驳回、审核中；订单状态解释为申请流程状态，使用处理中、已完成、已关闭。",
+      "未提供后端接口，查询和创建均在浏览器内作用于演示数据；新建记录默认进入审核中。"
+    ],
+    "ruleRefs": [
+      "DESIGN.md",
+      "01-foundations.md",
+      "02-components.md",
+      "03-query-list-patterns.md",
+      "execution/presentation-intent.md",
+      "execution/page-contract-v2.md"
+    ]
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "standard",
+    "regions": [
+      {
+        "id": "receiving-account-header",
+        "role": "page-header",
+        "purpose": "标识收款账户管理任务并提供新增入口"
+      },
+      {
+        "id": "receiving-account-filters",
+        "role": "query-controls",
+        "purpose": "按账户类型、账户状态和订单状态筛选账户"
+      },
+      {
+        "id": "receiving-account-results",
+        "role": "card-list",
+        "purpose": "以卡片浏览账户类型、开户信息和当前状态"
+      },
+      {
+        "id": "create-account-modal",
+        "role": "create-dialog",
+        "purpose": "互斥选择账户类型并填写收款账户资料"
+      }
+    ],
+    "hierarchy": {
+      "primary": "新增收款账户并确认创建结果",
+      "secondary": [
+        "按类型与状态筛选已有账户",
+        "快速识别成功、驳回和审核中账户"
+      ]
+    },
+    "operations": {
+      "primary": {
+        "id": "open-create-account",
+        "label": "新增收款账户",
+        "placement": "页面标题区右侧",
+        "outcome": "打开新增弹窗并聚焦账户类型选择"
+      },
+      "secondary": [
+        {
+          "id": "query-accounts",
+          "label": "查询",
+          "placement": "筛选条件区底部右侧",
+          "outcome": "应用账户类型、账户状态和订单状态筛选"
+        },
+        {
+          "id": "reset-account-filters",
+          "label": "重置",
+          "placement": "查询按钮左侧",
+          "outcome": "清空筛选条件并恢复全部账户卡片"
+        }
+      ]
+    },
+    "stateCoverage": [
+      "loading",
+      "empty",
+      "error",
+      "permission-denied",
+      "creating",
+      "success"
+    ],
+    "responsive": {
+      "desktop": "筛选区使用四列网格，账户结果使用三列卡片；新增弹窗双列表单并完整展示两种类型说明。",
+      "narrow": "筛选区和卡片网格改为单列；新增弹窗适配手机宽度，表单改为单列且底部操作保持可触控。"
+    },
+    "deviations": [
+      {
+        "ruleRef": "03-query-list-patterns.md §4 结果列表",
+        "change": "结果区使用 Ant Design Card 响应式网格，而不是 Table。",
+        "reason": "用户明确要求创建完成后以卡片形态展示收款账户。",
+        "scope": "receiving-account-results"
+      },
+      {
+        "ruleRef": "02-components.md § Selectable Card",
+        "change": "账户类型使用 Radio.Group + Radio 保留单选语义，并以 Ant Design Card 承载每项标题、标签和说明。",
+        "reason": "需求包含 2 个互斥账户类型，且每项同时具有标题、能力标签和较长适用范围说明，满足高置信度卡片式选择信号。",
+        "scope": "create-account-modal.account-type"
+      }
+    ]
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": {
+        "width": 200,
+        "background": "#F0F0F0",
+        "showCollapseControl": true
+      },
+      "brand": {
+        "name": "Yipex",
+        "logo": "logo.svg"
+      },
+      "navigation": [
+        {
+          "id": "home",
+          "label": "首页",
+          "icon": "HomeOutlined"
+        },
+        {
+          "id": "receiving-account",
+          "label": "收款账户",
+          "icon": "BankOutlined",
+          "active": true
+        }
+      ],
+      "header": {
+        "welcome": "收款管理",
+        "userName": "平台运营",
+        "email": "operations@yipex.tech",
+        "avatar": "运"
+      },
+      "footer": {
+        "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved"
+      },
+      "floatingTools": {
+        "show": false
+      }
+    },
+    "root": {
+      "id": "receiving-account-page",
+      "type": "receiving-account-list-create-page",
+      "props": {
+        "title": "收款账户",
+        "demoLabel": "演示数据"
+      },
+      "children": [
+        {
+          "id": "receiving-account-header",
+          "type": "page-header",
+          "label": "收款账户",
+          "children": [
+            {
+              "id": "open-create-account",
+              "type": "button",
+              "label": "新增收款账户",
+              "props": {
+                "buttonType": "primary"
+              },
+              "events": {
+                "click": "openCreateAccount"
+              }
+            }
+          ]
+        },
+        {
+          "id": "receiving-account-filters",
+          "type": "query-form",
+          "children": [
+            {
+              "id": "account-type-filter",
+              "type": "select",
+              "label": "账户类型",
+              "events": {
+                "change": "editAccountFilters"
+              }
+            },
+            {
+              "id": "account-status-filter",
+              "type": "select",
+              "label": "账户状态",
+              "events": {
+                "change": "editAccountFilters"
+              }
+            },
+            {
+              "id": "order-status-filter",
+              "type": "select",
+              "label": "订单状态",
+              "events": {
+                "change": "editAccountFilters"
+              }
+            },
+            {
+              "id": "reset-account-filters",
+              "type": "button",
+              "label": "重置",
+              "events": {
+                "click": "resetAccountFilters"
+              }
+            },
+            {
+              "id": "query-accounts",
+              "type": "button",
+              "label": "查询",
+              "props": {
+                "buttonType": "primary",
+                "htmlType": "submit"
+              },
+              "events": {
+                "click": "queryAccounts"
+              }
+            }
+          ]
+        },
+        {
+          "id": "receiving-account-results",
+          "type": "card-grid",
+          "label": "账户结果",
+          "events": {
+            "filter": "queryAccounts"
+          }
+        },
+        {
+          "id": "create-account-modal",
+          "type": "modal-form",
+          "label": "新增收款账户",
+          "state": {
+            "open": false
+          },
+          "children": [
+            {
+              "id": "account-type",
+              "type": "radio-group",
+              "label": "账户类型",
+              "props": {
+                "required": true,
+                "exclusive": true,
+                "presentation": "selectable-card",
+                "baseComponent": "Radio.Group + Radio + Card"
+              }
+            },
+            {
+              "id": "account-holder",
+              "type": "input",
+              "label": "账户持有人",
+              "props": {
+                "required": true,
+                "maxLength": 80
+              }
+            },
+            {
+              "id": "opening-location",
+              "type": "select",
+              "label": "开户地",
+              "props": {
+                "required": true
+              }
+            },
+            {
+              "id": "bank-name",
+              "type": "select",
+              "label": "开户行",
+              "props": {
+                "required": true
+              }
+            },
+            {
+              "id": "account-currency",
+              "type": "select",
+              "label": "账户币种",
+              "props": {
+                "required": true
+              }
+            },
+            {
+              "id": "trade-regions",
+              "type": "select-multiple",
+              "label": "贸易国家/地区",
+              "props": {
+                "required": true
+              }
+            },
+            {
+              "id": "goods-category",
+              "type": "select",
+              "label": "商品大类",
+              "props": {
+                "required": true
+              }
+            },
+            {
+              "id": "create-account",
+              "type": "button",
+              "label": "创建账户",
+              "props": {
+                "buttonType": "primary",
+                "htmlType": "submit"
+              },
+              "events": {
+                "click": "createAccount"
+              }
+            },
+            {
+              "id": "cancel-create-account",
+              "type": "button",
+              "label": "取消",
+              "events": {
+                "click": "cancelCreateAccount"
+              }
+            }
+          ],
+          "events": {
+            "cancel": "cancelCreateAccount"
+          }
+        }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "accountTypes": [
+        {
+          "value": "SWIFT",
+          "label": "新建收款订单",
+          "tag": "SWIFT 电汇",
+          "description": "覆盖全球银行网络，适合多币种跨境收款"
+        },
+        {
+          "value": "LOCAL",
+          "label": "本地收款账户",
+          "tag": "本地清算",
+          "description": "使用特定国家/地区本地清算网络，到账快、费用低"
+        }
+      ],
+      "accountStatuses": [
+        {
+          "value": "ALL",
+          "label": "全部状态"
+        },
+        {
+          "value": "SUCCESS",
+          "label": "成功"
+        },
+        {
+          "value": "REJECTED",
+          "label": "驳回"
+        },
+        {
+          "value": "REVIEWING",
+          "label": "审核中"
+        }
+      ],
+      "orderStatuses": [
+        {
+          "value": "ALL",
+          "label": "全部状态"
+        },
+        {
+          "value": "PROCESSING",
+          "label": "处理中"
+        },
+        {
+          "value": "COMPLETED",
+          "label": "已完成"
+        },
+        {
+          "value": "CLOSED",
+          "label": "已关闭"
+        }
+      ],
+      "openingLocations": [
+        {
+          "value": "HK",
+          "label": "中国香港"
+        },
+        {
+          "value": "SG",
+          "label": "新加坡"
+        },
+        {
+          "value": "US",
+          "label": "美国"
+        },
+        {
+          "value": "GB",
+          "label": "英国"
+        },
+        {
+          "value": "DE",
+          "label": "德国"
+        },
+        {
+          "value": "JP",
+          "label": "日本"
+        }
+      ],
+      "banks": [
+        {
+          "value": "HSBC_HK",
+          "label": "汇丰银行（香港）"
+        },
+        {
+          "value": "DBS_SG",
+          "label": "星展银行（新加坡）"
+        },
+        {
+          "value": "JPM_US",
+          "label": "摩根大通银行（美国）"
+        },
+        {
+          "value": "BARCLAYS_GB",
+          "label": "巴克莱银行（英国）"
+        },
+        {
+          "value": "DB_DE",
+          "label": "德意志银行（德国）"
+        },
+        {
+          "value": "MUFG_JP",
+          "label": "三菱日联银行（日本）"
+        }
+      ],
+      "currencies": [
+        {
+          "value": "USD",
+          "label": "USD - 美元"
+        },
+        {
+          "value": "EUR",
+          "label": "EUR - 欧元"
+        },
+        {
+          "value": "GBP",
+          "label": "GBP - 英镑"
+        },
+        {
+          "value": "JPY",
+          "label": "JPY - 日元"
+        },
+        {
+          "value": "SGD",
+          "label": "SGD - 新加坡元"
+        },
+        {
+          "value": "HKD",
+          "label": "HKD - 港币"
+        }
+      ],
+      "tradeRegions": [
+        {
+          "value": "US",
+          "label": "美国"
+        },
+        {
+          "value": "EU",
+          "label": "欧盟"
+        },
+        {
+          "value": "GB",
+          "label": "英国"
+        },
+        {
+          "value": "SEA",
+          "label": "东南亚"
+        },
+        {
+          "value": "JP",
+          "label": "日本"
+        },
+        {
+          "value": "AU",
+          "label": "澳大利亚"
+        }
+      ],
+      "goodsCategories": [
+        {
+          "value": "APPAREL",
+          "label": "服饰鞋包"
+        },
+        {
+          "value": "ELECTRONICS",
+          "label": "数码电子"
+        },
+        {
+          "value": "HOME",
+          "label": "家居用品"
+        },
+        {
+          "value": "OUTDOOR",
+          "label": "户外用品"
+        },
+        {
+          "value": "FOOD",
+          "label": "食品饮料"
+        }
+      ],
+      "records": [
+        {
+          "id": "RA202608001",
+          "type": "SWIFT",
+          "typeLabel": "新建收款订单",
+          "typeTag": "SWIFT 电汇",
+          "accountHolder": "深圳远山户外贸易有限公司",
+          "openingLocation": "中国香港",
+          "bankName": "汇丰银行（香港）",
+          "currency": "USD",
+          "tradeRegions": [
+            "美国",
+            "英国"
+          ],
+          "goodsCategory": "户外用品",
+          "accountStatus": "SUCCESS",
+          "accountStatusLabel": "成功",
+          "orderStatus": "COMPLETED",
+          "orderStatusLabel": "已完成",
+          "accountNumber": "**** 6821",
+          "updatedAt": "2026-08-27 16:20"
+        },
+        {
+          "id": "RA202608002",
+          "type": "LOCAL",
+          "typeLabel": "本地收款账户",
+          "typeTag": "本地清算",
+          "accountHolder": "杭州松果家居有限公司",
+          "openingLocation": "美国",
+          "bankName": "摩根大通银行（美国）",
+          "currency": "USD",
+          "tradeRegions": [
+            "美国"
+          ],
+          "goodsCategory": "家居用品",
+          "accountStatus": "REVIEWING",
+          "accountStatusLabel": "审核中",
+          "orderStatus": "PROCESSING",
+          "orderStatusLabel": "处理中",
+          "accountNumber": "待分配",
+          "updatedAt": "2026-08-27 14:08"
+        },
+        {
+          "id": "RA202608003",
+          "type": "LOCAL",
+          "typeLabel": "本地收款账户",
+          "typeTag": "本地清算",
+          "accountHolder": "上海北屿服饰有限公司",
+          "openingLocation": "德国",
+          "bankName": "德意志银行（德国）",
+          "currency": "EUR",
+          "tradeRegions": [
+            "欧盟",
+            "英国"
+          ],
+          "goodsCategory": "服饰鞋包",
+          "accountStatus": "REJECTED",
+          "accountStatusLabel": "驳回",
+          "orderStatus": "CLOSED",
+          "orderStatusLabel": "已关闭",
+          "accountNumber": "未分配",
+          "rejectionReason": "贸易资料不完整",
+          "updatedAt": "2026-08-26 11:32"
+        },
+        {
+          "id": "RA202608004",
+          "type": "SWIFT",
+          "typeLabel": "新建收款订单",
+          "typeTag": "SWIFT 电汇",
+          "accountHolder": "广州辰星科技有限公司",
+          "openingLocation": "新加坡",
+          "bankName": "星展银行（新加坡）",
+          "currency": "SGD",
+          "tradeRegions": [
+            "东南亚",
+            "澳大利亚"
+          ],
+          "goodsCategory": "数码电子",
+          "accountStatus": "SUCCESS",
+          "accountStatusLabel": "成功",
+          "orderStatus": "COMPLETED",
+          "orderStatusLabel": "已完成",
+          "accountNumber": "**** 1936",
+          "updatedAt": "2026-08-25 09:46"
+        },
+        {
+          "id": "RA202608005",
+          "type": "SWIFT",
+          "typeLabel": "新建收款订单",
+          "typeTag": "SWIFT 电汇",
+          "accountHolder": "苏州沐光食品有限公司",
+          "openingLocation": "英国",
+          "bankName": "巴克莱银行（英国）",
+          "currency": "GBP",
+          "tradeRegions": [
+            "英国",
+            "欧盟"
+          ],
+          "goodsCategory": "食品饮料",
+          "accountStatus": "REVIEWING",
+          "accountStatusLabel": "审核中",
+          "orderStatus": "PROCESSING",
+          "orderStatusLabel": "处理中",
+          "accountNumber": "待分配",
+          "updatedAt": "2026-08-24 18:15"
+        }
+      ]
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "creating": false,
+      "success": false,
+      "modalOpen": false
+    },
+    "interactions": [
+      {
+        "id": "openCreateAccount",
+        "trigger": "open-create-account.click",
+        "result": "打开新增收款账户弹窗并显示互斥类型选择"
+      },
+      {
+        "id": "editAccountFilters",
+        "trigger": "receiving-account-filters.change",
+        "result": "更新待提交筛选条件"
+      },
+      {
+        "id": "queryAccounts",
+        "trigger": "query-accounts.click",
+        "result": "显示短暂 loading 后筛选账户卡片"
+      },
+      {
+        "id": "resetAccountFilters",
+        "trigger": "reset-account-filters.click",
+        "result": "清空筛选条件并恢复全部卡片"
+      },
+      {
+        "id": "createAccount",
+        "trigger": "create-account.click",
+        "result": "校验表单、模拟创建，并在页面顶部新增审核中账户卡片"
+      },
+      {
+        "id": "cancelCreateAccount",
+        "trigger": "cancel-create-account.click or create-account-modal.cancel",
+        "result": "关闭弹窗并清空未提交内容"
+      }
+    ],
+    "extensions": {
+      "renderer": "receiving-account-create-v1-antd-shell",
+      "componentMap": {
+        "filters": "Form + Select",
+        "results": "Card grid",
+        "accountType": "Radio.Group + Radio + Card",
+        "form": "Form + Input + Select",
+        "modal": "Modal",
+        "status": "Tag",
+        "loading": "Skeleton",
+        "empty": "Empty",
+        "error": "Result",
+        "permissionDenied": "Result",
+        "feedback": "message"
+      },
+      "presentationDecisions": {
+        "results": {
+          "mode": "card-grid",
+          "confidence": "explicit",
+          "evidence": [
+            "创建完成后在页面以卡片的形态展示"
+          ],
+          "baseComponent": "Card",
+          "requiresDeviation": true
+        },
+        "accountType": {
+          "mode": "selectable-card",
+          "confidence": "inferred-high",
+          "evidence": [
+            "两个账户类型且必须唯一选择",
+            "每种类型包含标题、标签和较长能力说明"
+          ],
+          "baseComponent": "Radio.Group + Radio + Card",
+          "requiresDeviation": true
+        }
+      },
+      "responsive": [
+        "desktop",
+        "mobile"
+      ]
+    }
+  }
+}

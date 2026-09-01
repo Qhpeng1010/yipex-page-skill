@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-receiving-account-query-list",
+    "pageName": "收款账户",
+    "pageType": "receiving-account-query-list",
+    "componentLibrary": {
+      "name": "antd",
+      "source": "official"
+    },
+    "request": "帮我做一个收款账户列表。查询条件：开户地、开户时间、开户币种、账户币种、商品类型。列表：开户地、国家、类型、开户行、账户持有人、开户时间、操作（编辑、查看详情：15个详细字段）。可以提交申请收款账户：新建收款订单（支持SWIFT电汇,覆盖全球银行网络,适合多币种跨境收款）；本地收款账户（特定国家/地区本地清算网络,到账快、费用低）。信息：账户持有人、开户地、开户行、账户币种、贸易国家/地区、商品大类、开户行。",
+    "assumptions": [
+      "未提供后端接口，筛选、分页、详情、编辑和申请均在浏览器内作用于演示数据。",
+      "需求中的“开户币种”和“账户币种”按两个独立字段处理；开户币种表示开户行支持的结算币种，账户币种表示该收款账户实际入账币种。",
+      "开户行在申请信息中重复出现，合并为一个必填字段。",
+      "申请收款账户使用唯一单选账户类型；提交后默认进入审核中，并按创建时间倒序置于首条。",
+      "查看详情使用 15 个只读字段，超过全局 12 项阈值，因此使用右侧 Drawer。"
+    ],
+    "ruleRefs": [
+      "execution/context-packs/core.md",
+      "execution/context-packs/interaction.md",
+      "execution/context-packs/accessibility.md",
+      "execution/context-packs/layout.md",
+      "execution/context-packs/components.md",
+      "design-system/03-query-list-patterns.md",
+      "execution/presentation-intent.md",
+      "execution/page-contract-v2.md",
+      "execution/capability-model/capability-model.md"
+    ],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "list.query-detail-overlay",
+      "skeleton": "query-workbench",
+      "capabilities": [
+        "query.basic",
+        "query.dateRange",
+        "table.flat",
+        "table.pagination",
+        "detail.overlay"
+      ],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.30.3",
+      "rendererId": "yipex-standard-query-table-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "receiving-account-header", "role": "page-header", "purpose": "标识收款账户管理任务并提供申请入口" },
+      { "id": "receiving-account-filters", "role": "query-controls", "purpose": "按开户地、开户时间、开户币种、账户币种和商品类型筛选账户" },
+      { "id": "receiving-account-results", "role": "result-list", "purpose": "展示收款账户开户信息并提供编辑和详情操作" },
+      { "id": "receiving-account-detail", "role": "detail-overlay", "purpose": "在列表上下文中查看收款账户 15 项完整信息" },
+      { "id": "receiving-account-create", "role": "create-overlay", "purpose": "选择账户类型并提交收款账户申请" }
+    ],
+    "hierarchy": {
+      "primary": "快速找到收款账户并完成申请或维护",
+      "secondary": ["按开户信息筛选账户", "查看完整详情或编辑账户"]
+    },
+    "operations": {
+      "primary": {
+        "id": "query-receiving-accounts",
+        "label": "查询",
+        "placement": "查询条件区末列",
+        "outcome": "按当前条件筛选收款账户并回到第一页"
+      },
+      "secondary": [
+        {
+          "id": "reset-receiving-account-filters",
+          "label": "重置",
+          "placement": "查询按钮左侧",
+          "outcome": "清空筛选条件并恢复全部收款账户"
+        },
+        {
+          "id": "apply-receiving-account",
+          "label": "申请收款账户",
+          "placement": "列表标题工具区最右侧",
+          "outcome": "打开抽屉选择账户类型并填写申请信息"
+        },
+        {
+          "id": "edit-receiving-account",
+          "label": "编辑",
+          "placement": "每行操作列",
+          "outcome": "打开编辑抽屉并保存账户信息"
+        },
+        {
+          "id": "view-receiving-account-detail",
+          "label": "查看详情",
+          "placement": "每行操作列",
+          "outcome": "在右侧抽屉查看 15 个账户详情字段"
+        }
+      ]
+    },
+    "stateCoverage": [
+      "loading",
+      "empty",
+      "error",
+      "permission-denied",
+      "creating",
+      "success"
+    ],
+    "responsive": {
+      "desktop": "五项筛选使用四列网格；结果表格展示 7 列业务信息与操作列，详情和申请使用右侧抽屉。",
+      "narrow": "筛选条件改为单列，结果表格保留横向滚动；抽屉接近全宽并保持单列字段。"
+    },
+    "deviations": []
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": {
+        "width": 200,
+        "background": "#F0F0F0",
+        "showCollapseControl": true
+      },
+      "navigation": [
+        {
+          "id": "home",
+          "label": "首页",
+          "icon": "HomeOutlined"
+        },
+        {
+          "id": "receiving-account",
+          "label": "收款账户",
+          "icon": "BankOutlined",
+          "active": true
+        }
+      ],
+      "header": {
+        "welcome": "收款账户",
+        "userName": "平台运营",
+        "email": "operations@yipex.tech",
+        "avatar": "收"
+      },
+      "footer": {
+        "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved"
+      },
+      "floatingTools": {
+        "show": false
+      }
+    },
+    "root": {
+      "id": "receiving-account-query-page",
+      "type": "receiving-account-query-list-page",
+      "props": {
+        "title": "收款账户",
+        "resultTitle": "收款账户列表",
+        "createLabel": "申请收款账户"
+      },
+      "children": [
+        {
+          "id": "receiving-account-header",
+          "type": "page-header",
+          "label": "收款账户"
+        },
+        {
+          "id": "receiving-account-filters",
+          "type": "query-form",
+          "children": [
+            { "id": "opening-location-filter", "type": "select", "label": "开户地", "events": { "change": "editReceivingAccountFilters" } },
+            { "id": "opening-time-filter", "type": "date-range-picker", "label": "开户时间", "events": { "change": "editReceivingAccountFilters" } },
+            { "id": "opening-currency-filter", "type": "select", "label": "开户币种", "events": { "change": "editReceivingAccountFilters" } },
+            { "id": "account-currency-filter", "type": "select", "label": "账户币种", "events": { "change": "editReceivingAccountFilters" } },
+            { "id": "product-type-filter", "type": "select", "label": "商品类型", "events": { "change": "editReceivingAccountFilters" } },
+            { "id": "reset-receiving-account-filters", "type": "button", "label": "重置", "events": { "click": "resetReceivingAccountFilters" } },
+            { "id": "query-receiving-accounts", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryReceivingAccounts" } }
+          ]
+        },
+        {
+          "id": "receiving-account-results",
+          "type": "data-table",
+          "label": "收款账户列表",
+          "events": { "pageChange": "paginateReceivingAccounts", "rowClick": "openReceivingAccountDetail" },
+          "children": [
+            { "id": "apply-receiving-account", "type": "button", "label": "申请收款账户", "events": { "click": "openApplyReceivingAccount" } },
+            { "id": "edit-receiving-account", "type": "button", "label": "编辑", "events": { "click": "editReceivingAccount" } },
+            { "id": "view-receiving-account-detail", "type": "button", "label": "查看详情", "events": { "click": "openReceivingAccountDetail" } }
+          ]
+        },
+        {
+          "id": "receiving-account-detail",
+          "type": "detail-overlay",
+          "label": "收款账户详情",
+          "props": { "mode": "drawer" },
+          "events": { "close": "closeReceivingAccountDetail" }
+        },
+        {
+          "id": "receiving-account-create",
+          "type": "drawer-form",
+          "label": "申请收款账户",
+          "events": { "close": "closeApplyReceivingAccount", "submit": "submitApplyReceivingAccount" }
+        }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "persistenceKey": "yipex-receiving-account-demo",
+      "defaultSort": { "key": "createdAt", "order": "descend" },
+      "create": {
+        "idPrefix": "RA",
+        "idField": "accountId",
+        "timestampField": "createdAt",
+        "defaults": { "status": "PENDING", "statusLabel": "审核中" },
+        "successMessage": "收款账户申请已提交",
+        "editSuccessMessage": "收款账户已更新",
+        "derived": { "country": { "sourceKey": "openingLocation", "map": { "SHANGHAI": "中国", "HONG_KONG": "中国", "SINGAPORE": "新加坡", "UNITED_STATES": "美国" } } }
+      },
+      "filters": [
+        { "id": "opening-location", "key": "openingLocation", "label": "开户地", "type": "select", "placeholder": "请选择开户地", "options": [{ "value": "SHANGHAI", "label": "中国大陆" }, { "value": "HONG_KONG", "label": "中国香港" }, { "value": "SINGAPORE", "label": "新加坡" }, { "value": "UNITED_STATES", "label": "美国" }] },
+        { "id": "opening-time", "key": "createdAt", "label": "开户时间", "type": "date-range", "recordKey": "createdAt", "placeholder": ["开始日期", "结束日期"], "format": "YYYY-MM-DD" },
+        { "id": "opening-currency", "key": "openingCurrency", "label": "开户币种", "type": "select", "placeholder": "请选择开户币种", "options": [{ "value": "CNY", "label": "CNY" }, { "value": "USD", "label": "USD" }, { "value": "EUR", "label": "EUR" }, { "value": "HKD", "label": "HKD" }, { "value": "SGD", "label": "SGD" }] },
+        { "id": "account-currency", "key": "accountCurrency", "label": "账户币种", "type": "select", "placeholder": "请选择账户币种", "options": [{ "value": "CNY", "label": "CNY" }, { "value": "USD", "label": "USD" }, { "value": "EUR", "label": "EUR" }, { "value": "HKD", "label": "HKD" }, { "value": "SGD", "label": "SGD" }] },
+        { "id": "product-type", "key": "productType", "label": "商品类型", "type": "select", "placeholder": "请选择商品类型", "options": [{ "value": "CROSS_BORDER_TRADE", "label": "跨境贸易" }, { "value": "SAAS_SERVICE", "label": "软件服务" }, { "value": "DIGITAL_GOODS", "label": "数字商品" }, { "value": "GENERAL_MERCHANDISE", "label": "一般商品" }] }
+      ],
+      "columns": [
+        { "key": "openingLocationLabel", "label": "开户地", "width": 130 },
+        { "key": "country", "label": "国家", "width": 110 },
+        { "key": "typeLabel", "label": "类型", "width": 170 },
+        { "key": "bankName", "label": "开户行", "width": 190 },
+        { "key": "accountHolder", "label": "账户持有人", "width": 170 },
+        { "key": "createdAt", "label": "开户时间", "width": 168 },
+        { "key": "actions", "label": "操作", "width": 160, "format": "actions", "fixed": "right", "actions": [{ "id": "edit", "type": "edit", "label": "编辑" }, { "id": "detail", "type": "detail", "label": "查看详情" }] }
+      ],
+      "detailFields": [
+        { "key": "accountId", "label": "账户编号" },
+        { "key": "accountHolder", "label": "账户持有人" },
+        { "key": "openingLocationLabel", "label": "开户地" },
+        { "key": "country", "label": "国家" },
+        { "key": "typeLabel", "label": "账户类型" },
+        { "key": "bankName", "label": "开户行" },
+        { "key": "accountNumberMasked", "label": "账号（脱敏）" },
+        { "key": "swiftCode", "label": "SWIFT Code" },
+        { "key": "openingCurrency", "label": "开户币种" },
+        { "key": "accountCurrency", "label": "账户币种" },
+        { "key": "tradeRegion", "label": "贸易国家/地区" },
+        { "key": "productTypeLabel", "label": "商品大类" },
+        { "key": "beneficiaryAddress", "label": "收款人地址" },
+        { "key": "settlementMethod", "label": "结算方式" },
+        { "key": "createdAt", "label": "开户时间" }
+      ],
+      "createFields": [
+        { "key": "type", "label": "账户类型", "type": "radio", "required": true, "options": [{ "value": "NEW_ORDER", "label": "新建收款订单", "description": "支持 SWIFT 电汇，覆盖全球银行网络，适合多币种跨境收款" }, { "value": "LOCAL_ACCOUNT", "label": "本地收款账户", "description": "特定国家/地区本地清算网络，到账快、费用低" }] },
+        { "key": "accountHolder", "label": "账户持有人", "type": "text", "required": true, "placeholder": "请输入账户持有人" },
+        { "key": "openingLocation", "label": "开户地", "type": "select", "required": true, "placeholder": "请选择开户地", "options": [{ "value": "SHANGHAI", "label": "中国大陆" }, { "value": "HONG_KONG", "label": "中国香港" }, { "value": "SINGAPORE", "label": "新加坡" }, { "value": "UNITED_STATES", "label": "美国" }] },
+        { "key": "bankName", "label": "开户行", "type": "text", "required": true, "placeholder": "请输入开户行名称" },
+        { "key": "accountCurrency", "label": "账户币种", "type": "select", "required": true, "placeholder": "请选择账户币种", "options": [{ "value": "CNY", "label": "CNY" }, { "value": "USD", "label": "USD" }, { "value": "EUR", "label": "EUR" }, { "value": "HKD", "label": "HKD" }, { "value": "SGD", "label": "SGD" }] },
+        { "key": "tradeRegion", "label": "贸易国家/地区", "type": "text", "required": true, "placeholder": "请输入主要贸易国家或地区" },
+        { "key": "productType", "label": "商品大类", "type": "select", "required": true, "placeholder": "请选择商品大类", "options": [{ "value": "CROSS_BORDER_TRADE", "label": "跨境贸易" }, { "value": "SAAS_SERVICE", "label": "软件服务" }, { "value": "DIGITAL_GOODS", "label": "数字商品" }, { "value": "GENERAL_MERCHANDISE", "label": "一般商品" }] },
+        { "key": "openingCurrency", "label": "开户币种", "type": "select", "required": true, "placeholder": "请选择开户币种", "options": [{ "value": "CNY", "label": "CNY" }, { "value": "USD", "label": "USD" }, { "value": "EUR", "label": "EUR" }, { "value": "HKD", "label": "HKD" }, { "value": "SGD", "label": "SGD" }] }
+      ],
+      "records": [
+        { "id": "RA20260830018", "accountId": "RA20260830018", "openingLocation": "SHANGHAI", "openingLocationLabel": "中国大陆", "country": "中国", "type": "NEW_ORDER", "typeLabel": "新建收款订单", "bankName": "招商银行上海分行", "accountHolder": "上海远川供应链有限公司", "accountNumberMasked": "6225 **** **** 3819", "swiftCode": "CMBCCNBS", "openingCurrency": "CNY", "accountCurrency": "USD", "tradeRegion": "美国、加拿大", "productType": "CROSS_BORDER_TRADE", "productTypeLabel": "跨境贸易", "beneficiaryAddress": "上海市浦东新区", "settlementMethod": "SWIFT 电汇", "status": "PENDING", "statusLabel": "审核中", "createdAt": "2026-08-29 16:20" },
+        { "id": "RA20260830012", "accountId": "RA20260830012", "openingLocation": "HONG_KONG", "openingLocationLabel": "中国香港", "country": "中国", "type": "LOCAL_ACCOUNT", "typeLabel": "本地收款账户", "bankName": "汇丰银行香港总行", "accountHolder": "木棉数字科技工作室", "accountNumberMasked": "**** 7284", "swiftCode": "HSBCHKHH", "openingCurrency": "HKD", "accountCurrency": "HKD", "tradeRegion": "中国香港、东南亚", "productType": "SAAS_SERVICE", "productTypeLabel": "软件服务", "beneficiaryAddress": "香港九龙尖沙咀", "settlementMethod": "本地清算", "status": "ACTIVE", "statusLabel": "已开通", "createdAt": "2026-08-29 14:08" },
+        { "id": "RA20260830007", "accountId": "RA20260830007", "openingLocation": "SINGAPORE", "openingLocationLabel": "新加坡", "country": "新加坡", "type": "LOCAL_ACCOUNT", "typeLabel": "本地收款账户", "bankName": "DBS Bank", "accountHolder": "林晓", "accountNumberMasked": "**** 1042", "swiftCode": "DBSSSGSG", "openingCurrency": "SGD", "accountCurrency": "SGD", "tradeRegion": "新加坡、马来西亚", "productType": "GENERAL_MERCHANDISE", "productTypeLabel": "一般商品", "beneficiaryAddress": "Singapore 048623", "settlementMethod": "FAST 本地转账", "status": "PENDING", "statusLabel": "审核中", "createdAt": "2026-08-28 19:45" },
+        { "id": "RA20260829096", "accountId": "RA20260829096", "openingLocation": "UNITED_STATES", "openingLocationLabel": "美国", "country": "美国", "type": "NEW_ORDER", "typeLabel": "新建收款订单", "bankName": "JPMorgan Chase Bank", "accountHolder": "北辰文化发展有限公司", "accountNumberMasked": "**** 6310", "swiftCode": "CHASUS33", "openingCurrency": "USD", "accountCurrency": "USD", "tradeRegion": "美国、英国", "productType": "DIGITAL_GOODS", "productTypeLabel": "数字商品", "beneficiaryAddress": "New York, NY", "settlementMethod": "SWIFT 电汇", "status": "ACTIVE", "statusLabel": "已开通", "createdAt": "2026-08-28 11:32" },
+        { "id": "RA20260829084", "accountId": "RA20260829084", "openingLocation": "SHANGHAI", "openingLocationLabel": "中国大陆", "country": "中国", "type": "NEW_ORDER", "typeLabel": "新建收款订单", "bankName": "中国银行上海分行", "accountHolder": "沈念", "accountNumberMasked": "6217 **** **** 0098", "swiftCode": "BKCHCNBJ", "openingCurrency": "CNY", "accountCurrency": "EUR", "tradeRegion": "德国、法国", "productType": "CROSS_BORDER_TRADE", "productTypeLabel": "跨境贸易", "beneficiaryAddress": "上海市静安区", "settlementMethod": "SWIFT 电汇", "status": "ACTIVE", "statusLabel": "已开通", "createdAt": "2026-08-27 09:18" },
+        { "id": "RA20260829063", "accountId": "RA20260829063", "openingLocation": "HONG_KONG", "openingLocationLabel": "中国香港", "country": "中国", "type": "LOCAL_ACCOUNT", "typeLabel": "本地收款账户", "bankName": "渣打银行香港分行", "accountHolder": "云间智能制造有限公司", "accountNumberMasked": "**** 5576", "swiftCode": "SCBKHKHH", "openingCurrency": "HKD", "accountCurrency": "USD", "tradeRegion": "中国香港、澳大利亚", "productType": "GENERAL_MERCHANDISE", "productTypeLabel": "一般商品", "beneficiaryAddress": "香港中环皇后大道中", "settlementMethod": "本地清算", "status": "ACTIVE", "statusLabel": "已开通", "createdAt": "2026-08-26 17:52" }
+      ],
+      "pageSize": 6
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "creating": false,
+      "success": false,
+      "filters": {}
+    },
+    "interactions": [
+      { "id": "editReceivingAccountFilters", "source": "receiving-account-filters", "event": "change", "outcome": "更新待提交筛选条件，不立即刷新结果" },
+      { "id": "queryReceivingAccounts", "source": "query-receiving-accounts", "event": "click", "outcome": "显示短暂 loading 后应用筛选条件并回到第一页" },
+      { "id": "resetReceivingAccountFilters", "source": "reset-receiving-account-filters", "event": "click", "outcome": "清空筛选条件并恢复全部收款账户" },
+      { "id": "paginateReceivingAccounts", "source": "receiving-account-results", "event": "pageChange", "outcome": "切换当前结果页" },
+      { "id": "openReceivingAccountDetail", "source": "view-receiving-account-detail", "event": "click", "outcome": "在右侧抽屉查看 15 个只读详情字段" },
+      { "id": "editReceivingAccount", "source": "edit-receiving-account", "event": "click", "outcome": "打开编辑抽屉，保存后更新当前账户并提示成功" },
+      { "id": "openApplyReceivingAccount", "source": "apply-receiving-account", "event": "click", "outcome": "打开申请抽屉并以 Radio.Group 唯一选择账户类型" },
+      { "id": "submitApplyReceivingAccount", "source": "receiving-account-create", "event": "submit", "outcome": "校验必填信息，将账户以审核中状态按创建时间倒序置于首条并提示成功" },
+      { "id": "closeApplyReceivingAccount", "source": "receiving-account-create", "event": "close", "outcome": "关闭申请抽屉并清除未提交内容" },
+      { "id": "closeReceivingAccountDetail", "source": "receiving-account-detail", "event": "close", "outcome": "关闭详情抽屉并保留列表筛选、分页和排序上下文" }
+    ],
+    "extensions": {
+      "presentationDecisions": {
+        "receiving-account-results": { "mode": "table", "confidence": "pattern-default", "evidence": ["需求明确要求收款账户列表和固定业务列"], "baseComponent": "Table + Pagination", "requiresDeviation": false },
+        "receiving-account-detail": { "mode": "drawer", "confidence": "pattern-default", "evidence": ["详情包含 15 个字段，超过全局 12 项阈值", "列表上下文中查看完整账户信息"], "baseComponent": "Drawer + Descriptions (basic, two columns)", "requiresDeviation": false },
+        "receiving-account-create": { "mode": "drawer-form", "confidence": "explicit", "evidence": ["用户要求提交申请收款账户", "账户类型需要唯一单选并展示两段副描述"], "baseComponent": "Drawer + Radio.Group + Form controls", "requiresDeviation": false }
+      },
+      "renderer": "yipex-standard-query-table-v1",
+      "generation": {
+        "strategy": "standard",
+        "recipeId": "list.query-detail-overlay",
+        "skeleton": "query-workbench",
+        "capabilities": [
+          "query.basic",
+          "query.dateRange",
+          "table.flat",
+          "table.pagination",
+          "detail.overlay"
+        ],
+        "rendererId": "yipex-standard-query-table-v1"
+      }
+    }
+  }
+}

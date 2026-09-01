@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-order-query-list-latest",
+    "pageName": "订单查询",
+    "pageType": "order-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "按最新 YiPex 查询列表规则重建订单查询页。",
+    "assumptions": [
+      "未提供后端接口，查询、分页、详情和导出均在浏览器内作用于演示数据。",
+      "金额和数量使用右对齐，状态使用 Badge，操作列固定在右侧。",
+      "页面标题区不显示演示数据标签。"
+    ],
+    "ruleRefs": [
+      "DESIGN.md",
+      "01-foundations.md",
+      "02-components.md",
+      "03-query-list-patterns.md",
+      "execution/context-packs/core.md",
+      "execution/context-packs/layout.md",
+      "execution/context-packs/components.md",
+      "execution/context-packs/interaction.md",
+      "execution/context-packs/accessibility.md",
+      "execution/presentation-intent.md",
+      "execution/page-contract-v2.md",
+      "execution/capability-model/capability-model.md"
+    ],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "list.query-table",
+      "skeleton": "query-workbench",
+      "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.export", "detail.overlay"],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.30.5",
+      "rendererId": "yipex-standard-query-table-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "order-list-header", "role": "page-header", "purpose": "标识订单查询任务" },
+      { "id": "order-filters", "role": "query-controls", "purpose": "按关键词、日期、状态和渠道筛选订单" },
+      { "id": "order-results", "role": "result-list", "purpose": "浏览订单、导出结果并进入详情" },
+      { "id": "order-detail-overlay", "role": "detail-overlay", "purpose": "在列表上下文中查看订单完整信息" }
+    ],
+    "hierarchy": {
+      "primary": "快速找到并处理目标订单",
+      "secondary": ["导出当前筛选结果", "在详情抽屉查看订单信息"]
+    },
+    "operations": {
+      "primary": { "id": "query-orders", "label": "查询", "placement": "查询条件区操作组", "outcome": "应用筛选条件并回到第一页" },
+      "secondary": [
+        { "id": "reset-orders", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选条件并恢复全部订单" },
+        { "id": "export-orders", "label": "导出", "placement": "结果标题右侧", "outcome": "导出当前筛选结果 CSV" },
+        { "id": "view-order-detail", "label": "详情", "placement": "每行操作列", "outcome": "打开订单详情抽屉" }
+      ]
+    },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied", "success"],
+    "responsive": {
+      "desktop": "四项筛选使用四列网格；查询与重置在操作行右对齐；金额和数量右对齐，操作列固定右侧。",
+      "narrow": "筛选条件切换为单列；表格保留横向滚动；详情抽屉接近全宽。"
+    },
+    "deviations": []
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true },
+      "brand": { "name": "Yipex", "logo": "logo.svg" },
+      "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "orders", "label": "订单查询", "icon": "ReceiptOutlined", "active": true }],
+      "header": { "welcome": "订单查询", "userName": "订单运营", "email": "运营工作台", "avatar": "运" },
+      "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" },
+      "floatingTools": { "show": false }
+    },
+    "root": {
+      "id": "order-query-page",
+      "type": "standard-query-table-page",
+      "props": { "title": "订单查询", "resultTitle": "订单结果", "exportLabel": "导出", "exportFileName": "yipex-order-list" },
+      "children": [
+        { "id": "order-list-header", "type": "page-header", "label": "订单查询" },
+        { "id": "order-filters", "type": "query-form", "children": [{ "id": "edit-order-filters", "type": "filter", "events": { "change": "editOrderFilters" } }, { "id": "reset-orders", "type": "button", "label": "重置", "events": { "click": "resetOrders" } }, { "id": "query-orders", "type": "button", "label": "查询", "events": { "click": "queryOrders" } }] },
+        { "id": "order-results", "type": "data-table", "label": "订单结果", "events": { "pageChange": "paginateOrders", "rowClick": "openOrderDetail" }, "children": [{ "id": "export-orders", "type": "button", "label": "导出", "events": { "click": "exportOrders" } }, { "id": "view-order-detail", "type": "button", "label": "详情", "events": { "click": "openOrderDetail" } }] },
+        { "id": "order-detail-overlay", "type": "detail-overlay", "label": "订单详情", "props": { "mode": "drawer" }, "events": { "close": "closeOrderDetail" } }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "filters": [
+        { "id": "order-keyword", "key": "query", "label": "关键词", "type": "text", "matchKeys": ["id", "merchant", "customer"], "placeholder": "请输入订单号、商户或客户" },
+        { "id": "order-created-range", "key": "createdAt", "label": "下单时间", "type": "date-range", "placeholder": ["开始日期", "结束日期"], "format": "YYYY-MM-DD" },
+        { "id": "order-status", "key": "status", "label": "订单状态", "type": "select", "placeholder": "请选择订单状态", "options": [{ "value": "ALL", "label": "全部状态" }, { "value": "PENDING", "label": "待支付" }, { "value": "PROCESSING", "label": "处理中" }, { "value": "SUCCESS", "label": "已完成" }, { "value": "CLOSED", "label": "已关闭" }] },
+        { "id": "order-channel", "key": "channel", "label": "支付渠道", "type": "select", "placeholder": "请选择支付渠道", "options": [{ "value": "ALL", "label": "全部渠道" }, { "value": "微信支付", "label": "微信支付" }, { "value": "支付宝", "label": "支付宝" }, { "value": "银行卡", "label": "银行卡" }] }
+      ],
+      "columns": [
+        { "key": "id", "label": "订单号", "width": 180 },
+        { "key": "merchant", "label": "商户", "width": 180 },
+        { "key": "customer", "label": "客户", "width": 100 },
+        { "key": "amount", "label": "订单金额 (元)", "width": 130, "format": "amount" },
+        { "key": "status", "label": "订单状态", "width": 110, "format": "status", "labelKey": "statusLabel" },
+        { "key": "channel", "label": "支付渠道", "width": 110 },
+        { "key": "items", "label": "商品数", "width": 90, "format": "integer" },
+        { "key": "createdAt", "label": "下单时间", "width": 160 },
+        { "key": "owner", "label": "负责人", "width": 100 },
+        { "key": "detailAction", "label": "操作", "format": "detail-action", "actionLabel": "详情", "fixed": "right", "width": 90 }
+      ],
+      "detailFields": [
+        { "key": "id", "label": "订单号" }, { "key": "merchant", "label": "商户" }, { "key": "customer", "label": "客户" }, { "key": "amount", "label": "订单金额 (元)", "format": "amount" }, { "key": "status", "label": "订单状态", "format": "status", "labelKey": "statusLabel" }, { "key": "channel", "label": "支付渠道" }, { "key": "items", "label": "商品数", "format": "integer" }, { "key": "createdAt", "label": "下单时间" }, { "key": "owner", "label": "负责人" }
+      ],
+      "pageSize": 5,
+      "defaultSort": { "key": "createdAt", "order": "descend" },
+      "records": [
+        { "id": "YP2026082700186", "createdAt": "2026-08-27 15:42", "merchant": "海岸咖啡（静安店）", "customer": "林女士", "amount": 1280, "status": "PROCESSING", "statusLabel": "处理中", "channel": "银行卡", "items": 3, "owner": "陈路" },
+        { "id": "YP2026082700172", "createdAt": "2026-08-27 14:58", "merchant": "松果生活馆", "customer": "周先生", "amount": 869.5, "status": "PENDING", "statusLabel": "待支付", "channel": "微信支付", "items": 2, "owner": "王一" },
+        { "id": "YP2026082700149", "createdAt": "2026-08-27 13:26", "merchant": "北屿餐厅", "customer": "赵女士", "amount": 326, "status": "SUCCESS", "statusLabel": "已完成", "channel": "银行卡", "items": 5, "owner": "徐安" },
+        { "id": "YP2026082601397", "createdAt": "2026-08-26 21:17", "merchant": "原野户外用品", "customer": "吴先生", "amount": 2450, "status": "CLOSED", "statusLabel": "已关闭", "channel": "支付宝", "items": 1, "owner": "陈路" },
+        { "id": "YP2026082601264", "createdAt": "2026-08-26 18:43", "merchant": "白塔书店", "customer": "沈女士", "amount": 158.8, "status": "SUCCESS", "statusLabel": "已完成", "channel": "微信支付", "items": 4, "owner": "王一" },
+        { "id": "YP2026082601091", "createdAt": "2026-08-26 16:11", "merchant": "南山运动中心", "customer": "梁先生", "amount": 3600, "status": "PROCESSING", "statusLabel": "处理中", "channel": "银行卡", "items": 2, "owner": "徐安" },
+        { "id": "YP2026082500875", "createdAt": "2026-08-25 12:08", "merchant": "沐光烘焙", "customer": "钱女士", "amount": 498, "status": "PENDING", "statusLabel": "待支付", "channel": "支付宝", "items": 6, "owner": "陈路" },
+        { "id": "YP2026082400653", "createdAt": "2026-08-24 10:52", "merchant": "青禾花房", "customer": "冯女士", "amount": 288, "status": "SUCCESS", "statusLabel": "已完成", "channel": "微信支付", "items": 2, "owner": "徐安" },
+        { "id": "YP2026082300517", "createdAt": "2026-08-23 09:15", "merchant": "山茶家居", "customer": "顾先生", "amount": 1899, "status": "SUCCESS", "statusLabel": "已完成", "channel": "支付宝", "items": 1, "owner": "王一" },
+        { "id": "YP2026082200441", "createdAt": "2026-08-22 19:28", "merchant": "拾光数码", "customer": "唐女士", "amount": 5299, "status": "PROCESSING", "statusLabel": "处理中", "channel": "银行卡", "items": 2, "owner": "陈路" },
+        { "id": "YP2026082100386", "createdAt": "2026-08-21 11:06", "merchant": "禾木超市", "customer": "魏先生", "amount": 76.5, "status": "CLOSED", "statusLabel": "已关闭", "channel": "微信支付", "items": 8, "owner": "徐安" }
+      ]
+    },
+    "states": { "loading": false, "empty": false, "error": false, "permission-denied": false, "success": false, "filters": { "query": "", "createdAt": [], "status": "ALL", "channel": "ALL" }, "page": 1 },
+    "interactions": [
+      { "id": "editOrderFilters", "trigger": "edit-order-filters.change", "result": "更新待提交筛选条件，不立即刷新结果" },
+      { "id": "queryOrders", "trigger": "query-orders.click", "result": "显示 loading 后应用筛选条件并回到第一页" },
+      { "id": "resetOrders", "trigger": "reset-orders.click", "result": "清空筛选条件并恢复全部订单" },
+      { "id": "paginateOrders", "trigger": "order-results.pageChange", "result": "保留筛选条件并切换结果页" },
+      { "id": "exportOrders", "trigger": "export-orders.click", "result": "生成当前筛选结果 CSV" },
+      { "id": "openOrderDetail", "trigger": "order-results.rowClick or view-order-detail.click", "result": "打开订单详情 Drawer 并保留列表上下文" },
+      { "id": "closeOrderDetail", "trigger": "order-detail-overlay.close", "result": "关闭 Drawer 并恢复焦点" }
+    ],
+    "extensions": {
+      "presentationDecisions": {
+        "order-results": { "mode": "table", "confidence": "explicit", "evidence": ["需求是订单查询列表并包含多字段结果"], "baseComponent": "Table + Pagination", "requiresDeviation": false },
+        "order-detail-overlay": { "mode": "drawer", "confidence": "pattern-default", "evidence": ["详情包含 9 个字段，超过 Modal 阈值且需要保留列表上下文"], "baseComponent": "Drawer + Descriptions", "requiresDeviation": false }
+      },
+      "renderer": "yipex-standard-query-table-v1",
+      "generation": { "strategy": "standard", "recipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.export", "detail.overlay"], "rendererId": "yipex-standard-query-table-v1" }
+    }
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260901-digital-asset-query-list-test",
+    "pageName": "数字资产行情查询",
+    "pageType": "digital-asset-market-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "生成一个数字货币场景的查询列表用于测试；遵循 YiPex 规则，不增加无信息增量的副描述，不虚构后端接口。",
+    "assumptions": [
+      "需求未指定具体数字货币业务对象，本页按平台运营人员查询数字资产基础行情的演示场景实现。",
+      "页面未接入实时行情或资产服务，价格、涨跌幅、交易状态和更新时间均为演示数据，不代表真实市场信息。",
+      "当前需求仅包含查询、重置和分页，不增加详情、新增、导出或批量操作。"
+    ],
+    "ruleRefs": [
+      "execution/context-packs/core.md",
+      "design-system/director-rules/01-visual-constitution.md",
+      "design-system/director-rules/02-template-application-rules.md",
+      "design-system/director-rules/03-interaction-acceptance-rules.md",
+      "design-system/page-patterns/list.md",
+      "execution/page-contract-v2.md",
+      "execution/capability-model/capability-model.md"
+    ],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "list.query-table",
+      "skeleton": "query-workbench",
+      "capabilities": ["query.basic", "table.flat", "table.pagination"],
+      "policyVersion": 2,
+      "modelVersion": "2026.09.01.1",
+      "rendererId": "yipex-standard-query-table-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "asset-header", "role": "page-header", "purpose": "标识数字资产行情查询任务，不重复增加副描述" },
+      { "id": "asset-query", "role": "query-controls", "purpose": "按币种关键词、资产类型、网络和交易状态筛选演示数据" },
+      { "id": "asset-results", "role": "result-list", "purpose": "展示数字资产参考行情并分页浏览" }
+    ],
+    "hierarchy": {
+      "primary": "快速定位并比较数字资产参考行情",
+      "secondary": ["核对资产类型、网络、交易状态和数据更新时间"]
+    },
+    "operations": {
+      "primary": { "id": "query-assets", "label": "查询", "placement": "查询条件区末列", "outcome": "应用当前筛选条件并回到第一页" },
+      "secondary": [
+        { "id": "reset-asset-query", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选条件并恢复全部演示记录" }
+      ]
+    },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied"],
+    "responsive": {
+      "desktop": "四项筛选使用四列网格，结果表格占满内容区并保留分页。",
+      "narrow": "筛选条件改为单列，结果表格在业务区域内横向滚动，分页操作保持可达。"
+    },
+    "deviations": []
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true, "navigationMode": "demand-scoped" },
+      "navigation": [
+        { "id": "home", "label": "首页", "icon": "HomeOutlined" },
+        { "id": "digital-asset-market", "label": "数字资产行情", "icon": "LineChartOutlined", "active": true }
+      ],
+      "header": { "welcome": "数字资产运营", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "运" },
+      "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" },
+      "floatingTools": { "show": false }
+    },
+    "root": {
+      "id": "digital-asset-market-query-page",
+      "type": "standard-query-table-page",
+      "props": {
+        "title": "数字资产行情",
+        "resultTitle": "数字资产列表"
+      },
+      "children": [
+        { "id": "asset-header", "type": "page-header", "label": "数字资产行情" },
+        {
+          "id": "asset-query",
+          "type": "query-form",
+          "children": [
+            { "id": "asset-keyword-filter", "type": "input", "label": "币种关键词", "events": { "change": "editAssetFilters" } },
+            { "id": "asset-type-filter", "type": "select", "label": "资产类型", "events": { "change": "editAssetFilters" } },
+            { "id": "asset-network-filter", "type": "select", "label": "网络", "events": { "change": "editAssetFilters" } },
+            { "id": "asset-status-filter", "type": "select", "label": "交易状态", "events": { "change": "editAssetFilters" } },
+            { "id": "reset-asset-query", "type": "button", "label": "重置", "events": { "click": "resetAssetQuery" } },
+            { "id": "query-assets", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryAssets" } }
+          ]
+        },
+        { "id": "asset-results", "type": "data-table", "label": "数字资产列表", "events": { "pageChange": "paginateAssets" } }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "defaultSort": { "key": "updatedAt", "order": "descend" },
+      "pageSize": 6,
+      "filters": [
+        { "id": "asset-keyword", "key": "keyword", "label": "币种关键词", "type": "text", "matchKeys": ["symbol", "name"], "placeholder": "请输入币种简称或名称" },
+        {
+          "id": "asset-type",
+          "key": "assetType",
+          "label": "资产类型",
+          "type": "select",
+          "placeholder": "请选择资产类型",
+          "options": [
+            { "value": "ALL", "label": "全部类型" },
+            { "value": "MAINSTREAM", "label": "主流币" },
+            { "value": "STABLECOIN", "label": "稳定币" },
+            { "value": "PLATFORM", "label": "平台币" }
+          ]
+        },
+        {
+          "id": "asset-network",
+          "key": "network",
+          "label": "网络",
+          "type": "select",
+          "placeholder": "请选择网络",
+          "options": [
+            { "value": "ALL", "label": "全部网络" },
+            { "value": "BITCOIN", "label": "Bitcoin" },
+            { "value": "ETHEREUM", "label": "Ethereum" },
+            { "value": "SOLANA", "label": "Solana" },
+            { "value": "BNB_CHAIN", "label": "BNB Chain" },
+            { "value": "TRON", "label": "TRON" }
+          ]
+        },
+        {
+          "id": "asset-status",
+          "key": "status",
+          "label": "交易状态",
+          "type": "select",
+          "placeholder": "请选择交易状态",
+          "options": [
+            { "value": "ALL", "label": "全部状态" },
+            { "value": "ACTIVE", "label": "交易中" },
+            { "value": "MAINTENANCE", "label": "维护中" },
+            { "value": "SUSPENDED", "label": "已暂停" }
+          ]
+        }
+      ],
+      "columns": [
+        { "key": "symbol", "label": "币种", "width": 90 },
+        { "key": "name", "label": "资产名称", "width": 150 },
+        { "key": "assetTypeLabel", "label": "资产类型", "width": 110 },
+        { "key": "networkLabel", "label": "网络", "width": 120 },
+        { "key": "referencePrice", "label": "参考价格 (USD)", "width": 150, "format": "amount" },
+        { "key": "change24h", "label": "24h 涨跌幅", "width": 120 },
+        {
+          "key": "status",
+          "label": "交易状态",
+          "width": 110,
+          "format": "status",
+          "labelKey": "statusLabel",
+          "statusTone": { "ACTIVE": "success", "MAINTENANCE": "warning", "SUSPENDED": "default" }
+        },
+        { "key": "updatedAt", "label": "更新时间", "width": 168 }
+      ],
+      "records": [
+        { "id": "ASSET-BTC", "symbol": "BTC", "name": "比特币", "assetType": "MAINSTREAM", "assetTypeLabel": "主流币", "network": "BITCOIN", "networkLabel": "Bitcoin", "referencePrice": 64280.32, "change24h": "+2.34%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:26" },
+        { "id": "ASSET-ETH", "symbol": "ETH", "name": "以太币", "assetType": "MAINSTREAM", "assetTypeLabel": "主流币", "network": "ETHEREUM", "networkLabel": "Ethereum", "referencePrice": 3486.17, "change24h": "+1.08%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:25" },
+        { "id": "ASSET-USDT", "symbol": "USDT", "name": "泰达币", "assetType": "STABLECOIN", "assetTypeLabel": "稳定币", "network": "TRON", "networkLabel": "TRON", "referencePrice": 1, "change24h": "+0.01%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:24" },
+        { "id": "ASSET-USDC", "symbol": "USDC", "name": "美元币", "assetType": "STABLECOIN", "assetTypeLabel": "稳定币", "network": "ETHEREUM", "networkLabel": "Ethereum", "referencePrice": 0.9998, "change24h": "-0.02%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:23" },
+        { "id": "ASSET-SOL", "symbol": "SOL", "name": "Solana", "assetType": "MAINSTREAM", "assetTypeLabel": "主流币", "network": "SOLANA", "networkLabel": "Solana", "referencePrice": 158.46, "change24h": "+4.12%", "status": "MAINTENANCE", "statusLabel": "维护中", "updatedAt": "2026-09-01 10:22" },
+        { "id": "ASSET-BNB", "symbol": "BNB", "name": "BNB", "assetType": "PLATFORM", "assetTypeLabel": "平台币", "network": "BNB_CHAIN", "networkLabel": "BNB Chain", "referencePrice": 591.83, "change24h": "-0.46%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:21" },
+        { "id": "ASSET-TRX", "symbol": "TRX", "name": "波场币", "assetType": "PLATFORM", "assetTypeLabel": "平台币", "network": "TRON", "networkLabel": "TRON", "referencePrice": 0.1684, "change24h": "+0.72%", "status": "SUSPENDED", "statusLabel": "已暂停", "updatedAt": "2026-09-01 10:20" },
+        { "id": "ASSET-WBTC", "symbol": "WBTC", "name": "Wrapped Bitcoin", "assetType": "MAINSTREAM", "assetTypeLabel": "主流币", "network": "ETHEREUM", "networkLabel": "Ethereum", "referencePrice": 64192.76, "change24h": "+2.21%", "status": "ACTIVE", "statusLabel": "交易中", "updatedAt": "2026-09-01 10:19" }
+      ]
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "success": false,
+      "filters": {}
+    },
+    "interactions": [
+      { "id": "editAssetFilters", "source": "asset-query", "event": "change", "outcome": "更新待提交筛选条件，不立即刷新结果" },
+      {
+        "id": "queryAssets",
+        "source": "query-assets",
+        "event": "click",
+        "processing": "结果区域局部加载并阻止重复查询",
+        "success": "应用最近一次有效筛选并回到第一页",
+        "failure": "保留待提交条件和上一次有效结果并允许重试",
+        "outcome": "应用当前筛选条件并刷新演示结果"
+      },
+      { "id": "resetAssetQuery", "source": "reset-asset-query", "event": "click", "outcome": "清空筛选条件并恢复全部演示记录" },
+      { "id": "paginateAssets", "source": "asset-results", "event": "pageChange", "outcome": "保留已应用筛选条件并切换结果页" }
+    ],
+    "extensions": {
+      "presentationDecisions": {
+        "page-heading": {
+          "mode": "title-only",
+          "confidence": "explicit",
+          "evidence": ["用户明确指出不应出现无信息增量的左上角副描述"],
+          "baseComponent": "Page title without subtitle",
+          "requiresDeviation": false
+        },
+        "asset-results": {
+          "mode": "table",
+          "confidence": "explicit",
+          "evidence": ["需求明确要求查询列表", "价格、涨跌幅、网络和状态需要按列对齐比较"],
+          "baseComponent": "Table + Pagination",
+          "requiresDeviation": false
+        }
+      },
+      "renderer": "yipex-standard-query-table-v1",
+      "generation": {
+        "strategy": "standard",
+        "recipeId": "list.query-table",
+        "skeleton": "query-workbench",
+        "capabilities": ["query.basic", "table.flat", "table.pagination"],
+        "rendererId": "yipex-standard-query-table-v1"
+      }
+    }
+  }
+}

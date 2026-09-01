@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "changeId": "20260830-product-management",
+    "pageName": "商品管理流程",
+    "request": "/yipex:page 生成商品管理流程。商品列表支持按名称和状态查询，点击“新增商品”进入分步表单。表单分为“基本信息”“销售信息”“确认提交”三步，提交成功后返回列表并刷新数据。",
+    "ruleRefs": [
+      "execution/capability-model/page-composition.schema.json",
+      "execution/capability-model/composition-rules.json",
+      "execution/capability-model/data-binding.schema.json",
+      "execution/page-contract-v2.md"
+    ]
+  },
+  "ui": { "system": "yipex", "runtime": "yipex-composition", "rendererVersion": 1 },
+  "skeleton": "custom-composition",
+  "regions": [
+    {
+      "id": "product-list",
+      "type": "content",
+      "capabilities": ["query.basic", "table.flat", "table.pagination", "navigation.openPage"],
+      "config": { "pageSpec": "product-list/page-spec.json", "preview": "product-list/preview.html" }
+    },
+    {
+      "id": "product-create",
+      "type": "content",
+      "capabilities": ["form.steps", "form.validation", "form.stickyActions", "binding.submissionToResult", "navigation.openPage"],
+      "config": { "pageSpec": "product-create/page-spec.json", "preview": "product-create/preview.html" }
+    }
+  ],
+  "bindings": [
+    {
+      "id": "create-product-to-list-records",
+      "from": "product-create.submit-product",
+      "to": "product-list.records",
+      "path": "productId",
+      "transform": "coerce-string"
+    }
+  ],
+  "transitions": [
+    { "id": "list-to-create", "from": "product-list.create-product", "event": "openPage", "to": "product-create", "requires": ["navigation.openPage"] },
+    { "id": "create-submit-to-list", "from": "product-create.submit-product", "event": "submitted", "to": "product-list", "bindingIds": ["create-product-to-list-records"] },
+    { "id": "create-cancel-to-list", "from": "product-create.cancel-product", "event": "cancelled", "to": "product-list", "requires": ["navigation.openPage"] }
+  ],
+  "states": {
+    "product-list": ["loading", "empty", "error", "permission-denied", "success"],
+    "product-create": ["loading", "submitting", "error", "success", "permission-denied"]
+  },
+  "entryHtml": "preview.html"
+}

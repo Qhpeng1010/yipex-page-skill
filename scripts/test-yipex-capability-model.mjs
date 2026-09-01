@@ -62,6 +62,8 @@ for (const [fieldCount, preference, expected] of createOverlayCases) {
   const actual = resolveCreateOverlayMode(fields, preference);
   if (actual !== expected) errors.push(`create overlay ${fieldCount}/${preference}: expected ${expected}, got ${actual}`);
 }
+const preservedModal = resolveCreateOverlayMode(Array.from({ length: 18 }, (_, index) => ({ key: `field-${index + 1}` })), 'auto', { preserveStructure: true });
+if (preservedModal !== 'modal') errors.push(`preserveStructure should keep Modal, got ${preservedModal}`);
 for (const [fieldCount, expected] of [[6, 'modal'], [7, 'drawer'], [16, 'drawer'], [17, 'page']]) {
   const actual = resolveContextPresentation(fieldCount);
   if (actual !== expected) errors.push(`context presentation ${fieldCount}: expected ${expected}, got ${actual}`);

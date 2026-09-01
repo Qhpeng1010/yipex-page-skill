@@ -32,7 +32,8 @@ function runNode(script, args) {
 
 async function buildRegion(region) {
   const specPath = region?.config?.pageSpec;
-  if (!specPath) return { id: region?.id || 'unknown', code: 1, output: 'region.config.pageSpec is missing' };
+  // Action-only regions describe cross-page transitions and do not produce a page artifact.
+  if (!specPath) return { id: region?.id || 'unknown', code: 0, output: 'action-only region skipped' };
   const childDir = dirname(resolve(compositionDir, specPath));
   const childRelDir = childDir.slice(projectRoot.length + 1);
   const buildArgs = [resolve(compositionDir, specPath), ...(withDesignRecord ? ['--with-design-record'] : [])];

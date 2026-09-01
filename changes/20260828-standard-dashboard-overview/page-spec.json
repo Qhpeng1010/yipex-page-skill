@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260828-standard-dashboard-overview",
+    "pageName": "经营概览",
+    "pageType": "dashboard",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "创建经营概览看板，展示核心指标、交易趋势和业务分布，支持日期范围和业务范围筛选。",
+    "assumptions": ["图表使用演示数据，指标按当前展示范围汇总。"],
+    "ruleRefs": ["DESIGN.md", "01-foundations.md", "02-components.md", "04-dashboard-patterns.md", "execution/presentation-intent.md", "execution/page-contract-v2.md", "execution/capability-model/capability-model.md"],
+    "generation": { "mode": "auto", "strategy": "standard", "recipeId": "dashboard.overview", "skeleton": "dashboard-overview", "capabilities": ["dashboard.metrics", "dashboard.trend", "dashboard.distribution"], "policyVersion": 1, "modelVersion": "2026.08.28.1", "rendererId": "yipex-standard-dashboard-overview-v1" }
+  },
+  "contract": {
+    "pageFamily": "dashboard", "shell": "yipex-default", "density": "compact",
+    "regions": [{ "id": "overview-metrics", "role": "metrics", "purpose": "展示经营核心指标" }, { "id": "overview-charts", "role": "chart", "purpose": "展示趋势和分布分析" }],
+    "hierarchy": { "primary": "快速了解当前经营状态和变化趋势", "secondary": ["按日期范围切换数据范围", "比较不同业务分布"] },
+    "operations": { "primary": null, "secondary": [] },
+    "stateCoverage": ["loading", "error", "permission-denied"],
+    "responsive": { "desktop": "指标四列展示，趋势与分布双栏展示。", "narrow": "指标单列展示，图表上下排列并保持数据可读。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "sidebar": { "navigationMode": "demand-scoped" }, "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined", "active": true }], "header": { "welcome": "经营分析", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "运" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" } },
+    "root": { "id": "overview-page", "type": "standard-dashboard-overview-page", "props": { "title": "经营概览" }, "children": [{ "id": "overview-metrics", "type": "metrics", "label": "核心指标" }, { "id": "overview-charts", "type": "chart", "label": "趋势与分布" }] },
+    "data": {
+      "dateRange": { "start": "2026-08-01", "end": "2026-08-28" },
+      "scopes": [{ "value": "all", "label": "全部业务" }, { "value": "merchant", "label": "商户业务" }, { "value": "wallet", "label": "钱包业务" }],
+      "metrics": [{ "id": "sales", "label": "交易金额", "value": 1286430.5, "format": "currency", "unit": "元" }, { "id": "orders", "label": "交易笔数", "value": 4826, "format": "integer", "unit": "笔" }, { "id": "merchants", "label": "活跃商户", "value": 328, "format": "integer", "unit": "家" }, { "id": "successRate", "label": "交易成功率", "value": 98.6, "unit": "%" }],
+      "trendTitle": "交易金额趋势（近 28 日）",
+      "trend": [{ "label": "08/01", "value": 36280, "format": "currency" }, { "label": "08/05", "value": 42860, "format": "currency" }, { "label": "08/09", "value": 48340, "format": "currency" }, { "label": "08/13", "value": 55860, "format": "currency" }, { "label": "08/17", "value": 63140, "format": "currency" }, { "label": "08/21", "value": 68820, "format": "currency" }, { "label": "08/25", "value": 76980, "format": "currency" }, { "label": "08/28", "value": 89420, "format": "currency" }],
+      "distributionTitle": "交易状态分布",
+      "distribution": [{ "label": "交易成功", "value": 3288, "color": "#4AA52E" }, { "label": "处理中", "value": 721, "color": "#1677FF" }, { "label": "已关闭", "value": 468, "color": "#8C8C8C" }, { "label": "退款中", "value": 241, "color": "#F5A623" }, { "label": "异常", "value": 108, "color": "#D4380D" }]
+    },
+    "states": { "loading": false, "error": false, "permission-denied": false },
+    "interactions": [],
+    "extensions": { "renderer": "yipex-standard-dashboard-overview-v1", "generation": { "strategy": "standard", "recipeId": "dashboard.overview", "skeleton": "dashboard-overview", "capabilities": ["dashboard.metrics", "dashboard.trend", "dashboard.distribution"], "rendererId": "yipex-standard-dashboard-overview-v1" } }
+  }
+}

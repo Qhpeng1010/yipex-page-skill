@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "modelVersion": "2026.08.30.7",
+  "modelVersion": "2026.09.01.1",
   "system": "yipex",
   "skeletons": [
     { "id": "query-workbench", "label": "查询工作台", "runtimeStatus": "implemented", "legacyFamilies": ["list"], "requiredRegions": ["query", "table"], "optionalRegions": ["summary", "action", "detail-overlay", "form-overlay"] },
@@ -17,7 +17,7 @@
     { "id": "action", "label": "操作区", "runtimeStatus": "implemented", "capabilities": ["action.primary", "action.secondary", "action.confirm", "dashboard.refresh", "dashboard.export"] },
     { "id": "detail-overlay", "label": "详情浮层", "runtimeStatus": "implemented", "capabilities": ["detail.overlay"] },
     { "id": "form-overlay", "label": "表单浮层", "runtimeStatus": "implemented", "capabilities": ["form.overlay"] },
-    { "id": "form", "label": "表单区", "runtimeStatus": "implemented", "capabilities": ["form.simple", "form.groups", "form.steps", "form.validation", "form.stickyActions"] },
+    { "id": "form", "label": "表单区", "runtimeStatus": "implemented", "capabilities": ["form.simple", "form.groups", "form.steps", "form.validation", "form.stickyActions", "form.advancedFields", "form.dependencies", "form.dynamicOptions", "form.preserveStructure"] },
     { "id": "review", "label": "复核区", "runtimeStatus": "declared-only", "capabilities": ["form.review"] },
     { "id": "detail", "label": "详情区", "runtimeStatus": "implemented", "capabilities": ["detail.groups", "detail.metrics", "detail.embeddedTable"] },
     { "id": "result", "label": "结果区", "runtimeStatus": "implemented", "capabilities": ["result.summary", "result.actions", "result.retry"] },
@@ -51,6 +51,10 @@
     { "id": "form.steps", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
     { "id": "form.validation", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
     { "id": "form.stickyActions", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
+    { "id": "form.advancedFields", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
+    { "id": "form.dependencies", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
+    { "id": "form.dynamicOptions", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
+    { "id": "form.preserveStructure", "kind": "form", "region": "form", "runtimeStatus": "implemented" },
     { "id": "form.review", "kind": "form", "region": "review", "runtimeStatus": "declared-only" },
     { "id": "detail.groups", "kind": "detail", "region": "detail", "runtimeStatus": "implemented" },
     { "id": "detail.metrics", "kind": "detail", "region": "detail", "runtimeStatus": "implemented" },

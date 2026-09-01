@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "changeId": "20260827-order-query-list",
+    "pageName": "订单查询",
+    "pageType": "query-list",
+    "componentLibrary": {
+      "name": "antd",
+      "source": "official"
+    },
+    "request": "帮我用skill创建一个查询列表吧",
+    "assumptions": [
+      "未指定业务对象，默认创建订单查询列表。",
+      "未提供后端接口，页面使用明确标注的演示数据。",
+      "查询、导出和详情交互均在浏览器端作用于演示数据。"
+    ],
+    "ruleRefs": [
+      "DESIGN.md",
+      "01-foundations.md",
+      "02-components.md",
+      "03-query-list-patterns.md",
+      "execution/context-packs/layout.md",
+      "execution/context-packs/accessibility.md",
+      "execution/context-packs/components.md",
+      "execution/context-packs/interaction.md",
+      "references/antd-component-map.md",
+      "shell/README.md",
+      "shell/shell.template.html",
+      "shell/shell.css",
+      "shell/shell-runtime.js"
+    ]
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": {
+        "width": 216,
+        "background": "#FFFFFF",
+        "showCollapseControl": false
+      },
+      "brand": {
+        "mark": "Y",
+        "name": "YiPex"
+      },
+      "navigation": [
+        {
+          "id": "home",
+          "label": "首页",
+          "icon": "HomeOutlined"
+        },
+        {
+          "id": "order-query",
+          "label": "订单查询",
+          "icon": "FileTextOutlined",
+          "active": true
+        }
+      ],
+      "header": {
+        "welcome": "订单查询",
+        "userName": "订单运营",
+        "email": "运营工作台"
+      },
+      "footer": {
+        "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved"
+      },
+      "floatingTools": {
+        "show": false
+      }
+    },
+    "root": {
+      "id": "order-query-page",
+      "type": "query-list",
+      "props": {
+        "title": "订单查询",
+        "demoLabel": "演示数据"
+      },
+      "children": [
+        {
+          "id": "query-filters",
+          "type": "filter-form",
+          "label": "查询条件",
+          "events": {
+            "submit": "queryOrders",
+            "reset": "resetFilters"
+          }
+        },
+        {
+          "id": "order-results",
+          "type": "data-table",
+          "label": "订单结果",
+          "events": {
+            "select": "selectOrders",
+            "rowClick": "openOrderDetail",
+            "pageChange": "paginateOrders"
+          }
+        },
+        {
+          "id": "order-detail-drawer",
+          "type": "drawer",
+          "label": "订单详情",
+          "state": {
+            "open": false
+          },
+          "events": {
+            "close": "closeOrderDetail"
+          }
+        }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "updatedAt": "2026-08-27 16:20",
+      "statuses": [
+        "全部状态",
+        "待支付",
+        "处理中",
+        "已完成",
+        "已关闭"
+      ],
+      "channels": [
+        "全部渠道",
+        "微信支付",
+        "支付宝",
+        "银行卡"
+      ],
+      "records": [
+        {
+          "id": "YP2026082700186",
+          "createdAt": "2026-08-27 15:42",
+          "merchant": "海岸咖啡（静安店）",
+          "customer": "林女士",
+          "amount": 1280,
+          "status": "处理中",
+          "channel": "银行卡",
+          "items": 3,
+          "owner": "陈路"
+        },
+        {
+          "id": "YP2026082700172",
+          "createdAt": "2026-08-27 14:58",
+          "merchant": "松果生活馆",
+          "customer": "周先生",
+          "amount": 869.5,
+          "status": "待支付",
+          "channel": "微信支付",
+          "items": 2,
+          "owner": "王一"
+        },
+        {
+          "id": "YP2026082700149",
+          "createdAt": "2026-08-27 13:26",
+          "merchant": "北屿餐厅",
+          "customer": "赵女士",
+          "amount": 326,
+          "status": "已完成",
+          "channel": "银行卡",
+          "items": 5,
+          "owner": "徐安"
+        },
+        {
+          "id": "YP2026082601397",
+          "createdAt": "2026-08-26 21:17",
+          "merchant": "原野户外用品",
+          "customer": "吴先生",
+          "amount": 2450,
+          "status": "已关闭",
+          "channel": "支付宝",
+          "items": 1,
+          "owner": "陈路"
+        },
+        {
+          "id": "YP2026082601264",
+          "createdAt": "2026-08-26 18:43",
+          "merchant": "白塔书店",
+          "customer": "沈女士",
+          "amount": 158.8,
+          "status": "已完成",
+          "channel": "微信支付",
+          "items": 4,
+          "owner": "王一"
+        },
+        {
+          "id": "YP2026082601091",
+          "createdAt": "2026-08-26 16:11",
+          "merchant": "南山运动中心",
+          "customer": "梁先生",
+          "amount": 3600,
+          "status": "处理中",
+          "channel": "银行卡",
+          "items": 2,
+          "owner": "徐安"
+        },
+        {
+          "id": "YP2026082500875",
+          "createdAt": "2026-08-25 12:08",
+          "merchant": "沐光烘焙",
+          "customer": "钱女士",
+          "amount": 498,
+          "status": "待支付",
+          "channel": "支付宝",
+          "items": 6,
+          "owner": "陈路"
+        },
+        {
+          "id": "YP2026082400653",
+          "createdAt": "2026-08-24 10:52",
+          "merchant": "青禾花房",
+          "customer": "冯女士",
+          "amount": 288,
+          "status": "已完成",
+          "channel": "微信支付",
+          "items": 2,
+          "owner": "徐安"
+        },
+        {
+          "id": "YP2026082300517",
+          "createdAt": "2026-08-23 09:15",
+          "merchant": "山茶家居",
+          "customer": "顾先生",
+          "amount": 1899,
+          "status": "已完成",
+          "channel": "支付宝",
+          "items": 1,
+          "owner": "王一"
+        },
+        {
+          "id": "YP2026082200441",
+          "createdAt": "2026-08-22 19:28",
+          "merchant": "拾光数码",
+          "customer": "唐女士",
+          "amount": 5299,
+          "status": "处理中",
+          "channel": "银行卡",
+          "items": 2,
+          "owner": "陈路"
+        },
+        {
+          "id": "YP2026082100386",
+          "createdAt": "2026-08-21 11:06",
+          "merchant": "禾木超市",
+          "customer": "魏先生",
+          "amount": 76.5,
+          "status": "已关闭",
+          "channel": "微信支付",
+          "items": 8,
+          "owner": "徐安"
+        }
+      ]
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "success": true,
+      "query": "",
+      "status": "全部状态",
+      "channel": "全部渠道",
+      "start": "2026-08-01",
+      "end": "2026-08-27",
+      "page": 1,
+      "pageSize": 5,
+      "selectedOrderIds": [],
+      "selectedOrderId": null
+    },
+    "interactions": [
+      {
+        "id": "queryOrders",
+        "trigger": "query-filters.submit",
+        "result": "按关键词、日期、状态和渠道刷新结果列表"
+      },
+      {
+        "id": "resetFilters",
+        "trigger": "query-filters.reset",
+        "result": "恢复默认查询条件并刷新列表"
+      },
+      {
+        "id": "selectOrders",
+        "trigger": "order-results.select",
+        "result": "显示批量导出操作"
+      },
+      {
+        "id": "openOrderDetail",
+        "trigger": "order-results.rowClick",
+        "result": "打开订单详情抽屉"
+      },
+      {
+        "id": "exportOrders",
+        "trigger": "order-results.export",
+        "result": "导出当前筛选结果 CSV"
+      },
+      {
+        "id": "closeOrderDetail",
+        "trigger": "order-detail-drawer.close",
+        "result": "关闭详情抽屉并恢复焦点"
+      }
+    ],
+    "extensions": {
+      "renderer": "query-list-v2-antd-shell",
+      "componentMap": {
+        "form": "Form",
+        "keyword": "Input",
+        "status": "Select",
+        "channel": "Select",
+        "dateRange": "DatePicker.RangePicker",
+        "actions": "Button",
+        "results": "Table",
+        "pagination": "Pagination",
+        "detail": "Drawer",
+        "detailFields": "Descriptions",
+        "state": "Tag",
+        "empty": "Empty"
+      },
+      "responsive": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ],
+      "exportFormat": "csv"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-digital-currency-info-list",
+    "pageName": "数币信息管理",
+    "pageType": "digital-currency-info-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "/yipex:page 创建一个数币查询列表页面。条件：币种/类型、所属银行、所属国际地区、添加人、状态、时间。可以新增币种信息，12个表单项。列表：币种ID、币种/类型、所属银行、所属国际地区、添加人、状态、时间、操作（编辑、详情、禁用）",
+    "assumptions": ["未提供后端接口，新增、编辑和禁用状态使用浏览器 localStorage 演示。", "新增币种信息按基础信息、归属信息、配置与状态补充为 12 个字段，币种 ID 和创建时间由系统生成。", "详情展示 15 个字段，保持列表上下文。"],
+    "ruleRefs": ["execution/context-packs/core.md", "design-system/director-rules/01-visual-constitution.md", "design-system/director-rules/02-template-application-rules.md", "design-system/director-rules/03-interaction-acceptance-rules.md", "design-system/page-patterns/list.md", "execution/page-contract-v2.md", "execution/capability-model/capability-model.md"],
+    "generation": { "mode": "auto", "strategy": "open", "recipeId": null, "referenceRecipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.status", "detail.overlay", "form.overlay", "action.confirm"], "policyVersion": 2, "modelVersion": "2026.08.30.7" }
+  },
+  "contract": {
+    "pageFamily": "list", "shell": "yipex-default", "density": "compact",
+    "regions": [
+      { "id": "currency-header", "role": "page-header", "purpose": "标识数币信息管理任务" },
+      { "id": "currency-query", "role": "query-controls", "purpose": "按币种类型、银行、地区、添加人、状态和时间筛选" },
+      { "id": "currency-results", "role": "result-list", "purpose": "展示数币信息并执行编辑、详情和禁用操作" },
+      { "id": "currency-detail", "role": "detail-overlay", "purpose": "在列表上下文中查看币种完整信息" },
+      { "id": "currency-create", "role": "form-overlay", "purpose": "在大尺寸抽屉中新增或编辑 12 项币种信息" }
+    ],
+    "hierarchy": { "primary": "查询并维护数币信息", "secondary": ["通过详情和状态操作核对币种归属与配置"] },
+    "operations": {
+      "primary": { "id": "query-currencies", "label": "查询", "placement": "查询条件区末列", "outcome": "应用筛选并回到第一页" },
+      "secondary": [
+        { "id": "reset-currency-query", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选并恢复全部记录" },
+        { "id": "create-currency", "label": "新增币种信息", "placement": "列表标题工具区最右侧", "outcome": "打开大尺寸新增抽屉" },
+        { "id": "edit-currency", "label": "编辑", "placement": "每行操作列", "outcome": "打开抽屉编辑当前币种信息" },
+        { "id": "view-currency-detail", "label": "详情", "placement": "每行操作列", "outcome": "打开详情抽屉查看 15 项信息" },
+        { "id": "disable-currency", "label": "禁用", "placement": "每行操作列", "outcome": "确认后将当前币种状态更新为已禁用" }
+      ]
+    },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied", "submitting", "success"],
+    "responsive": { "desktop": "六项筛选按四列网格换行，表格固定操作列，新增和详情使用官方大尺寸右侧抽屉。", "narrow": "筛选条件改为单列，表格保留横向滚动，抽屉接近全宽且详情降为单列。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true }, "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "digital-currency", "label": "数币信息", "icon": "WalletOutlined", "active": true }], "header": { "welcome": "数币信息", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "数" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" }, "floatingTools": { "show": false } },
+    "root": { "id": "digital-currency-info-query-page", "type": "standard-query-table-page", "props": { "title": "数币信息管理", "resultTitle": "数币信息列表", "createLabel": "新增币种信息" }, "children": [
+      { "id": "currency-header", "type": "page-header", "label": "数币信息管理" },
+      { "id": "currency-query", "type": "query-form", "children": [
+        { "id": "currency-type-filter", "type": "select", "label": "币种/类型", "events": { "change": "editCurrencyFilters" } },
+        { "id": "currency-bank-filter", "type": "select", "label": "所属银行", "events": { "change": "editCurrencyFilters" } },
+        { "id": "currency-region-filter", "type": "select", "label": "所属国际地区", "events": { "change": "editCurrencyFilters" } },
+        { "id": "currency-creator-filter", "type": "select", "label": "添加人", "events": { "change": "editCurrencyFilters" } },
+        { "id": "currency-status-filter", "type": "select", "label": "状态", "events": { "change": "editCurrencyFilters" } },
+        { "id": "currency-time-filter", "type": "date-range", "label": "时间", "events": { "change": "editCurrencyFilters" } },
+        { "id": "reset-currency-query", "type": "button", "label": "重置", "events": { "click": "resetCurrencyQuery" } },
+        { "id": "query-currencies", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryCurrencies" } }
+      ] },
+      { "id": "currency-results", "type": "data-table", "label": "数币信息列表", "events": { "pageChange": "paginateCurrencies" }, "children": [{ "id": "create-currency", "type": "button", "label": "新增币种信息", "events": { "click": "openCreateCurrency" } }, { "id": "edit-currency", "type": "button", "label": "编辑", "events": { "click": "editCurrency" } }, { "id": "view-currency-detail", "type": "button", "label": "详情", "events": { "click": "viewCurrencyDetail" } }, { "id": "disable-currency", "type": "button", "label": "禁用", "events": { "click": "disableCurrency" } }] },
+      { "id": "currency-detail", "type": "detail-overlay", "label": "币种详情", "props": { "mode": "drawer" } },
+      { "id": "currency-create", "type": "form-overlay", "label": "新增币种信息", "props": { "mode": "drawer" } }
+    ] },
+    "data": {
+      "demo": true, "persistenceKey": "yipex-digital-currency-info-demo", "defaultSort": { "key": "createdAt", "order": "descend" }, "pageSize": 6, "detailOverlay": "drawer", "createOverlay": "drawer", "detailDrawerSize": "large", "createDrawerSize": "large", "returnMessage": "币种信息已保存",
+      "filters": [
+        { "id": "currency-type", "key": "currencyType", "label": "币种/类型", "type": "select", "placeholder": "请选择币种/类型", "options": [{ "value": "USDT", "label": "USDT / 稳定币" }, { "value": "USDC", "label": "USDC / 稳定币" }, { "value": "BTC", "label": "BTC / 主流币" }, { "value": "ETH", "label": "ETH / 主流币" }] },
+        { "id": "currency-bank", "key": "bankName", "label": "所属银行", "type": "select", "placeholder": "请选择所属银行", "options": [{ "value": "招商银行", "label": "招商银行" }, { "value": "汇丰银行", "label": "汇丰银行" }, { "value": "花旗银行", "label": "花旗银行" }, { "value": "星展银行", "label": "星展银行" }] },
+        { "id": "currency-region", "key": "region", "label": "所属国际地区", "type": "select", "placeholder": "请选择国际地区", "options": [{ "value": "亚洲", "label": "亚洲" }, { "value": "欧洲", "label": "欧洲" }, { "value": "北美洲", "label": "北美洲" }, { "value": "大洋洲", "label": "大洋洲" }] },
+        { "id": "currency-creator", "key": "addPerson", "label": "添加人", "type": "select", "placeholder": "请选择添加人", "options": [{ "value": "林知夏", "label": "林知夏" }, { "value": "周远", "label": "周远" }, { "value": "赵晴", "label": "赵晴" }] },
+        { "id": "currency-status", "key": "status", "label": "状态", "type": "select", "placeholder": "请选择状态", "options": [{ "value": "ALL", "label": "全部状态" }, { "value": "ACTIVE", "label": "已启用" }, { "value": "PENDING", "label": "待审核" }, { "value": "DISABLED", "label": "已禁用" }] },
+        { "id": "currency-time", "key": "createdAt", "label": "时间", "type": "date-range", "recordKey": "createdAt", "format": "YYYY-MM-DD", "placeholder": ["开始日期", "结束日期"] }
+      ],
+      "columns": [
+        { "key": "currencyId", "label": "币种ID", "width": 160 }, { "key": "currencyTypeLabel", "label": "币种/类型", "width": 160 }, { "key": "bankName", "label": "所属银行", "width": 150 }, { "key": "regionLabel", "label": "所属国际地区", "width": 140 }, { "key": "addPerson", "label": "添加人", "width": 120 },
+        { "key": "status", "label": "状态", "width": 110, "format": "status", "labelKey": "statusLabel", "statusTone": { "ACTIVE": "success", "PENDING": "warning", "DISABLED": "default" } }, { "key": "createdAt", "label": "时间", "width": 168 },
+        { "key": "actions", "label": "操作", "width": 190, "format": "actions", "fixed": "right", "actions": [{ "id": "edit-currency", "type": "edit", "label": "编辑" }, { "id": "view-currency-detail", "type": "detail", "label": "详情" }, { "id": "disable-currency", "type": "status-transition", "label": "禁用", "from": ["ACTIVE", "PENDING"], "to": "DISABLED", "toLabel": "已禁用", "confirmTitle": "禁用币种", "confirmContent": "确认禁用币种 {id}？", "successMessage": "币种已禁用", "confirmOkText": "确认禁用", "confirmCancelText": "取消" }] }
+      ],
+      "detailFields": [{ "key": "currencyId", "label": "币种ID" }, { "key": "currencyCode", "label": "币种代码" }, { "key": "currencyName", "label": "币种名称" }, { "key": "currencyTypeLabel", "label": "币种/类型" }, { "key": "bankName", "label": "所属银行" }, { "key": "regionLabel", "label": "所属国际地区" }, { "key": "countryLabel", "label": "国家/地区" }, { "key": "settlementNetworkLabel", "label": "清算网络" }, { "key": "issuer", "label": "发行方" }, { "key": "contractAddress", "label": "合约地址" }, { "key": "precision", "label": "小数精度" }, { "key": "addPerson", "label": "添加人" }, { "key": "status", "label": "状态", "format": "status", "labelKey": "statusLabel", "statusTone": { "ACTIVE": "success", "PENDING": "warning", "DISABLED": "default" } }, { "key": "createdAt", "label": "创建时间" }, { "key": "updatedAt", "label": "更新时间" }],
+      "createSections": [{ "id": "currency-basic", "title": "基础信息", "fieldKeys": ["currencyCode", "currencyName", "currencyType", "issuer"] }, { "id": "currency-ownership", "title": "归属信息", "fieldKeys": ["bankName", "region", "country", "settlementNetwork"] }, { "id": "currency-config", "title": "配置与状态", "fieldKeys": ["contractAddress", "precision", "addPerson", "status"] }],
+      "createFields": [
+        { "key": "currencyCode", "label": "币种代码", "type": "text", "required": true, "maxLength": 20, "placeholder": "请输入币种代码，例如 USDT" }, { "key": "currencyName", "label": "币种名称", "type": "text", "required": true, "maxLength": 60, "placeholder": "请输入币种名称" }, { "key": "currencyType", "label": "币种/类型", "type": "select", "required": true, "labelKey": "currencyTypeLabel", "placeholder": "请选择币种/类型", "options": [{ "value": "USDT", "label": "USDT / 稳定币" }, { "value": "USDC", "label": "USDC / 稳定币" }, { "value": "BTC", "label": "BTC / 主流币" }, { "value": "ETH", "label": "ETH / 主流币" }] }, { "key": "issuer", "label": "发行方", "type": "text", "required": true, "maxLength": 80, "placeholder": "请输入发行方" },
+        { "key": "bankName", "label": "所属银行", "type": "select", "required": true, "placeholder": "请选择所属银行", "options": [{ "value": "招商银行", "label": "招商银行" }, { "value": "汇丰银行", "label": "汇丰银行" }, { "value": "花旗银行", "label": "花旗银行" }, { "value": "星展银行", "label": "星展银行" }] }, { "key": "region", "label": "所属国际地区", "type": "select", "required": true, "labelKey": "regionLabel", "placeholder": "请选择国际地区", "options": [{ "value": "亚洲", "label": "亚洲" }, { "value": "欧洲", "label": "欧洲" }, { "value": "北美洲", "label": "北美洲" }, { "value": "大洋洲", "label": "大洋洲" }] }, { "key": "country", "label": "国家/地区", "type": "select", "required": true, "labelKey": "countryLabel", "placeholder": "请选择国家/地区", "options": [{ "value": "中国", "label": "中国" }, { "value": "新加坡", "label": "新加坡" }, { "value": "英国", "label": "英国" }, { "value": "美国", "label": "美国" }] }, { "key": "settlementNetwork", "label": "清算网络", "type": "select", "required": true, "labelKey": "settlementNetworkLabel", "placeholder": "请选择清算网络", "options": [{ "value": "SWIFT", "label": "SWIFT" }, { "value": "SEPA", "label": "SEPA" }, { "value": "FPS", "label": "FPS" }, { "value": "ACH", "label": "ACH" }] },
+        { "key": "contractAddress", "label": "合约地址", "type": "text", "required": true, "maxLength": 120, "placeholder": "请输入合约地址；原生币可填 NATIVE" }, { "key": "precision", "label": "小数精度", "type": "number", "required": true, "validation": { "min": 0, "max": 18 }, "placeholder": "请输入 0-18 的小数位数" }, { "key": "addPerson", "label": "添加人", "type": "select", "required": true, "placeholder": "请选择添加人", "options": [{ "value": "林知夏", "label": "林知夏" }, { "value": "周远", "label": "周远" }, { "value": "赵晴", "label": "赵晴" }] }, { "key": "status", "label": "状态", "type": "select", "required": true, "labelKey": "statusLabel", "placeholder": "请选择状态", "options": [{ "value": "ACTIVE", "label": "已启用" }, { "value": "PENDING", "label": "待审核" }, { "value": "DISABLED", "label": "已禁用" }] }
+      ],
+      "create": { "idPrefix": "CUR", "idField": "currencyId", "timestampField": "createdAt", "defaults": { "status": "PENDING", "statusLabel": "待审核" }, "successMessage": "币种信息已新增", "editSuccessMessage": "币种信息已更新" },
+      "records": [
+        { "id": "CUR20260830018", "currencyId": "CUR20260830018", "currencyCode": "USDT", "currencyName": "泰达币", "currencyType": "USDT", "currencyTypeLabel": "USDT / 稳定币", "bankName": "招商银行", "region": "亚洲", "regionLabel": "亚洲", "country": "中国", "countryLabel": "中国", "settlementNetwork": "SWIFT", "settlementNetworkLabel": "SWIFT", "issuer": "Tether", "contractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "precision": 6, "addPerson": "林知夏", "status": "ACTIVE", "statusLabel": "已启用", "createdAt": "2026-08-30 09:42", "updatedAt": "2026-08-30 09:42" },
+        { "id": "CUR20260830012", "currencyId": "CUR20260830012", "currencyCode": "USDC", "currencyName": "美元币", "currencyType": "USDC", "currencyTypeLabel": "USDC / 稳定币", "bankName": "汇丰银行", "region": "欧洲", "regionLabel": "欧洲", "country": "英国", "countryLabel": "英国", "settlementNetwork": "SEPA", "settlementNetworkLabel": "SEPA", "issuer": "Circle", "contractAddress": "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "precision": 6, "addPerson": "周远", "status": "ACTIVE", "statusLabel": "已启用", "createdAt": "2026-08-29 16:18", "updatedAt": "2026-08-29 16:18" },
+        { "id": "CUR20260830007", "currencyId": "CUR20260830007", "currencyCode": "BTC", "currencyName": "比特币", "currencyType": "BTC", "currencyTypeLabel": "BTC / 主流币", "bankName": "星展银行", "region": "亚洲", "regionLabel": "亚洲", "country": "新加坡", "countryLabel": "新加坡", "settlementNetwork": "SWIFT", "settlementNetworkLabel": "SWIFT", "issuer": "Bitcoin Network", "contractAddress": "NATIVE", "precision": 8, "addPerson": "赵晴", "status": "PENDING", "statusLabel": "待审核", "createdAt": "2026-08-29 11:06", "updatedAt": "2026-08-29 11:06" },
+        { "id": "CUR20260829096", "currencyId": "CUR20260829096", "currencyCode": "ETH", "currencyName": "以太币", "currencyType": "ETH", "currencyTypeLabel": "ETH / 主流币", "bankName": "花旗银行", "region": "北美洲", "regionLabel": "北美洲", "country": "美国", "countryLabel": "美国", "settlementNetwork": "ACH", "settlementNetworkLabel": "ACH", "issuer": "Ethereum Foundation", "contractAddress": "NATIVE", "precision": 18, "addPerson": "林知夏", "status": "DISABLED", "statusLabel": "已禁用", "createdAt": "2026-08-28 18:32", "updatedAt": "2026-08-29 08:12" },
+        { "id": "CUR20260829084", "currencyId": "CUR20260829084", "currencyCode": "USDT", "currencyName": "泰达币", "currencyType": "USDT", "currencyTypeLabel": "USDT / 稳定币", "bankName": "汇丰银行", "region": "欧洲", "regionLabel": "欧洲", "country": "英国", "countryLabel": "英国", "settlementNetwork": "FPS", "settlementNetworkLabel": "FPS", "issuer": "Tether", "contractAddress": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "precision": 6, "addPerson": "周远", "status": "ACTIVE", "statusLabel": "已启用", "createdAt": "2026-08-27 14:20", "updatedAt": "2026-08-27 14:20" },
+        { "id": "CUR20260829063", "currencyId": "CUR20260829063", "currencyCode": "USDC", "currencyName": "美元币", "currencyType": "USDC", "currencyTypeLabel": "USDC / 稳定币", "bankName": "招商银行", "region": "大洋洲", "regionLabel": "大洋洲", "country": "中国", "countryLabel": "中国", "settlementNetwork": "SWIFT", "settlementNetworkLabel": "SWIFT", "issuer": "Circle", "contractAddress": "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "precision": 6, "addPerson": "赵晴", "status": "ACTIVE", "statusLabel": "已启用", "createdAt": "2026-08-26 10:48", "updatedAt": "2026-08-26 10:48" }
+      ]
+    },
+    "states": { "loading": false, "empty": false, "error": false, "permission-denied": false, "submitting": false, "success": false, "filters": {} },
+    "interactions": [
+      { "id": "editCurrencyFilters", "source": "currency-query", "event": "change", "outcome": "更新待提交筛选条件，不立即刷新结果" },
+      { "id": "queryCurrencies", "source": "query-currencies", "event": "click", "outcome": "应用六项筛选并回到第一页" },
+      { "id": "resetCurrencyQuery", "source": "reset-currency-query", "event": "click", "outcome": "清空筛选并恢复全部记录" },
+      { "id": "paginateCurrencies", "source": "currency-results", "event": "pageChange", "outcome": "保留已应用筛选并切换结果页" },
+      { "id": "openCreateCurrency", "source": "create-currency", "event": "click", "outcome": "打开大尺寸新增币种信息抽屉" },
+      { "id": "editCurrency", "source": "edit-currency", "event": "click", "outcome": "打开编辑抽屉并保留当前记录" },
+      { "id": "viewCurrencyDetail", "source": "view-currency-detail", "event": "click", "outcome": "打开详情抽屉查看 15 个字段" },
+      { "id": "disableCurrency", "source": "disable-currency", "event": "click", "outcome": "确认后更新状态为已禁用" }
+    ],
+    "extensions": { "presentationDecisions": { "currency-results": { "mode": "table", "confidence": "explicit", "evidence": ["需求明确要求查询列表"], "baseComponent": "Table + Pagination", "requiresDeviation": false }, "currency-create": { "mode": "drawer-form", "confidence": "pattern-default", "evidence": ["新增包含 12 个表单项，按 7-16 项使用 Drawer"], "baseComponent": "Drawer + Form controls", "requiresDeviation": false }, "currency-detail": { "mode": "drawer", "confidence": "pattern-default", "evidence": ["详情包含 15 个字段，按 7-16 项使用 Drawer"], "baseComponent": "Drawer + Descriptions (two columns)", "requiresDeviation": false } }, "renderer": "yipex-standard-query-table-v1", "generation": { "strategy": "open", "recipeId": null, "referenceRecipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.status", "detail.overlay", "form.overlay", "action.confirm"] } }
+  }
+}

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { relative, resolve, dirname, sep } from 'node:path';
 import { normalizeUnitPresentationData } from '../lib/yipex-unit-presentation.mjs';
+import { formRuntimeBootstrapSource } from '../lib/yipex-form-runtime.mjs';
 
 const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -22,7 +23,8 @@ export function resolveDetailOverlayMode(fields, preference = 'auto') {
   return resolveContextPresentation(Array.isArray(fields) ? fields.length : 0, preference);
 }
 
-export function resolveCreateOverlayMode(fields, preference = 'auto') {
+export function resolveCreateOverlayMode(fields, preference = 'auto', { preserveStructure = false } = {}) {
+  if (preserveStructure && (!preference || preference === 'auto')) return 'modal';
   return resolveContextPresentation(Array.isArray(fields) ? fields.length : 0, preference);
 }
 
@@ -51,7 +53,8 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
   const detailOverlayNode = (root.children || []).find((node) => node?.type === 'detail-overlay');
   const detailFields = Array.isArray(data.detailFields) ? data.detailFields : columns;
   const detailOverlayMode = resolveDetailOverlayMode(detailFields, detailOverlayNode?.props?.mode || data.detailOverlay || props.detailOverlay);
-  const createOverlayMode = resolveCreateOverlayMode(data.createFields, data.createOverlay || props.createOverlay);
+  const preserveStructure = Boolean(data.preserveStructure || data.create?.preserveStructure || props.preserveStructure);
+  const createOverlayMode = resolveCreateOverlayMode(data.createFields, data.createOverlay || props.createOverlay, { preserveStructure });
   const embedded = JSON.stringify({
     pageName: metadata.pageName,
     props,
@@ -61,6 +64,7 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
     columns,
     detailOverlay: detailOverlayMode,
     createOverlay: createOverlayMode,
+    preserveStructure,
     generation: metadata.generation || page.extensions?.generation || {}
   }).replace(/</g, '\\u003c');
   const navigation = renderNavigation(shell.navigation);
@@ -81,7 +85,8 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
   const appScript = `
 (() => {
   const h = React.createElement;
-  const { ConfigProvider, Card, Input, Select, Radio, Button, Table, Pagination, Empty, Result, Badge, Drawer, Descriptions, DatePicker, Statistic, Modal, Tabs, message } = antd;
+  const { ConfigProvider, Card, Form, Input, Select, Radio, Button, Table, Pagination, Empty, Result, Badge, Tag, Drawer, Descriptions, DatePicker, Statistic, Modal, Tabs, message } = antd;
+  ${formRuntimeBootstrapSource()}
   const payload = JSON.parse(document.getElementById('yipex-standard-query-table-data').textContent);
   const source = payload.data || {};
   const filterDefs = payload.filters || [];
@@ -107,6 +112,8 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
   const detailFieldDefs = Array.isArray(source.detailFields) ? source.detailFields : columnDefs;
   const detailPresentation = payload.detailOverlay || 'modal';
   const createPresentation = payload.createOverlay || 'modal';
+  const preserveStructure = Boolean(payload.preserveStructure);
+  const optionSets = source.optionSets || {};
   const supportsCreate = capabilities.has('form.overlay') && Array.isArray(source.createFields) && source.createFields.length > 0 && createPresentation !== 'page';
   const supportsCreatePage = Boolean(source.createPageHref) && (!source.createOverlay || createPresentation === 'page');
   const detailDrawerSize = source.detailDrawerSize === 'large' || source.detailDrawerSize === 'default' ? source.detailDrawerSize : (detailFieldDefs.length > 8 ? 'large' : 'default');
@@ -124,6 +131,11 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
   function formatCell(value, record, column) {
     if (column.format === 'amount' || column.format === 'currency') return formatMoney(value, column.unitPlacement === 'value' && column.unitKey ? record[column.unitKey] : undefined);
     if (column.format === 'integer') return value == null ? '-' : Number(value).toLocaleString('zh-CN');
+    if (column.format === 'status-tag') {
+      const text = record[column.labelKey || 'statusLabel'] || value || '-';
+      const tone = resolveStatusTone(value, column);
+      return h(Tag, { color: tone === 'default' ? undefined : tone, className: 'standard-status-tag' }, text);
+    }
     if (column.format === 'status') {
       const text = record[column.labelKey || 'statusLabel'] || value || '-';
       const tone = resolveStatusTone(value, column);
@@ -132,6 +144,7 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
     return safe(value) || '-';
   }
   function App() {
+    const [createForm] = Form.useForm();
     const [draft, setDraft] = React.useState(hydratedInitialFilters);
     const [applied, setApplied] = React.useState(hydratedInitialFilters);
     const [activeTab, setActiveTab] = React.useState(initialTab);
@@ -218,7 +231,7 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
           window.location.href = target.href;
         } else setDrawerRecord(record);
       }
-      else if (action.type === 'edit') { setEditingRecord(record); setCreateValues(record); setCreateOpen(true); }
+      else if (action.type === 'edit') openEdit(record);
       else if (action.type === 'status-transition') runStatusTransition(action, record);
       else if (action.href) {
         const target = new URL(action.href.replace(/\{id\}/g, encodeURIComponent(safe(record.id))), window.location.href);
@@ -226,29 +239,22 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
         window.location.href = target.href;
       }
     };
-    const submitCreate = () => {
+    const submitCreate = async () => {
       const fields = source.createFields || [];
-      const missing = fields.find((field) => field.required && (createValues[field.key] == null || String(createValues[field.key]).trim() === ''));
-      if (missing) { message.warning(missing.requiredMessage || ('请填写' + missing.label)); return; }
-      const normalizedValues = { ...createValues };
+      let submittedValues;
+      try { submittedValues = await createForm.validateFields(); } catch { return; }
+      const reconciled = formRuntime.reconcileFields(fields, submittedValues, optionSets);
+      const normalizedValues = formRuntime.serializeValues(fields, reconciled.values);
       for (const field of fields) {
-        const value = createValues[field.key];
+        const value = normalizedValues[field.key];
         if (value == null || value === '') continue;
-        if (field.type === 'number' || field.type === 'amount') {
-          const numberValue = Number(value);
-          if (!Number.isFinite(numberValue)) { message.warning(field.invalidMessage || ('请输入有效的' + field.label)); return; }
-          const validation = field.validation || {};
-          if (validation.min !== undefined && numberValue < validation.min) { message.warning(validation.minMessage || (field.label + '不能小于 ' + validation.min)); return; }
-          if (validation.max !== undefined && numberValue > validation.max) { message.warning(validation.maxMessage || (field.label + '不能大于 ' + validation.max)); return; }
-          normalizedValues[field.key] = numberValue;
-        }
-        const option = (field.options || []).find((item) => item.value === value);
-        if (option) normalizedValues[field.labelKey || (field.key + 'Label')] = option.label;
+        if (field.labelKey) normalizedValues[field.labelKey] = formRuntime.displayValue(field, value, normalizedValues, optionSets);
       }
       const createConfig = source.create || {};
       for (const [key, definition] of Object.entries(createConfig.derived || {})) {
         const value = normalizedValues[definition.sourceKey];
-        if (value != null && definition.map && definition.map[value] != null) normalizedValues[key] = definition.map[value];
+        if (value == null) continue;
+        normalizedValues[key] = definition.map && definition.map[value] != null ? definition.map[value] : value;
       }
       const now = new Date();
       const timestampField = createConfig.timestampField || 'createdAt';
@@ -256,12 +262,12 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
       if (editingRecord) {
         const updated = { ...editingRecord, ...normalizedValues, id: editingRecord.id };
         setRecords((current) => { const next = orderRecords(current.map((item) => item.id === editingRecord.id ? updated : item)); if (source.persistenceKey) window.localStorage.setItem(source.persistenceKey, JSON.stringify(next.filter((item) => !source.records?.some((base) => base.id === item.id)))); return next; });
-        setCreateValues({}); setEditingRecord(null); setCreateOpen(false); message.success(createConfig.editSuccessMessage || source.editSuccessMessage || '记录已更新'); return;
+        setCreateValues({}); createForm.resetFields(); setEditingRecord(null); setCreateOpen(false); message.success(createConfig.editSuccessMessage || source.editSuccessMessage || '记录已更新'); return;
       }
       const prefix = createConfig.idPrefix || source.createIdPrefix || 'REC';
-      const id = createValues.id || prefix + now.getTime().toString().slice(-10);
+      const id = normalizedValues.id || prefix + now.getTime().toString().slice(-10);
       const record = { ...(createConfig.defaults || {}), ...normalizedValues, id, ...(createConfig.idField || source.createIdField ? { [createConfig.idField || source.createIdField]: id } : {}), [timestampField]: timestamp };
-      setRecords((current) => { const next = orderRecords([record, ...current]); if (source.persistenceKey) window.localStorage.setItem(source.persistenceKey, JSON.stringify(next.filter((item) => !source.records?.some((base) => base.id === item.id)))); return next; }); setCreateValues({}); setCreateOpen(false); setPage(1); message.success(createConfig.successMessage || source.createSuccessMessage || '记录已新增');
+      setRecords((current) => { const next = orderRecords([record, ...current]); if (source.persistenceKey) window.localStorage.setItem(source.persistenceKey, JSON.stringify(next.filter((item) => !source.records?.some((base) => base.id === item.id)))); return next; }); setCreateValues({}); createForm.resetFields(); setCreateOpen(false); setPage(1); message.success(createConfig.successMessage || source.createSuccessMessage || '记录已新增');
     };
     const activeTabDef = tabDefs.find((tab) => tab.key === activeTab);
     const filtered = records.filter((record) => {
@@ -326,31 +332,45 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
     const detailFields = detailFieldDefs;
     const detailColumnCount = window.innerWidth <= 680 ? 1 : Number(source.detailColumns || 2);
     const detailOverlayMode = detailPresentation === 'drawer' ? 'drawer' : 'modal';
-    const detailTitle = drawerRecord ? (drawerRecord.name || drawerRecord.id || '详情') : '详情';
-    const detailBody = drawerRecord ? h(Descriptions, { className: 'standard-detail-descriptions', bordered: false, column: detailColumnCount, size: 'middle' }, detailFields.map((field) => h(Descriptions.Item, { key: field.key, label: field.displayLabel || field.label, span: field.span === 'full' ? detailColumnCount : 1 }, formatCell(drawerRecord[field.key], drawerRecord, field)))) : null;
+    const detailTitle = drawerRecord ? (source.detailTitle || drawerRecord.name || drawerRecord.id || '详情') : (source.detailTitle || '详情');
+    const detailSections = Array.isArray(source.detailSections) ? source.detailSections : [];
+    const detailSectionKeys = new Set(detailSections.flatMap((section) => section.fieldKeys || []));
+    const ungroupedDetailFields = detailFields.filter((field) => !detailSectionKeys.has(field.key));
+    const renderDetailDescriptions = (fields, key) => h(Descriptions, { key, className: 'standard-detail-descriptions', bordered: false, column: detailColumnCount, size: 'middle' }, fields.map((field) => h(Descriptions.Item, { key: field.key, label: field.displayLabel || field.label, span: field.span === 'full' ? detailColumnCount : 1 }, formatCell(drawerRecord[field.key], drawerRecord, field))));
+    const detailBody = drawerRecord ? detailSections.length
+      ? h('div', { className: 'standard-detail-sections' }, [
+          ...detailSections.map((section) => h('section', { key: section.id || section.title, className: 'standard-detail-section', 'aria-label': section.title }, [h('h3', { key: 'title' }, section.title), renderDetailDescriptions(detailFields.filter((field) => (section.fieldKeys || []).includes(field.key)), 'fields')])),
+          ungroupedDetailFields.length ? h('section', { key: 'other', className: 'standard-detail-section', 'aria-label': source.detailOtherTitle || '其他信息' }, [h('h3', { key: 'title' }, source.detailOtherTitle || '其他信息'), renderDetailDescriptions(ungroupedDetailFields, 'fields')]) : null
+        ])
+      : renderDetailDescriptions(detailFields, 'fields') : null;
     const detailFooter = h('div', { className: 'standard-detail-overlay-footer' }, h(Button, { onClick: () => setDrawerRecord(null) }, '关闭'));
     const detailOverlay = supportsDetail ? detailOverlayMode === 'drawer'
       ? h(Drawer, { className: 'standard-detail-drawer', title: detailTitle, open: Boolean(drawerRecord), placement: 'right', size: detailDrawerSize, width: window.innerWidth <= 680 ? 'calc(100vw - 16px)' : undefined, onClose: () => setDrawerRecord(null), footer: detailFooter }, detailBody)
       : h(Modal, { className: 'standard-detail-modal', title: detailTitle, open: Boolean(drawerRecord), width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: () => setDrawerRecord(null), footer: detailFooter, centered: true, destroyOnHidden: true }, detailBody)
       : null;
     const renderCreateField = (field) => {
-      const value = createValues[field.key] || '';
-      const update = (next) => setCreateValues((current) => ({ ...current, [field.key]: next }));
-      let control;
-      if (field.type === 'select') control = h(Select, { value: value || undefined, placeholder: field.placeholder, options: (field.options || []).map((option) => ({ label: option.label, value: option.value })), onChange: update });
-      else if (field.type === 'radio' || field.type === 'radio-group') control = h(Radio.Group, { value: value || undefined, onChange: (event) => update(event.target.value) }, h('div', { className: 'standard-create-radio-list' }, (field.options || []).map((option) => h(Radio, { key: option.value, value: option.value, className: 'standard-create-radio-option' }, h('span', { className: 'standard-create-radio-copy' }, [h('strong', { key: 'label' }, option.label), option.description ? h('small', { key: 'description' }, option.description) : null])))));
-      else if (field.type === 'textarea') control = h(Input.TextArea, { value, rows: 3, placeholder: field.placeholder, onChange: (event) => update(event.target.value) });
-      else control = h(Input, { value, type: field.type === 'number' ? 'number' : 'text', placeholder: field.placeholder, onChange: (event) => update(event.target.value) });
-      return h('label', { key: field.key, className: 'standard-create-field' }, [h('span', { key: 'label' }, field.label + (field.required ? '：' : '：')), control]);
+      const state = formRuntime.resolveFieldState(field, createValues, optionSets);
+      if (!state.visible) return null;
+      return h(Form.Item, { key: field.key, className: 'standard-create-field', label: field.label + '：', name: field.key, ...formRuntime.fieldValueProps(field), rules: formRuntime.buildRules(field, state), extra: field.help }, formRuntime.renderControl(field, createValues, optionSets, state));
     };
     const createFieldDefs = supportsCreate ? (source.createFields || []) : [];
     const createSections = Array.isArray(source.createSections) ? source.createSections : [];
     const groupedFieldKeys = new Set(createSections.flatMap((section) => section.fieldKeys || []));
     const ungroupedFields = createFieldDefs.filter((field) => !groupedFieldKeys.has(field.key));
-    const openCreate = () => { setEditingRecord(null); setCreateValues({}); setCreateOpen(true); };
-    const closeCreate = () => { setCreateOpen(false); setCreateValues({}); setEditingRecord(null); };
+    const applyCreateValues = (values) => {
+      const prepared = formRuntime.reconcileFields(createFieldDefs, formRuntime.toFormValues(createFieldDefs, values), optionSets).values;
+      createForm.resetFields(); createForm.setFieldsValue(prepared); setCreateValues(prepared);
+    };
+    const openCreate = () => { setEditingRecord(null); applyCreateValues(source.createInitialValues || {}); setCreateOpen(true); };
+    const openEdit = (record) => { setEditingRecord(record); applyCreateValues(record); setCreateOpen(true); };
+    const closeCreate = () => { setCreateOpen(false); setCreateValues({}); createForm.resetFields(); setEditingRecord(null); };
+    const onCreateValuesChange = (_, values) => {
+      const reconciled = formRuntime.reconcileFields(createFieldDefs, values, optionSets);
+      if (reconciled.changedKeys.length) createForm.setFields(reconciled.changedKeys.map((key) => ({ name: key, value: reconciled.values[key], errors: [] })));
+      setCreateValues(reconciled.values);
+    };
     const createFooter = h('div', { className: 'standard-drawer-footer' }, [h(Button, { key: 'cancel', onClick: closeCreate }, '取消'), h(Button, { key: 'submit', type: 'primary', onClick: submitCreate }, editingRecord ? '保存' : '提交')]);
-    const createBody = createSections.length
+    const createFieldsBody = createSections.length
       ? h('div', { className: 'standard-create-sections' }, [
           ...createSections.map((section) => h('section', { key: section.id || section.title, className: 'standard-create-section', 'aria-label': section.title }, [
             h('h3', { key: 'title' }, section.title),
@@ -359,24 +379,28 @@ export function renderStandardQueryTable(pageSpec, { projectRoot, specPath }) {
           ungroupedFields.length ? h('div', { key: 'ungrouped', className: 'standard-create-form' }, ungroupedFields.map(renderCreateField)) : null
         ])
       : h('div', { className: 'standard-create-form' }, createFieldDefs.map(renderCreateField));
+    const createBody = h(Form, { form: createForm, layout: 'vertical', colon: false, preserve: true, onValuesChange: onCreateValuesChange }, createFieldsBody);
     const createOverlay = supportsCreate
       ? createPresentation === 'drawer'
         ? h(Drawer, { className: 'standard-create-drawer', title: editingRecord ? (source.editLabel || '编辑记录') : (payload.props.createLabel || '新增记录'), open: createOpen, placement: 'right', size: createDrawerSize, width: window.innerWidth <= 680 ? 'calc(100vw - 16px)' : undefined, onClose: closeCreate, footer: createFooter }, createBody)
-        : h(Modal, { className: 'standard-create-modal', title: editingRecord ? (source.editLabel || '编辑记录') : (payload.props.createLabel || '新增记录'), open: createOpen, width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: closeCreate, footer: createFooter, centered: true, destroyOnHidden: true }, createBody)
+        : h(Modal, { className: 'standard-create-modal' + (preserveStructure ? ' yipex-preserve-structure' : ''), title: editingRecord ? (source.editLabel || '编辑记录') : (payload.props.createLabel || '新增记录'), open: createOpen, width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: closeCreate, footer: createFooter, centered: true, destroyOnHidden: !preserveStructure }, createBody)
       : null;
     const resultTitle = h('div', { className: 'standard-result-title' }, [h('h2', { key: 'title' }, payload.props.resultTitle || '查询列表'), h('span', { key: 'count', className: 'standard-result-count', 'aria-live': 'polite' }, '共 ' + filtered.length + ' 条')]);
     const summaryMetrics = supportsSummary && Array.isArray(source.metrics) ? h('div', { key: 'metrics', className: 'standard-query-metrics' }, source.metrics.map((metric) => h(Card, { key: metric.id || metric.label, className: 'standard-query-metric', bordered: false }, h(Statistic, { title: metric.displayLabel || metric.label, value: metric.value, precision: metric.format === 'currency' || metric.format === 'amount' ? 2 : undefined })))) : null;
-    const resultActions = [supportsCreatePage ? h(Button, { key: 'create-page', type: 'primary', onClick: () => { window.location.href = source.createPageHref; } }, payload.props.createLabel || '新增记录') : null, supportsCreate ? h(Button, { key: 'create', type: 'primary', onClick: openCreate }, payload.props.createLabel || '新增记录') : null, supportsExport ? h(Button, { key: 'export', onClick: exportCsv }, (payload.props.exportLabel || '导出') + (selectedKeys.length ? ' (' + selectedKeys.length + ')' : '')) : null].filter(Boolean);
+    const createAction = supportsCreate ? h(Button, { key: 'create', type: 'primary', onClick: openCreate }, payload.props.createLabel || '新增记录') : null;
+    const resultActions = [supportsCreatePage ? h(Button, { key: 'create-page', type: 'primary', onClick: () => { window.location.href = source.createPageHref; } }, payload.props.createLabel || '新增记录') : null, source.createPlacement === 'page-header' ? null : createAction, supportsExport ? h(Button, { key: 'export', onClick: exportCsv }, (payload.props.exportLabel || '导出') + (selectedKeys.length ? ' (' + selectedKeys.length + ')' : '')) : null].filter(Boolean);
+    const pageHeaderAction = source.createPlacement === 'page-header' ? createAction : null;
     const resultExtra = resultActions.length ? h('div', { className: 'standard-result-actions' }, resultActions) : null;
     const resultPanel = h('section', { className: 'standard-result-panel', 'aria-label': payload.props.resultTitle || '查询列表' }, [h('div', { key: 'header', className: 'standard-result-header' }, [resultTitle, resultExtra]), h(Table, { key: 'table', rowKey: (record) => record.id || JSON.stringify(record), rowSelection, columns: tableColumns, dataSource: visible, loading, pagination: false, size: 'middle', scroll: { x: Math.max(720, tableColumns.length * 140) }, onRow: supportsDetail && detailPresentation !== 'page' ? (record) => ({ onClick: () => setDrawerRecord(record), className: 'standard-query-clickable-row' }) : undefined, locale: { emptyText: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' }) } }), h('div', { key: 'footer', className: 'standard-query-pagination' }, [h('span', { key: 'summary' }, filtered.length ? '显示 ' + ((page - 1) * pageSize + 1) + '-' + Math.min(page * pageSize, filtered.length) + ' 条，共 ' + filtered.length + ' 条' : '显示 0 条，共 0 条'), h(Pagination, { key: 'pagination', current: page, pageSize, total: filtered.length, showSizeChanger: false, showTotal: false, onChange: (nextPage) => { setPage(nextPage); syncLocation(applied, activeTab, nextPage); } })]), detailOverlay, createOverlay]);
-    return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { fontFamily: 'Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontSize: 14, fontSizeSM: 12, fontSizeLG: 16, fontSizeXL: 20, lineHeight: 22 / 14, lineHeightSM: 20 / 12, lineHeightLG: 24 / 16, fontWeightStrong: 500, borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' } } }, h('div', { className: 'standard-query-page' }, [h('header', { key: 'header', className: 'standard-query-header' }, [h('div', { key: 'titleWrap' }, [h('div', { key: 'titleRow', className: 'standard-query-title-row' }, h('h1', { key: 'title' }, payload.props.title || payload.pageName)), payload.props.subtitle ? h('p', { key: 'subtitle' }, payload.props.subtitle) : null])]), tabsNode, summaryMetrics, filterPanel, resultPanel]));
+    return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { fontFamily: 'Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontSize: 14, fontSizeSM: 12, fontSizeLG: 16, fontSizeXL: 20, lineHeight: 22 / 14, lineHeightSM: 20 / 12, lineHeightLG: 24 / 16, fontWeightStrong: 500, borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' } } }, h('div', { className: 'standard-query-page' }, [h('header', { key: 'header', className: 'standard-query-header' }, [h('div', { key: 'titleRow', className: 'standard-query-title-row' }, h('h1', { key: 'title' }, payload.props.title || payload.pageName)), pageHeaderAction]), tabsNode, summaryMetrics, filterPanel, resultPanel]));
   }
   ReactDOM.createRoot(document.getElementById('yipex-standard-query-table-app')).render(h(App));
 })();
   `;
   const pageCss = `
+    .standard-query-header{display:flex;align-items:center;justify-content:space-between;gap:16px}.standard-status-tag{margin-inline-end:0}.standard-detail-sections{display:flex;flex-direction:column;gap:20px}.standard-detail-section+.standard-detail-section{padding-top:20px;border-top:1px solid #E7E8E8}.standard-detail-section h3{margin:0 0 12px;color:#222;font-size:14px;font-weight:500;line-height:22px}
     .yipex-confirm-modal .yipex-confirm-primary{background:#222222;border-color:#222222;color:#FFFFFF;box-shadow:0 2px 0 rgba(0,0,0,.04)}.yipex-confirm-modal .yipex-confirm-primary:hover,.yipex-confirm-modal .yipex-confirm-primary:focus{background:#3A3A3A;border-color:#3A3A3A;color:#FFFFFF}.yipex-confirm-modal .yipex-confirm-cancel{border-color:#D9D9D9!important;color:#222222!important;background:#FFFFFF!important;box-shadow:none}.yipex-confirm-modal .yipex-confirm-cancel:hover{border-color:#D9D9D9!important;color:#222222!important;background:#F5F5F5!important}.yipex-confirm-modal .yipex-confirm-cancel:focus,.yipex-confirm-modal .yipex-confirm-cancel:focus-visible{border-color:#D9D9D9!important;color:#222222!important;background:#FFFFFF!important;box-shadow:none}
-    .standard-query-page{width:100%;min-width:0;margin:0;letter-spacing:0}.standard-query-header{margin-bottom:16px}.standard-query-title-row{display:flex;align-items:center}.standard-query-title-row h1{margin:0;color:#222;font-size:20px;font-weight:500;line-height:28px}.standard-query-header p{margin:6px 0 0;color:rgba(0,0,0,.58);font-size:14px;font-weight:400;line-height:22px}.standard-query-filter-panel{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #E7E8E8}.standard-query-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}.standard-query-metric{border:0!important;box-shadow:none!important;background:#fafafa}.standard-query-metric .ant-card-body{padding:16px}.standard-query-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:end}.standard-query-field{display:flex;min-width:0;flex-direction:column;gap:6px;color:rgba(0,0,0,.85);font-size:14px;font-weight:400;line-height:22px}.standard-query-field>span:first-child{font-weight:400}.standard-query-field .ant-input,.standard-query-field .ant-select,.standard-query-field .ant-picker{width:100%}.standard-query-actions{grid-column:4;grid-row:var(--standard-action-row-desktop);display:flex;justify-content:flex-end;gap:8px}.standard-result-panel{margin-bottom:16px}.standard-result-header{min-height:32px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px}.standard-result-title{display:flex;align-items:baseline;gap:8px}.standard-result-title h2{margin:0;font-size:16px;font-weight:500;line-height:24px}.standard-result-count{color:rgba(0,0,0,.42);font-size:12px;font-weight:400;line-height:20px}.standard-result-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.standard-result-panel .ant-table-thead>tr>th{font-weight:500;line-height:22px}.standard-result-panel .ant-table-tbody>tr>td,.standard-result-panel .ant-table-tbody .ant-btn{font-size:14px;font-weight:400;line-height:22px}.standard-result-panel .standard-row-action.ant-btn-link{padding-inline:0}.standard-row-actions{display:flex;align-items:center;gap:8px;white-space:nowrap}.standard-cancel-action.ant-btn-link:disabled{color:rgba(0,0,0,.25)}.standard-query-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;color:rgba(0,0,0,.58);font-size:12px;font-weight:400;line-height:20px}.standard-query-pagination .ant-pagination{margin-left:auto}.standard-query-clickable-row{cursor:pointer}.standard-query-clickable-row:hover>td{background:#FAFAFA!important}.standard-detail-drawer .ant-drawer-header-title,.standard-create-drawer .ant-drawer-header-title{display:flex;align-items:center;width:100%}.standard-detail-drawer .ant-drawer-title,.standard-create-drawer .ant-drawer-title{order:1;flex:1;min-width:0}.standard-detail-drawer .ant-drawer-close,.standard-create-drawer .ant-drawer-close{order:2;margin-inline:16px 0}.standard-detail-overlay-footer,.standard-drawer-footer{display:flex;justify-content:flex-end;gap:8px}.standard-create-sections{display:flex;flex-direction:column;gap:20px}.standard-create-section+.standard-create-section{padding-top:20px;border-top:1px solid #E7E8E8}.standard-create-section h3{margin:0 0 12px;color:#222;font-size:14px;font-weight:500;line-height:22px}.standard-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.standard-create-field{display:flex;min-width:0;flex-direction:column;gap:6px;color:rgba(0,0,0,.85);font-size:14px;line-height:22px}.standard-create-field:nth-last-child(1){grid-column:1/-1}.standard-create-sections .standard-create-field:nth-last-child(1){grid-column:auto}.standard-create-field .ant-input,.standard-create-field .ant-select{width:100%}.standard-create-radio-list{display:flex;flex-direction:column;gap:10px}.standard-create-radio-option{display:flex;align-items:flex-start;margin-inline:0;padding:10px 12px;border:1px solid #e7e8e8;border-radius:6px}.standard-create-radio-option .ant-radio{margin-top:2px}.standard-create-radio-copy{display:flex;flex-direction:column;gap:2px;line-height:20px}.standard-create-radio-copy strong{font-weight:500}.standard-create-radio-copy small{color:rgba(0,0,0,.58);font-size:12px;line-height:18px}@media(max-width:900px){.standard-query-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.standard-query-actions{grid-column:2;grid-row:var(--standard-action-row-tablet)}.standard-query-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.standard-create-form{grid-template-columns:1fr}.standard-create-field:nth-last-child(1){grid-column:auto}.standard-query-grid{grid-template-columns:1fr}.standard-query-metrics{grid-template-columns:1fr}.standard-query-actions{grid-column:1;grid-row:var(--standard-action-row-narrow);justify-content:flex-end}.standard-result-header{align-items:flex-start}.standard-query-pagination{align-items:flex-start;flex-direction:column}.standard-query-pagination .ant-pagination{margin-left:0;align-self:flex-end}}
+    .standard-query-page{width:100%;min-width:0;margin:0;letter-spacing:0}.standard-query-header{margin-bottom:16px}.standard-query-title-row{display:flex;align-items:center}.standard-query-title-row h1{margin:0;color:#222;font-size:20px;font-weight:500;line-height:28px}.standard-query-header p{margin:6px 0 0;color:rgba(0,0,0,.58);font-size:14px;font-weight:400;line-height:22px}.standard-query-filter-panel{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #E7E8E8}.standard-query-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}.standard-query-metric{border:0!important;box-shadow:none!important;background:#fafafa}.standard-query-metric .ant-card-body{padding:16px}.standard-query-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:end}.standard-query-field{display:flex;min-width:0;flex-direction:column;gap:6px;color:rgba(0,0,0,.85);font-size:14px;font-weight:400;line-height:22px}.standard-query-field>span:first-child{font-weight:400}.standard-query-field .ant-input,.standard-query-field .ant-select,.standard-query-field .ant-picker{width:100%}.standard-query-actions{grid-column:4;grid-row:var(--standard-action-row-desktop);display:flex;justify-content:flex-end;gap:8px}.standard-result-panel{margin-bottom:16px}.standard-result-header{min-height:32px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px}.standard-result-title{display:flex;align-items:baseline;gap:8px}.standard-result-title h2{margin:0;font-size:16px;font-weight:500;line-height:24px}.standard-result-count{color:rgba(0,0,0,.42);font-size:12px;font-weight:400;line-height:20px}.standard-result-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.standard-result-panel .ant-table-thead>tr>th{font-weight:500;line-height:22px}.standard-result-panel .ant-table-tbody>tr>td,.standard-result-panel .ant-btn{font-size:14px;font-weight:400;line-height:22px}.standard-result-panel .standard-row-action.ant-btn-link{padding-inline:0}.standard-row-actions{display:flex;align-items:center;gap:8px;white-space:nowrap}.standard-cancel-action.ant-btn-link:disabled{color:rgba(0,0,0,.25)}.standard-query-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;color:rgba(0,0,0,.58);font-size:12px;font-weight:400;line-height:20px}.standard-query-pagination .ant-pagination{margin-left:auto}.standard-query-clickable-row{cursor:pointer}.standard-query-clickable-row:hover>td{background:#FAFAFA!important}.standard-detail-drawer .ant-drawer-header-title,.standard-create-drawer .ant-drawer-header-title{display:flex;align-items:center;width:100%}.standard-detail-drawer .ant-drawer-title,.standard-create-drawer .ant-drawer-title{order:1;flex:1;min-width:0}.standard-detail-drawer .ant-drawer-close,.standard-create-drawer .ant-drawer-close{order:2;margin-inline:16px 0}.standard-detail-overlay-footer,.standard-drawer-footer{display:flex;justify-content:flex-end;gap:8px}.standard-create-sections{display:flex;flex-direction:column;gap:20px}.standard-create-section+.standard-create-section{padding-top:20px;border-top:1px solid #E7E8E8}.standard-create-section h3{margin:0 0 12px;color:#222;font-size:14px;font-weight:500;line-height:22px}.standard-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.standard-create-field.ant-form-item{min-width:0;margin-bottom:0;color:rgba(0,0,0,.85);font-size:14px;line-height:22px}.standard-create-field:nth-last-child(1){grid-column:1/-1}.standard-create-sections .standard-create-field:nth-last-child(1){grid-column:auto}.standard-create-field .ant-input,.standard-create-field .ant-input-number,.standard-create-field .ant-select,.standard-create-field .ant-picker,.standard-create-field .ant-cascader-picker{width:100%}.yipex-preserve-structure .ant-modal-body{max-height:min(70vh,720px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.standard-create-radio-list{display:flex;flex-direction:column;gap:10px}.standard-create-radio-option{display:flex;align-items:flex-start;margin-inline:0;padding:10px 12px;border:1px solid #e7e8e8;border-radius:6px}.standard-create-radio-option .ant-radio{margin-top:2px}.standard-create-radio-copy{display:flex;flex-direction:column;gap:2px;line-height:20px}.standard-create-radio-copy strong{font-weight:500}.standard-create-radio-copy small{color:rgba(0,0,0,.58);font-size:12px;line-height:18px}@media(max-width:900px){.standard-query-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.standard-query-actions{grid-column:2;grid-row:var(--standard-action-row-tablet)}.standard-query-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.standard-create-form{grid-template-columns:1fr}.standard-create-field:nth-last-child(1){grid-column:auto}.standard-query-grid{grid-template-columns:1fr}.standard-query-metrics{grid-template-columns:1fr}.standard-query-actions{grid-column:1;grid-row:var(--standard-action-row-narrow);justify-content:flex-end}.standard-result-header{align-items:flex-start}.standard-query-pagination{align-items:flex-start;flex-direction:column}.standard-query-pagination .ant-pagination{margin-left:0;align-self:flex-end}}
   `;
   const runtimeAssets = ['react.production.min.js', 'react-dom.production.min.js', 'dayjs.min.js', 'dayjs-zh-cn.js', 'antd.min.js', 'ant-design-icons.umd.js'];
   const preloads = runtimeAssets.map((asset) => `<link rel="preload" as="script" href="${vendorPath(asset)}">`).join('');

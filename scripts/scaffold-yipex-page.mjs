@@ -4,6 +4,7 @@ import { basename, resolve } from 'node:path';
 import { readRules } from './read-yipex-rules.mjs';
 import { resolvePageStrategy } from './lib/yipex-capability-policy.mjs';
 import { createRendererScaffold } from './lib/yipex-renderer-registry.mjs';
+import { createDemandScopedNavigation } from './lib/yipex-navigation.mjs';
 
 const args = process.argv.slice(2);
 const changeDir = args[0];
@@ -48,18 +49,7 @@ const scaffold = rendererId
       states: { loading: false, empty: false, error: false, 'permission-denied': false, success: false },
       interactions: []
     };
-const navigationCatalog = [
-  { id: 'home', label: '首页', icon: 'HomeOutlined', keywords: ['首页', '主页', '概览', '看板', 'dashboard'] },
-  { id: 'trade-background', label: '贸易背景材料', icon: 'FileTextOutlined', keywords: ['贸易背景', '贸易材料', '背景材料'] },
-  { id: 'digital-wallet', label: '数币钱包流水', icon: 'WalletOutlined', keywords: ['数币', '数字货币', '数字币', '钱包流水'] },
-  { id: 'fiat-wallet', label: '法币钱包流水', icon: 'AccountBookOutlined', keywords: ['法币', '结算', '订单', '流水'] },
-  { id: 'receiving-account', label: '收款账户', icon: 'BankOutlined', keywords: ['收款账户', '收款账号', '收款'] },
-  { id: 'profile', label: '个人中心', icon: 'UserOutlined', keywords: ['个人中心', '账号设置', '个人资料'] }
-];
-const navigationText = `${request} ${changeId}`.toLowerCase();
-const matchedNavigation = navigationCatalog.filter((item) => item.id === 'home' || item.keywords.some((keyword) => navigationText.includes(keyword.toLowerCase())));
-const navigation = matchedNavigation.length > 1 ? matchedNavigation : [navigationCatalog[0]];
-const activeNavigationId = navigation.find((item) => item.id !== 'home')?.id || 'home';
+const navigation = createDemandScopedNavigation({ request, pageName: scaffold.pageName, changeId });
 const spec = {
   schemaVersion: 2,
   metadata: {
@@ -97,7 +87,7 @@ const spec = {
     shell: {
       id: 'yipex-default',
       sidebar: { width: 200, background: '#F0F0F0', showCollapseControl: true },
-      navigation: navigation.map(({ id, label, icon }) => ({ id, label, icon, ...(id === activeNavigationId ? { active: true } : {}) })),
+      navigation,
       header: { welcome: '欢迎回来', userName: '用户', email: 'user@yipex.tech' },
       footer: { copyright: 'Copyright Somei E-Commerce Limited 2025. All rights reserved' },
       floatingTools: { show: false }

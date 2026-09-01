@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260828-standard-grouped-form",
+    "pageName": "新增结算规则",
+    "pageType": "form",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "创建一个新增结算规则表单，按基础信息、结算参数和补充设置分组，支持校验、保存和取消。",
+    "assumptions": ["保存操作使用演示数据，不调用真实接口。"],
+    "ruleRefs": ["DESIGN.md", "01-foundations.md", "02-components.md", "05-form-patterns.md", "execution/presentation-intent.md", "execution/page-contract-v2.md", "execution/capability-model/capability-model.md"],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "form.grouped-submit",
+      "skeleton": "form-workflow",
+      "capabilities": ["form.groups", "form.validation", "form.stickyActions", "action.primary", "action.secondary"],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.28.1",
+      "rendererId": "yipex-standard-grouped-form-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "form",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "rule-form", "role": "form", "purpose": "按业务分组填写结算规则" },
+      { "id": "form-actions", "role": "action", "purpose": "保存或取消当前规则" }
+    ],
+    "hierarchy": { "primary": "完成结算规则配置并保存", "secondary": ["按分组快速定位字段"] },
+    "operations": {
+      "primary": { "id": "save-rule", "label": "保存", "placement": "覆盖 Shell Footer 的固定吸底栏最右侧", "outcome": "校验字段并保存演示规则" },
+      "secondary": [{ "id": "cancel-rule", "label": "取消", "placement": "保存按钮左侧", "outcome": "重置当前编辑内容" }]
+    },
+    "stateCoverage": ["loading", "error", "success", "permission-denied"],
+    "responsive": { "desktop": "移除分组表单最外层白色背景和 24px 内容内边距；面包屑在模块外展示并在上方、左侧各保留 8px；每个业务模块的 header 和 body 使用纯白背景并保留清晰的 1px 灰色分割线，字段默认使用三列网格，水平、垂直及模块间距均为 16px；固定吸底操作栏从侧边栏右缘到窗口右缘左右通铺，按钮组右对齐。", "narrow": "模块字段改为单列，纯白模块保持独立区分；面包屑保持可见，固定吸底操作栏从窗口左缘到右缘通铺。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "settlement-rules", "label": "结算规则", "icon": "FileTextOutlined", "active": true }], "header": { "welcome": "运营配置", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "运" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" } },
+    "root": { "id": "rule-page", "type": "standard-grouped-form-page", "props": { "primaryActionLabel": "保存规则", "secondaryActionLabel": "取消" }, "children": [
+      { "id": "rule-form", "type": "form", "label": "结算规则表单", "children": [{ "id": "basic-section", "type": "form-section", "label": "基础信息" }, { "id": "settlement-section", "type": "form-section", "label": "结算参数" }, { "id": "advanced-section", "type": "form-section", "label": "补充设置" }] },
+      { "id": "form-actions", "type": "action", "children": [{ "id": "cancel-rule", "type": "button", "label": "取消", "events": { "click": "cancelRule" } }, { "id": "save-rule", "type": "button", "label": "保存规则", "events": { "click": "saveRule" } }] }
+    ] },
+    "data": {
+      "demo": true,
+      "sections": [
+        { "id": "basic", "title": "基础信息", "fields": [
+          { "key": "ruleName", "label": "规则名称", "required": true, "placeholder": "例如：华东餐饮商户 T+1 结算" },
+          { "key": "merchantIds", "label": "适用商户", "type": "select", "required": true, "searchable": true, "options": [{ "value": "M10086", "label": "海岸咖啡（静安店）" }, { "value": "M10092", "label": "松果生活馆" }, { "value": "M10103", "label": "北屿餐厅" }] }
+        ] },
+        { "id": "settlement", "title": "结算参数", "fields": [
+          { "key": "settlementCycle", "label": "结算周期", "type": "select", "required": true, "options": [{ "value": "T1", "label": "T+1（次日结算）" }, { "value": "T7", "label": "T+7（七日结算）" }, { "value": "MONTHLY", "label": "每月结算" }] },
+          { "key": "feeRate", "label": "手续费率", "type": "number", "required": true, "min": 0, "max": 100, "precision": 4, "suffix": "%", "help": "请输入 0-100 之间的费率" },
+          { "key": "minimumAmount", "label": "最低结算金额", "type": "amount", "required": true, "min": 0, "precision": 2, "prefix": "¥" },
+          { "key": "effectiveAt", "label": "生效时间", "type": "date-time", "required": true, "format": "YYYY-MM-DD HH:mm" }
+        ] },
+        { "id": "advanced", "title": "补充设置", "fields": [
+          { "key": "autoSettlement", "label": "自动结算", "type": "switch", "help": "开启后按规则自动发起结算" },
+          { "key": "notes", "label": "备注", "type": "textarea", "span": "full", "maxLength": 200, "placeholder": "补充适用范围或审批说明" }
+        ] }
+      ],
+      "initialValues": { "autoSettlement": true },
+      "demoSubmission": { "mode": "success", "latencyMs": 650, "successMessage": "结算规则已保存" }
+    },
+    "states": { "loading": false, "submitting": false, "error": false, "success": false, "permission-denied": false },
+    "interactions": [
+      { "id": "saveRule", "trigger": "save-rule.click", "result": "校验并保存演示规则" },
+      { "id": "cancelRule", "trigger": "cancel-rule.click", "result": "重置当前表单内容" }
+    ],
+    "extensions": {
+      "renderer": "yipex-standard-grouped-form-v1",
+      "presentationDecisions": {
+        "rule-form": {
+          "mode": "grouped-form-sections",
+          "confidence": "explicit",
+          "evidence": ["分模块展示，每个模块有标题；信息较多的分组表单默认三列，横向、纵向和模块间距均为 16px；外层不使用白色背景和 24px 内容内边距，模块 header 与 body 使用纯白背景并保留清晰的灰色分割线；面包屑在模块外展示且上方、左侧各保留 8px"],
+          "baseComponent": "Card + Form",
+          "requiresDeviation": false
+        }
+      },
+      "generation": { "strategy": "standard", "recipeId": "form.grouped-submit", "skeleton": "form-workflow", "capabilities": ["form.groups", "form.validation", "form.stickyActions", "action.primary", "action.secondary"], "rendererId": "yipex-standard-grouped-form-v1" }
+    }
+  }
+}

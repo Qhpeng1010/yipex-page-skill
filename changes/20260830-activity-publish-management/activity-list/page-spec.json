@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-activity-publish-management-list",
+    "pageName": "活动发布管理",
+    "pageType": "activity-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "生成活动发布管理流程，包含活动列表和新增活动分步表单。",
+    "assumptions": ["未提供后端接口，列表、草稿和发布结果使用浏览器 localStorage 演示持久化。", "活动封面使用 Ant Design Upload 本地演示，列表不上传到服务器。"],
+    "ruleRefs": ["execution/context-packs/core.md", "design-system/director-rules/01-visual-constitution.md", "design-system/director-rules/02-template-application-rules.md", "design-system/director-rules/03-interaction-acceptance-rules.md", "design-system/page-patterns/list.md", "execution/page-contract-v2.md", "execution/capability-model/capability-model.md"],
+    "generation": { "mode": "standard", "strategy": "standard", "recipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.status", "detail.overlay", "action.confirm", "navigation.openPage"], "policyVersion": 2, "modelVersion": "2026.08.30.6", "rendererId": "yipex-standard-query-table-v1" }
+  },
+  "contract": {
+    "pageFamily": "list", "shell": "yipex-default", "density": "compact",
+    "regions": [
+      { "id": "activity-list-header", "role": "page-header", "purpose": "标识活动发布管理任务并提供新建活动入口" },
+      { "id": "activity-filters", "role": "query-controls", "purpose": "按活动名称、活动类型、发布状态和活动时间筛选" },
+      { "id": "activity-results", "role": "result-list", "purpose": "浏览活动、预览、编辑或下线" }
+    ],
+    "hierarchy": { "primary": "快速定位并管理活动发布状态", "secondary": ["从列表进入新增或编辑活动分步表单", "在下线前进行二次确认"] },
+    "operations": {
+      "primary": { "id": "create-activity", "label": "新建活动", "placement": "列表标题工具区最右侧", "outcome": "进入活动三步表单" },
+      "secondary": [
+        { "id": "query-activities", "label": "查询", "placement": "查询条件区末列", "outcome": "应用筛选并回到第一页" },
+        { "id": "reset-activity-filters", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选条件并恢复全部活动" },
+        { "id": "edit-activity", "label": "编辑", "placement": "活动列表操作列", "outcome": "进入活动编辑分步表单" },
+        { "id": "preview-activity", "label": "预览", "placement": "活动列表操作列", "outcome": "打开活动详情预览" },
+        { "id": "offline-activity", "label": "下线", "placement": "活动列表操作列", "outcome": "二次确认后将已发布活动下线" }
+      ]
+    },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied", "success"],
+    "responsive": { "desktop": "筛选条件按网格排列，表格保留核心字段，操作列固定在右侧。", "narrow": "筛选条件改为单列，表格保持横向滚动，操作按钮保持可操作。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true }, "brand": { "name": "Yipex", "logo": "logo.svg" }, "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "activity-management", "label": "活动管理", "icon": "CalendarOutlined", "active": true }], "header": { "welcome": "活动发布管理", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "活" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" }, "floatingTools": { "show": false } },
+    "root": { "id": "activity-list-page", "type": "standard-query-table-page", "props": { "title": "活动发布管理", "resultTitle": "活动列表", "createLabel": "新建活动" }, "children": [
+      { "id": "activity-list-header", "type": "page-header", "label": "活动发布管理" },
+      { "id": "activity-filters", "type": "query-form", "children": [{ "id": "activity-name-filter", "type": "input", "label": "活动名称", "events": { "change": "editActivityFilters" } }, { "id": "activity-type-filter", "type": "select", "label": "活动类型", "events": { "change": "editActivityFilters" } }, { "id": "activity-status-filter", "type": "select", "label": "发布状态", "events": { "change": "editActivityFilters" } }, { "id": "activity-time-filter", "type": "date-range", "label": "活动时间", "events": { "change": "editActivityFilters" } }, { "id": "reset-activity-filters", "type": "button", "label": "重置", "events": { "click": "resetActivityFilters" } }, { "id": "query-activities", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryActivities" } }] },
+      { "id": "activity-results", "type": "data-table", "label": "活动列表", "events": { "pageChange": "paginateActivities" }, "children": [{ "id": "create-activity", "type": "button", "label": "新建活动", "events": { "click": "openCreateActivity" } }, { "id": "edit-activity", "type": "button", "label": "编辑", "events": { "click": "editActivity" } }, { "id": "preview-activity", "type": "button", "label": "预览", "events": { "click": "previewActivity" } }, { "id": "offline-activity", "type": "button", "label": "下线", "events": { "click": "offlineActivity" } }] }
+    ] },
+    "data": {
+      "demo": true,
+      "persistenceKey": "yipex-activity-publish-management-demo",
+      "createPageHref": "../activity-create/preview.html",
+      "returnMessage": "活动发布成功",
+      "defaultSort": { "key": "createdAt", "order": "descend" },
+      "pageSize": 6,
+      "filters": [
+        { "id": "activity-name", "key": "activityName", "label": "活动名称", "type": "text", "recordKey": "activityName", "placeholder": "请输入活动名称" },
+        { "id": "activity-type", "key": "activityType", "label": "活动类型", "type": "select", "recordKey": "activityType", "placeholder": "请选择活动类型", "options": [{ "value": "PROMOTION", "label": "促销活动" }, { "value": "WEBINAR", "label": "线上讲座" }, { "value": "OFFLINE", "label": "线下活动" }] },
+        { "id": "activity-status", "key": "status", "label": "发布状态", "type": "select", "recordKey": "status", "placeholder": "请选择发布状态", "options": [{ "value": "ALL", "label": "全部状态" }, { "value": "DRAFT", "label": "草稿" }, { "value": "PUBLISHED", "label": "已发布" }, { "value": "OFFLINE", "label": "已下线" }] },
+        { "id": "activity-time", "key": "activityTime", "label": "活动时间", "type": "date-range", "recordKey": "activityTimeStart", "placeholder": ["开始日期", "结束日期"] }
+      ],
+      "columns": [{ "key": "activityName", "label": "活动名称", "width": 220 }, { "key": "activityTypeLabel", "label": "活动类型", "width": 130 }, { "key": "signupCount", "label": "报名人数", "width": 110, "format": "integer" }, { "key": "activityTimeLabel", "label": "活动时间", "width": 260 }, { "key": "creator", "label": "创建人", "width": 120 }, { "key": "status", "label": "发布状态", "width": 110, "format": "status", "labelKey": "statusLabel", "statusTone": { "DRAFT": "warning", "PUBLISHED": "success", "OFFLINE": "default" } }, { "key": "actions", "label": "操作", "role": "action", "width": 180, "actions": [{ "type": "link", "label": "编辑", "href": "../activity-create/preview.html?mode=edit&id={id}" }, { "type": "detail", "label": "预览" }, { "type": "status-transition", "label": "下线", "from": ["PUBLISHED"], "to": "OFFLINE", "toLabel": "已下线", "confirmTone": "danger", "confirmTitle": "确认下线活动？", "confirmContent": "活动下线后将无法继续报名，请确认是否下线。", "successMessage": "活动已下线" }] }],
+      "detailFields": [{ "key": "activityName", "label": "活动名称" }, { "key": "activityTypeLabel", "label": "活动类型" }, { "key": "activityTimeLabel", "label": "活动时间" }, { "key": "activityLocation", "label": "活动地点" }, { "key": "signupCount", "label": "报名人数", "format": "integer" }, { "key": "signupLimit", "label": "报名人数上限", "format": "integer" }, { "key": "signupDeadline", "label": "报名截止时间" }, { "key": "contactName", "label": "联系人" }, { "key": "contactPhone", "label": "联系电话" }, { "key": "creator", "label": "创建人" }, { "key": "status", "label": "发布状态", "format": "status", "labelKey": "statusLabel" }, { "key": "coverImage", "label": "封面图片" }, { "key": "activityType", "label": "活动类型编码" }, { "key": "activityTimeStart", "label": "开始时间" }, { "key": "activityTimeEnd", "label": "结束时间" }],
+      "detailOverlay": "drawer",
+      "detailDrawerSize": "large",
+      "records": [
+        { "id": "ACT20260830018", "activityName": "跨境支付增长线上分享会", "activityType": "WEBINAR", "activityTypeLabel": "线上讲座", "signupCount": 86, "signupLimit": 200, "activityTimeStart": "2026-09-05 14:00", "activityTimeEnd": "2026-09-05 16:00", "activityTimeLabel": "2026-09-05 14:00 至 2026-09-05 16:00", "activityLocation": "线上直播间", "signupDeadline": "2026-09-05 12:00", "contactName": "林晓", "contactPhone": "13800001234", "creator": "平台运营", "status": "PUBLISHED", "statusLabel": "已发布", "coverImage": "growth-webinar.jpg", "createdAt": "2026-08-30 09:42" },
+        { "id": "ACT20260830012", "activityName": "夏末费率优惠活动", "activityType": "PROMOTION", "activityTypeLabel": "促销活动", "signupCount": 132, "signupLimit": 300, "activityTimeStart": "2026-09-01 00:00", "activityTimeEnd": "2026-09-15 23:59", "activityTimeLabel": "2026-09-01 00:00 至 2026-09-15 23:59", "activityLocation": "Yipex 活动中心", "signupDeadline": "2026-08-31 23:59", "contactName": "周宁", "contactPhone": "13900005678", "creator": "市场团队", "status": "PUBLISHED", "statusLabel": "已发布", "coverImage": "summer-rate.jpg", "createdAt": "2026-08-29 16:18" },
+        { "id": "ACT20260830007", "activityName": "商户运营训练营", "activityType": "OFFLINE", "activityTypeLabel": "线下活动", "signupCount": 24, "signupLimit": 60, "activityTimeStart": "2026-09-20 09:30", "activityTimeEnd": "2026-09-20 17:30", "activityTimeLabel": "2026-09-20 09:30 至 2026-09-20 17:30", "activityLocation": "上海市浦东新区会议中心", "signupDeadline": "2026-09-18 18:00", "contactName": "陈楠", "contactPhone": "13700007890", "creator": "客户成功部", "status": "DRAFT", "statusLabel": "草稿", "coverImage": "merchant-camp.jpg", "createdAt": "2026-08-29 11:06" },
+        { "id": "ACT20260829096", "activityName": "年度客户答谢会", "activityType": "OFFLINE", "activityTypeLabel": "线下活动", "signupCount": 210, "signupLimit": 240, "activityTimeStart": "2026-08-25 18:30", "activityTimeEnd": "2026-08-25 21:00", "activityTimeLabel": "2026-08-25 18:30 至 2026-08-25 21:00", "activityLocation": "上海外滩金融中心", "signupDeadline": "2026-08-20 18:00", "contactName": "赵琪", "contactPhone": "13600004567", "creator": "品牌部", "status": "OFFLINE", "statusLabel": "已下线", "coverImage": "customer-night.jpg", "createdAt": "2026-08-28 18:32" },
+        { "id": "ACT20260829084", "activityName": "新客首单礼遇", "activityType": "PROMOTION", "activityTypeLabel": "促销活动", "signupCount": 58, "signupLimit": 500, "activityTimeStart": "2026-09-10 00:00", "activityTimeEnd": "2026-09-30 23:59", "activityTimeLabel": "2026-09-10 00:00 至 2026-09-30 23:59", "activityLocation": "线上活动页", "signupDeadline": "2026-09-30 20:00", "contactName": "王璇", "contactPhone": "13500002345", "creator": "增长团队", "status": "PUBLISHED", "statusLabel": "已发布", "coverImage": "new-customer.jpg", "createdAt": "2026-08-27 14:20" },
+        { "id": "ACT20260829063", "activityName": "支付产品内测招募", "activityType": "WEBINAR", "activityTypeLabel": "线上讲座", "signupCount": 12, "signupLimit": 30, "activityTimeStart": "2026-10-08 15:00", "activityTimeEnd": "2026-10-08 16:30", "activityTimeLabel": "2026-10-08 15:00 至 2026-10-08 16:30", "activityLocation": "线上会议室", "signupDeadline": "2026-10-07 18:00", "contactName": "何宇", "contactPhone": "13300006789", "creator": "产品团队", "status": "DRAFT", "statusLabel": "草稿", "coverImage": "product-beta.jpg", "createdAt": "2026-08-26 10:48" }
+      ]
+    },
+    "states": { "loading": false, "empty": false, "error": false, "permission-denied": false, "success": false, "filters": {} },
+    "interactions": [{ "id": "editActivityFilters", "source": "activity-filters", "event": "change", "outcome": "更新待提交筛选条件" }, { "id": "queryActivities", "source": "query-activities", "event": "click", "outcome": "应用活动筛选并回到第一页" }, { "id": "resetActivityFilters", "source": "reset-activity-filters", "event": "click", "outcome": "清空活动筛选条件" }, { "id": "paginateActivities", "source": "activity-results", "event": "pageChange", "outcome": "切换活动列表分页" }, { "id": "openCreateActivity", "source": "create-activity", "event": "click", "outcome": "进入新增活动分步表单" }, { "id": "editActivity", "source": "edit-activity", "event": "click", "outcome": "进入活动编辑分步表单" }, { "id": "previewActivity", "source": "preview-activity", "event": "click", "outcome": "打开活动详情预览" }, { "id": "offlineActivity", "source": "offline-activity", "event": "click", "outcome": "二次确认后下线活动" }],
+    "extensions": { "presentationDecisions": { "activity-results": { "mode": "table", "confidence": "explicit", "evidence": ["用户明确要求活动列表和分页"], "baseComponent": "Table + Pagination", "requiresDeviation": false }, "activity-create": { "mode": "form-page", "confidence": "explicit", "evidence": ["用户明确要求三步分步表单"], "baseComponent": "Steps + Form + Descriptions", "requiresDeviation": false } }, "renderer": "yipex-standard-query-table-v1", "generation": { "strategy": "standard", "recipeId": "list.query-table", "skeleton": "query-workbench", "capabilities": ["query.basic", "query.dateRange", "table.flat", "table.pagination", "table.status", "detail.overlay", "action.confirm", "navigation.openPage"], "rendererId": "yipex-standard-query-table-v1" } }
+  }
+}

@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-customer-management-list",
+    "pageName": "客户管理",
+    "pageType": "customer-query-list",
+    "componentLibrary": {
+      "name": "antd",
+      "source": "official"
+    },
+    "request": "/yipex:page 生成客户管理流程，包含客户列表和新增客户两个关联页面。客户列表支持关键词、客户类型和状态筛选，表格顶部提供“新增客户”按钮；点击后进入新增客户页面。新增页面包含基础信息、联系人和结算信息，提交成功后返回客户列表，并用 message 提示成功，按创建时间倒序展示新客户；取消时直接返回且不保存",
+    "assumptions": [
+      "未提供后端接口，列表与新增操作使用浏览器本地演示数据。",
+      "客户列表以客户编号、名称、类型、联系人、结算方式、状态和创建时间帮助运营人员完成日常管理。",
+      "新增客户提交后通过本地演示存储在列表中插入记录，并按创建时间倒序置顶；返回列表时由列表页显示成功 message。"
+    ],
+    "ruleRefs": [
+      "DESIGN.md",
+      "01-foundations.md",
+      "02-components.md",
+      "03-query-list-patterns.md",
+      "execution/presentation-intent.md",
+      "execution/page-contract-v2.md",
+      "execution/capability-model/capability-model.md"
+    ],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "list.query-table",
+      "skeleton": "query-workbench",
+      "capabilities": [
+        "query.basic",
+        "table.flat",
+        "table.pagination"
+      ],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.30.1",
+      "rendererId": "yipex-standard-query-table-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      {
+        "id": "customer-list-header",
+        "role": "page-header",
+        "purpose": "标识客户管理任务"
+      },
+      {
+        "id": "customer-filters",
+        "role": "query-controls",
+        "purpose": "按关键词、客户类型和状态筛选客户"
+      },
+      {
+        "id": "customer-results",
+        "role": "result-list",
+        "purpose": "浏览客户并进入新增流程"
+      }
+    ],
+    "hierarchy": {
+      "primary": "快速定位并管理客户",
+      "secondary": [
+        "从列表进入新增客户页面",
+        "识别刚创建的客户"
+      ]
+    },
+    "operations": {
+      "primary": {
+        "id": "query-customers",
+        "label": "查询",
+        "placement": "筛选条件区末列右侧",
+        "outcome": "按当前条件筛选客户并回到第一页"
+      },
+      "secondary": [
+        {
+          "id": "reset-customer-filters",
+          "label": "重置",
+          "placement": "查询按钮左侧",
+          "outcome": "清空筛选条件并恢复全部客户"
+        },
+        {
+          "id": "create-customer",
+          "label": "新增客户",
+          "placement": "列表标题工具区最右侧",
+          "outcome": "进入新增客户页面"
+        }
+      ]
+    },
+    "stateCoverage": [
+      "loading",
+      "empty",
+      "error",
+      "permission-denied",
+      "success"
+    ],
+    "responsive": {
+      "desktop": "三项筛选使用四列网格，操作组与第三项同处末行右侧；客户表格按创建时间倒序展示。",
+      "narrow": "筛选条件改为单列，列表保留横向滚动，返回列表后的成功反馈使用 message，不改变行样式。"
+    },
+    "deviations": []
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": {
+        "width": 200,
+        "background": "#F0F0F0",
+        "showCollapseControl": true
+      },
+      "brand": {
+        "name": "Yipex",
+        "logo": "logo.svg"
+      },
+      "navigation": [
+        {
+          "id": "home",
+          "label": "首页",
+          "icon": "HomeOutlined"
+        },
+        {
+          "id": "customer-management",
+          "label": "客户管理",
+          "icon": "TeamOutlined",
+          "active": true
+        }
+      ],
+      "header": {
+        "welcome": "客户管理",
+        "userName": "平台运营",
+        "email": "operations@yipex.tech",
+        "avatar": "运"
+      },
+      "footer": {
+        "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved"
+      },
+      "floatingTools": {
+        "show": false
+      }
+    },
+    "root": {
+      "id": "customer-list-page",
+      "type": "customer-query-list-page",
+      "props": {
+        "title": "客户管理",
+        "resultTitle": "客户列表",
+        "createLabel": "新增客户"
+      },
+      "children": [
+        {
+          "id": "customer-list-header",
+          "type": "page-header",
+          "label": "客户管理"
+        },
+        {
+          "id": "customer-filters",
+          "type": "query-form",
+          "children": [
+            {
+              "id": "customer-keyword-filter",
+              "type": "input",
+              "label": "关键词",
+              "events": {
+                "change": "editCustomerFilters"
+              }
+            },
+            {
+              "id": "customer-type-filter",
+              "type": "select",
+              "label": "客户类型",
+              "events": {
+                "change": "editCustomerFilters"
+              }
+            },
+            {
+              "id": "customer-status-filter",
+              "type": "select",
+              "label": "客户状态",
+              "events": {
+                "change": "editCustomerFilters"
+              }
+            },
+            {
+              "id": "reset-customer-filters",
+              "type": "button",
+              "label": "重置",
+              "events": {
+                "click": "resetCustomerFilters"
+              }
+            },
+            {
+              "id": "query-customers",
+              "type": "button",
+              "label": "查询",
+              "props": {
+                "buttonType": "primary",
+                "htmlType": "submit"
+              },
+              "events": {
+                "click": "queryCustomers"
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer-results",
+          "type": "data-table",
+          "label": "客户列表",
+          "events": {
+            "pageChange": "paginateCustomers"
+          },
+          "children": [
+            {
+              "id": "create-customer",
+              "type": "button",
+              "label": "新增客户",
+              "events": {
+                "click": "openCreateCustomer"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "updatedAt": "2026-08-30 10:20",
+      "persistenceKey": "yipex-customer-management-demo",
+      "createPageHref": "../customer-create/preview.html",
+      "filters": [
+        {
+          "id": "customer-keyword",
+          "key": "keyword",
+          "label": "关键词",
+          "type": "text",
+          "matchKeys": [
+            "id",
+            "name",
+            "contactName",
+            "contactPhone"
+          ],
+          "placeholder": "请输入客户编号、名称或联系人"
+        },
+        {
+          "id": "customer-type",
+          "key": "customerType",
+          "label": "客户类型",
+          "type": "select",
+          "placeholder": "请选择客户类型",
+          "options": [
+            {
+              "value": "ALL",
+              "label": "全部类型"
+            },
+            {
+              "value": "MERCHANT",
+              "label": "企业客户"
+            },
+            {
+              "value": "INDIVIDUAL",
+              "label": "个人客户"
+            }
+          ]
+        },
+        {
+          "id": "customer-status",
+          "key": "status",
+          "label": "客户状态",
+          "type": "select",
+          "placeholder": "请选择客户状态",
+          "options": [
+            {
+              "value": "ALL",
+              "label": "全部状态"
+            },
+            {
+              "value": "ACTIVE",
+              "label": "正常"
+            },
+            {
+              "value": "PENDING",
+              "label": "待认证"
+            },
+            {
+              "value": "INACTIVE",
+              "label": "已停用"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "key": "id",
+          "label": "客户编号",
+          "width": 160
+        },
+        {
+          "key": "name",
+          "label": "客户名称",
+          "width": 210
+        },
+        {
+          "key": "customerTypeLabel",
+          "label": "客户类型",
+          "width": 110
+        },
+        {
+          "key": "contactName",
+          "label": "联系人",
+          "width": 120
+        },
+        {
+          "key": "settlementCycleLabel",
+          "label": "结算方式",
+          "width": 140
+        },
+        {
+          "key": "status",
+          "label": "客户状态",
+          "width": 110,
+          "format": "status",
+          "labelKey": "statusLabel"
+        },
+        {
+          "key": "createdAt",
+          "label": "创建时间",
+          "width": 168
+        }
+      ],
+      "pageSize": 6,
+      "records": [
+        {
+          "id": "C20260830018",
+          "name": "上海远川供应链有限公司",
+          "customerType": "MERCHANT",
+          "customerTypeLabel": "企业客户",
+          "contactName": "周宁",
+          "contactPhone": "138****6218",
+          "settlementCycleLabel": "月结",
+          "status": "ACTIVE",
+          "statusLabel": "正常",
+          "createdAt": "2026-08-29 16:20"
+        },
+        {
+          "id": "C20260830012",
+          "name": "木棉数字科技工作室",
+          "customerType": "MERCHANT",
+          "customerTypeLabel": "企业客户",
+          "contactName": "叶清",
+          "contactPhone": "186****0934",
+          "settlementCycleLabel": "T+1",
+          "status": "ACTIVE",
+          "statusLabel": "正常",
+          "createdAt": "2026-08-29 14:08"
+        },
+        {
+          "id": "C20260830007",
+          "name": "林晓",
+          "customerType": "INDIVIDUAL",
+          "customerTypeLabel": "个人客户",
+          "contactName": "林晓",
+          "contactPhone": "139****8472",
+          "settlementCycleLabel": "T+7",
+          "status": "PENDING",
+          "statusLabel": "待认证",
+          "createdAt": "2026-08-28 19:45"
+        },
+        {
+          "id": "C20260829096",
+          "name": "北辰文化发展有限公司",
+          "customerType": "MERCHANT",
+          "customerTypeLabel": "企业客户",
+          "contactName": "何川",
+          "contactPhone": "158****3017",
+          "settlementCycleLabel": "月结",
+          "status": "INACTIVE",
+          "statusLabel": "已停用",
+          "createdAt": "2026-08-28 11:32"
+        },
+        {
+          "id": "C20260829084",
+          "name": "沈念",
+          "customerType": "INDIVIDUAL",
+          "customerTypeLabel": "个人客户",
+          "contactName": "沈念",
+          "contactPhone": "135****1849",
+          "settlementCycleLabel": "T+1",
+          "status": "ACTIVE",
+          "statusLabel": "正常",
+          "createdAt": "2026-08-27 09:18"
+        },
+        {
+          "id": "C20260829063",
+          "name": "云间智能制造有限公司",
+          "customerType": "MERCHANT",
+          "customerTypeLabel": "企业客户",
+          "contactName": "钱悦",
+          "contactPhone": "136****7792",
+          "settlementCycleLabel": "T+1",
+          "status": "ACTIVE",
+          "statusLabel": "正常",
+          "createdAt": "2026-08-26 17:52"
+        }
+      ],
+      "returnMessage": "客户新增成功",
+      "defaultSort": {
+        "key": "createdAt",
+        "order": "descend"
+      }
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "filters": {},
+      "success": false
+    },
+    "interactions": [
+      {
+        "id": "editCustomerFilters",
+        "trigger": "customer-filters.change",
+        "result": "更新待提交筛选条件，不立即刷新结果"
+      },
+      {
+        "id": "queryCustomers",
+        "trigger": "query-customers.click",
+        "result": "应用筛选并回到第一页"
+      },
+      {
+        "id": "resetCustomerFilters",
+        "trigger": "reset-customer-filters.click",
+        "result": "清空筛选并恢复全部客户"
+      },
+      {
+        "id": "paginateCustomers",
+        "trigger": "customer-results.pageChange",
+        "result": "切换当前结果页"
+      },
+      {
+        "id": "openCreateCustomer",
+        "trigger": "create-customer.click",
+        "result": "进入新增客户页面"
+      }
+    ],
+    "extensions": {
+      "presentationDecisions": {
+        "customer-results": {
+          "mode": "table",
+          "confidence": "pattern-default",
+          "evidence": [
+            "多记录、多字段筛选与列对齐需求"
+          ],
+          "baseComponent": "Table + Pagination",
+          "requiresDeviation": false
+        }
+      },
+      "renderer": "yipex-standard-query-table-v1",
+      "generation": {
+        "strategy": "standard",
+        "recipeId": "list.query-table",
+        "skeleton": "query-workbench",
+        "capabilities": [
+          "query.basic",
+          "table.flat",
+          "table.pagination"
+        ],
+        "rendererId": "yipex-standard-query-table-v1"
+      }
+    }
+  }
+}

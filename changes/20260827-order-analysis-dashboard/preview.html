@@ -1,0 +1,227 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../../modules/yipex/shell/vendor/antd-reset.css"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/react-dom.production.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/antd.min.js"><link rel="preload" as="script" href="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"><title>经营分析 | YiPex</title><style>:root{--yipex-shell-sidebar:200px;--yipex-shell-canvas:#f0f0f0;--yipex-shell-surface:#f0f0f0;--yipex-shell-line:#d9d9d9;--yipex-shell-text:#222;--yipex-shell-muted:rgba(0,0,0,.58);--yipex-shell-brand:#4aa52e;--yipex-shell-radius:10px;--yipex-overlay-padding:24px;--yipex-overlay-divider:#e7e8e8}
+*,*::before,*::after{box-sizing:border-box;letter-spacing:0!important}
+html,body{height:100%;overflow:hidden}
+body{margin:0;min-width:320px;background:var(--yipex-shell-canvas);color:var(--yipex-shell-text);font-family:Roboto,"PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:400;line-height:22px;letter-spacing:0;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.yipex-shell{height:100vh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--yipex-shell-canvas)}
+.yipex-shell-topbar{height:52px;flex:0 0 52px;padding:0 28px 0 32px;border-bottom:1px solid var(--yipex-shell-line);background:var(--yipex-shell-canvas);display:flex;align-items:center;justify-content:space-between;gap:18px}.yipex-shell-topbar-brand{height:100%;display:flex;align-items:center}.yipex-shell-logo{width:85px;height:auto;display:block}.yipex-shell-topbar-actions{display:flex;align-items:center;gap:6px}.yipex-shell-topbar-button{position:relative;height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--yipex-shell-muted);display:inline-flex;align-items:center;gap:7px}.yipex-shell-topbar-button:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-notification-button{padding-right:10px}.yipex-shell-account{height:40px;padding:0 0 0 12px;border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--yipex-shell-text)}.yipex-shell-account:hover{background:#e7e7e7}.yipex-shell-email{font-size:14px}.yipex-shell-avatar{width:34px;height:34px;border-radius:50%;background:#f59c16;color:#fff;display:grid;place-items:center;font-weight:500}.yipex-shell-account>[data-antd-icon]{display:inline-flex;color:var(--yipex-shell-muted)}
+.yipex-shell-body{min-height:0;overflow:hidden;flex:1;display:grid;grid-template-columns:var(--yipex-shell-sidebar) minmax(0,1fr)}.yipex-shell-sidebar{min-height:0;padding:12px 10px 12px;background:var(--yipex-shell-surface);border-right:1px solid var(--yipex-shell-line);display:flex;flex-direction:column;z-index:10}.yipex-shell-nav{flex:1;display:grid;align-content:start;gap:6px;border:0;background:transparent}.yipex-shell-nav-item{min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;text-decoration:none;font-size:14px;font-weight:400}.yipex-shell-nav-item:hover{background:#e7e7e7;color:var(--yipex-shell-text)}.yipex-shell-nav-item.active{background:#e3f2df;color:#357d21;font-weight:400}.yipex-shell-nav-item .nav-icon{width:20px;display:inline-flex;align-items:center;justify-content:center}.yipex-shell-sidebar-footer{margin-top:auto;padding-top:12px}.yipex-shell-toggle{width:100%;height:40px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--yipex-shell-muted);display:flex;align-items:center;gap:10px;text-align:left;font-size:14px;font-weight:400}.yipex-shell-toggle:hover{background:#e7e7e7;color:var(--yipex-shell-text)}
+.yipex-shell-workspace{min-width:0;min-height:0;padding:12px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;display:flex;flex-direction:column}.yipex-shell-content{width:100%;min-width:0;min-height:0;flex:1 0 auto;padding:24px;background:#fff;border-radius:var(--yipex-shell-radius);overflow:visible}.yipex-shell-footer{flex:0 0 auto;min-height:32px;padding:8px 4px 0;text-align:center}.yipex-shell-copyright{color:var(--yipex-shell-muted);font-size:12px;font-weight:400;line-height:20px}
+.yipex-shell.is-collapsed{--yipex-shell-sidebar:72px}
+@media(max-width:760px){.yipex-shell-topbar{padding:0 14px}.yipex-shell-topbar-button>span:last-child{display:none}.yipex-shell-topbar-button{padding:0 8px}.yipex-shell-account{padding-left:4px}.yipex-shell-email{display:none}.yipex-shell-body{display:block}.yipex-shell-sidebar{display:none}.yipex-shell-workspace{padding:12px}.yipex-shell-content{padding:24px 16px}.yipex-shell-footer{text-align:center}}
+.yipex-shell-topbar-button{width:36px;height:36px;padding:0;display:inline-grid;place-items:center}.yipex-shell-topbar-button>span:not([data-antd-icon]){display:none}
+.yipex-shell.is-collapsed .yipex-shell-nav-item>span:not(.nav-icon),.yipex-shell.is-collapsed .yipex-shell-toggle>span:last-child{display:none}.yipex-shell.is-collapsed .yipex-shell-nav-item,.yipex-shell.is-collapsed .yipex-shell-toggle{justify-content:center;padding-left:0;padding-right:0}
+.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon,.yipex-shell.is-collapsed .yipex-shell-nav-item .nav-icon span,.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon],.yipex-shell.is-collapsed .yipex-shell-toggle>[data-antd-icon] span{display:inline-flex}
+.yipex-shell-empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}.yipex-shell-empty-title{margin:0 0 24px;color:var(--yipex-shell-text);font-size:20px;line-height:28px;font-weight:500}.yipex-shell-empty-content{min-height:120px;display:flex;align-items:center;justify-content:center}.yipex-shell-empty-content .ant-empty{margin:0}
+.ant-modal:not(.ant-modal-confirm) .ant-modal-content{padding:0;overflow:hidden}.ant-modal:not(.ant-modal-confirm) .ant-modal-header{margin:0;padding:16px 48px 16px 24px;border-bottom:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-body{padding:var(--yipex-overlay-padding)}.ant-modal:not(.ant-modal-confirm) .ant-modal-footer{margin:0;padding:16px 24px;border-top:1px solid var(--yipex-overlay-divider)}.ant-modal:not(.ant-modal-confirm) .ant-modal-close{top:12px;inset-inline-end:16px}
+.ant-btn-default:not(:disabled):hover{color:#222!important;border-color:#d9d9d9!important;background:#f5f5f5!important;box-shadow:none}.ant-btn-default:not(:disabled):focus{color:#222!important;border-color:#d9d9d9!important;background:#fff!important;box-shadow:none}.ant-btn-default:not(:disabled):active{color:#222!important;border-color:#bfbfbf!important;background:#ededed!important}.ant-btn-link:not(:disabled):hover,.ant-btn-link:not(:disabled):focus{color:#357d21!important}.ant-btn:focus-visible{outline:0;box-shadow:0 0 0 2px rgba(74,165,46,.16)!important}
+
+    :root{--yipex-control-height:32px;--dash-ink:#222;--dash-text:rgba(0,0,0,.85);--dash-muted:rgba(0,0,0,.58);--dash-faint:rgba(0,0,0,.42);--dash-line:#e7e8e8;--dash-brand:#4aa52e;--dash-brand-dark:#357d21;--dash-danger:#d4380d;--dash-warning:#d48806}
+    #order-dashboard-app{min-height:100%}.dashboard-loading{min-height:420px;display:grid;place-content:center;justify-items:center;gap:12px;color:var(--dash-muted)}.dashboard-loading-spinner{width:22px;height:22px;border:2px solid #dfead9;border-top-color:var(--dash-brand);border-radius:50%;animation:dashboard-spin .8s linear infinite}@keyframes dashboard-spin{to{transform:rotate(360deg)}}
+    .dashboard-page{max-width:1440px;margin:0 auto}.dashboard-header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:16px}.dashboard-title-row{display:flex;align-items:center;gap:10px}.dashboard-title{margin:0;color:var(--dash-ink);font-size:20px;font-weight:500;line-height:28px}.dashboard-demo{height:24px;display:inline-flex;align-items:center;padding:0 8px;border-radius:4px;background:#eff0f1;color:var(--dash-muted);font-size:12px}
+    .dashboard-filter{padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--dash-line);display:flex;align-items:flex-end;justify-content:space-between;gap:16px}.dashboard-filter-field{min-width:320px}.dashboard-filter-field>label{display:block;margin-bottom:8px;color:var(--dash-muted);font-size:12px}.dashboard-filter-actions{display:flex;align-items:center;gap:8px}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}.metric-card.ant-card{border-color:var(--dash-line);box-shadow:none}.metric-card .ant-card-body{padding:16px}.metric-label{display:flex;align-items:center;justify-content:space-between;color:var(--dash-muted)}.metric-icon{color:var(--dash-faint);font-size:16px}.metric-card.is-alert .metric-icon{color:var(--dash-danger)}.metric-card .ant-statistic{margin-top:12px}.metric-card .ant-statistic-content{font-size:24px;line-height:32px}.metric-change{display:flex;align-items:center;gap:8px;margin-top:8px;color:var(--dash-faint);font-size:12px}.metric-change b{color:var(--dash-brand);font-weight:500}
+    .dashboard-analysis{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,.7fr);gap:16px;margin-bottom:16px}.analysis-card.ant-card{height:100%;border-color:var(--dash-line);box-shadow:none}.analysis-card .ant-card-head{min-height:calc(var(--yipex-control-height) + 16px);padding:0 16px;border-bottom:1px solid var(--dash-line)}.analysis-card .ant-card-head-title{padding:12px 0;font-weight:500}.analysis-card .ant-card-extra{padding:8px 0}.analysis-card .ant-card-body{padding:16px}.analysis-title{display:flex;align-items:center;gap:10px}.analysis-title small{color:var(--dash-faint);font-weight:400}.trend-total{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}.trend-total strong{font:600 22px/1.3 Roboto,"PingFang SC",sans-serif}.trend-total span{color:var(--dash-brand);font-size:12px}.trend-chart{height:238px}.trend-chart svg{display:block;width:100%;height:100%;overflow:visible}.trend-grid{stroke:#edf0ef;stroke-width:1}.trend-axis{fill:rgba(0,0,0,.42);font:11px Roboto,"PingFang SC",sans-serif}.trend-line{fill:none;stroke:var(--dash-brand);stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}.trend-dot{fill:#fff;stroke:var(--dash-brand);stroke-width:2}
+    .status-layout{display:grid;grid-template-columns:140px minmax(0,1fr);align-items:center;gap:16px}.status-donut{width:140px;height:140px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#4aa52e 0 68.1%,#1677ff 68.1% 83%,#8c8c8c 83% 92.7%,#f5a623 92.7% 97.7%,#d4380d 97.7% 100%);position:relative}.status-donut::after{content:"";position:absolute;width:92px;height:92px;border-radius:50%;background:#fff}.status-center{position:relative;z-index:1;text-align:center}.status-center strong,.status-center span{display:block}.status-center strong{font:600 22px/1.2 Roboto,sans-serif}.status-center span{margin-top:4px;color:var(--dash-faint);font-size:12px}.status-list{display:grid;gap:2px}.status-button.ant-btn{width:100%;height:34px;padding:0 6px;display:flex;align-items:center;justify-content:space-between;color:var(--dash-text)}.status-button.is-active{background:#f2f7f0}.status-name{display:flex;align-items:center;gap:8px;white-space:nowrap}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--status-color)}.status-count{display:flex;align-items:center;gap:8px}.status-count b{font:500 13px Roboto,sans-serif}.status-count small{width:42px;color:var(--dash-faint);text-align:right;font:11px Roboto,sans-serif}
+    .result-section{padding-top:0}.result-card.ant-card{border:0;box-shadow:none}.result-card>.ant-card-head{min-height:calc(var(--yipex-control-height) + 16px);padding:0;border-bottom:0}.result-card>.ant-card-head .ant-card-head-title{padding:8px 0}.result-card>.ant-card-head .ant-card-extra{padding:4px 0}.result-card>.ant-card-body{padding:0}.result-heading{display:flex;align-items:center;gap:8px}.result-heading small{color:var(--dash-faint);font-weight:400}.result-tools{display:flex;align-items:center;gap:8px}.result-tools .ant-input-affix-wrapper{width:260px}.selected-count{color:var(--dash-muted);font-size:12px}.order-link.ant-btn-link,.detail-link.ant-btn-link{padding:0;color:var(--dash-brand);font-weight:500}.order-link.ant-btn-link:hover,.detail-link.ant-btn-link:hover{color:var(--dash-brand-dark);text-decoration:underline}.merchant-main{display:block;color:var(--dash-text);font-weight:500}.merchant-sub{display:block;margin-top:3px;color:var(--dash-faint);font-size:12px}.amount{color:var(--dash-ink);font:500 13px Roboto,sans-serif}.reason-cell{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.result-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px}.page-summary{color:var(--dash-muted);font-size:12px}
+    .yipex-drawer .ant-drawer-header-title{display:flex;align-items:center;justify-content:space-between;width:100%}.yipex-drawer .ant-drawer-title{order:1}.yipex-drawer .ant-drawer-close{order:2;margin-inline-end:0;margin-inline-start:12px}.yipex-drawer .ant-drawer-body{padding:24px}.yipex-drawer .ant-drawer-footer{text-align:right;padding:16px 24px}.drawer-amount{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;margin-bottom:16px;border-radius:8px;background:#f7f8f8}.drawer-amount strong{font:600 24px Roboto,sans-serif}.drawer-alert{margin-bottom:16px}.drawer-section-title{margin:24px 0 12px;color:var(--dash-text);font-weight:500}
+    @media(max-width:1180px){.dashboard-analysis{grid-template-columns:1fr}.status-layout{grid-template-columns:160px minmax(0,1fr)}.status-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:880px){.dashboard-header{align-items:flex-start;flex-direction:column}.dashboard-filter{align-items:stretch;flex-direction:column}.dashboard-filter-field{min-width:0}.dashboard-filter-actions{justify-content:flex-end}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.result-card>.ant-card-head{align-items:flex-start;flex-direction:column}.result-card>.ant-card-head .ant-card-extra{width:100%}.result-tools{width:100%;flex-wrap:wrap}.result-tools .ant-input-affix-wrapper{min-width:220px;flex:1}}
+    @media(max-width:620px){.metric-grid{gap:8px}.metric-card .ant-card-body{padding:12px}.metric-card .ant-statistic-content{font-size:19px}.dashboard-analysis{gap:8px}.status-layout{grid-template-columns:1fr}.status-donut{margin:0 auto}.status-list{grid-template-columns:1fr}.result-pagination{align-items:flex-start;flex-direction:column}.result-pagination .ant-pagination{align-self:flex-end}.dashboard-filter-actions .ant-btn{flex:1}.dashboard-filter-actions{width:100%}}
+  </style></head><body><div class="yipex-shell" data-shell="yipex-default">
+  <header class="yipex-shell-topbar">
+    <div class="yipex-shell-topbar-brand"><img class="yipex-shell-logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzkiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA3OSAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy4xMTU0IDAuMDE5ODM2NEgyMC43OTg1QzIwLjI5OSAwLjAxOTgzNjQgMTkuODIwOCAwLjIxOTY1NCAxOS40Njc5IDAuNTczMzMyQzE5LjExNCAwLjkyODA3OCAxOC45MTY0IDEuNDA3ODQgMTguOTE2NCAxLjkwODk3VjE1Ljk3OTJIMjMuMTE1NFYwLjAxOTgzNjRaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNS42NDg2NiA4LjM0MTI0QzUuNjQ4NjYgOC4zNDEyNCAzLjIwODUyIDUuODkzMDIgMi4wODcyOSA0Ljc2ODA4QzEuNzM0NDUgNC40MTQwNyAxLjI1NTE1IDQuMjE0NjggMC43NTU2NDUgNC4yMTQ2OEMwLjM3NjIzNCA0LjIxNDY4IDAgNC4yMTQ2OCAwIDQuMjE0NjhWMC4wMDA2NzkwMTZIMi41MTEzNEMzLjAxMTkxIDAuMDAwNjc5MDE2IDMuNDkxMjMgMC4yMDExMzggMy44NDUxMyAwLjU1NjIxNUM1LjA2NTIgMS43ODU2NSA3Ljg4NDc0IDQuNjI1MiA3Ljg4NDc0IDQuNjI1MkM3Ljg4NDc0IDQuNjI1MiAxMC43MDQzIDEuNzg1NjUgMTEuOTI0NCAwLjU1NjIxNUMxMi4yNzgzIDAuMjAxMTM4IDEyLjc1NzYgMC4wMDA2NzkwMTYgMTMuMjU4MSAwLjAwMDY3OTAxNkgxNS43Njk1VjQuMjE0NjhIMTQuODk4QzE0LjQ3MjkgNC4yMTQ2OCAxNC4wNjQ4IDQuMzg0MjEgMTMuNzY0IDQuNjg1OTdDMTIuNjMyMiA1LjgyMTU4IDkuODQ4NzUgOC42MTQyMiA5Ljg0ODc1IDguNjE0MjJWMTUuOTgwMkg1LjY0ODY2VjguMzQxMjRaIiBmaWxsPSIjOEZENjI5Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjYuMjg3OCAxNS45OFYxLjkxMDE4QzI2LjI4NzggMC44NjYyNzkgMjcuMTMwNiAwLjAyMDcxIDI4LjE3MSAwLjAyMDcxQzMwLjk3MjUgMC4wMjA3MSAzNS45MTQ0IDAuMDIwNzEgMzUuOTE0NCAwLjAyMDcxVjQuMjM0NzFIMzAuNDg3OVY1Ljc4NTExSDM3LjYzMDhWMC4wMjA3MUg0MS45NjU5VjkuOTk5MTFIMzAuNDg3OVYxNS45OEgyNi4yODc4WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4LjQ2NzkgMTAuMjMyNFYxMS43ODZINTkuODEwOVYxNkg0NC4xMzM5VjcuOTA3ODlDNDQuMTMzOSA2Ljg2NTA1IDQ0Ljk3NjcgNi4wMTg0MSA0Ni4wMTYxIDYuMDE4NDFDNTAuMTgyMiA2LjAxODQxIDU5LjgxMDkgNi4wMTg0MSA1OS44MTA5IDYuMDE4NDFWMTAuMjMyNEg0OC40Njc5WiIgZmlsbD0iIzIzMUYyMCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTU5LjgxMTUgNC4yMzQwNlYwLjAyMTEzOTFMNDYuMDE1OCAwLjAyMTEzOTFDNDQuOTc2NiAwLjAyMTEzOTEgNDQuMTMzNyAwLjg2NjcwNyA0NC4xMzM3IDEuOTA5NTRWNC4yMzQwNkw1OS44MTE1IDQuMjM0MDZaIiBmaWxsPSIjMjMxRjIwIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNzMuNzMzNyA3Ljk5OTMyTDc3LjQyMDUgMTEuNzY1Nkg3OVYxNS45NzkySDc2LjQzN0M3NS45MzYxIDE1Ljk3OTIgNzUuNDU0NiAxNS43Nzg4IDc1LjEwMTUgMTUuNDIyNEM3Mi43ODc5IDEzLjA4NyA2My45OTIzIDQuMjExNDMgNjMuOTkyMyA0LjIxMTQzSDYyLjQzMTJMNjIuNDMzNCAwSDY0Ljk5NjRDNjUuNDk3MyAwIDY1Ljk3NzcgMC4yMDAzOSA2Ni4zMzA4IDAuNTU1Njc1QzY3LjYxODcgMS44NTMzMyA3MC43MTcyIDQuOTcyODkgNzAuNzE3MiA0Ljk3Mjg5QzcwLjcxNzIgNC45NzI4OSA3My44MTQ2IDEuODUzMzMgNzUuMTAzNyAwLjU1NTY3NUM3NS40NTY3IDAuMjAwMzkgNzUuOTM2MSAwIDc2LjQzNyAwSDc5TDc4Ljk5ODkgNC4yMTE0M0g3Ny40Mzg5TDczLjczMzcgNy45OTkzMlpNNjkuMjIwOSAxMi41OTQyQzY5LjIyMDkgMTIuNTk0MiA2Ny4zMDAzIDE0LjQ4MzMgNjYuMzI4NiAxNS40Mzk3QzY1Ljk3NjcgMTUuNzg1MyA2NS41MDM4IDE1Ljk3OTIgNjUuMDEwNCAxNS45NzkySDYyLjQzMzRWMTEuNzY1Nkg2NC4wMTI4TDY2LjIwNDQgOS41MDA2Mkw2OS4yMjA5IDEyLjU5NDJaIiBmaWxsPSIjMjMxRjIwIi8+Cjwvc3ZnPgo=" alt="Yipex"></div>
+    <div class="yipex-shell-topbar-actions">
+      <button class="yipex-shell-topbar-button ant-btn" type="button" data-shell-action="tools" aria-label="功能" title="功能"><span data-antd-icon="AppstoreOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-topbar-button yipex-shell-notification-button ant-btn" type="button" data-shell-action="notifications" aria-label="消息" title="消息"><span data-antd-icon="BellOutlined" aria-hidden="true"></span></button>
+      <button class="yipex-shell-account ant-btn" type="button" data-shell-action="account" aria-label="打开账号菜单"><span class="yipex-shell-email">运营工作台</span><span class="yipex-shell-avatar">订</span><span data-antd-icon="DownOutlined" aria-hidden="true"></span></button>
+    </div>
+  </header>
+  <div class="yipex-shell-body">
+    <aside class="yipex-shell-sidebar" aria-label="主导航">
+      <nav class="yipex-shell-nav ant-menu ant-menu-root ant-menu-inline" data-antd-component="Menu"><a class="yipex-shell-nav-item" data-antd-component="Menu.Item" data-menu-key="home" href="#home" title="首页" ><span class="nav-icon anticon" data-antd-icon="HomeOutlined" aria-hidden="true"></span><span>首页</span></a><a class="yipex-shell-nav-item active" data-antd-component="Menu.Item" data-menu-key="business-analysis" href="#business-analysis" title="经营分析" aria-current="page"><span class="nav-icon anticon" data-antd-icon="DashboardOutlined" aria-hidden="true"></span><span>经营分析</span></a></nav>
+      <div class="yipex-shell-sidebar-footer"><button class="yipex-shell-toggle ant-btn" type="button" data-shell-action="toggle-sidebar" aria-label="收起导航" title="收起导航" aria-expanded="true"><span data-antd-icon="MenuFoldOutlined" aria-hidden="true"></span><span>收起</span></button></div>
+    </aside>
+    <div class="yipex-shell-workspace">
+      <main id="yipex-page" class="yipex-shell-content"><div id="order-dashboard-app" data-antd-component="OrderAnalysisDashboard"><div class="dashboard-loading" role="status" aria-live="polite"><span class="dashboard-loading-spinner" aria-hidden="true"></span><span>正在加载经营分析</span></div></div></main>
+      <footer class="yipex-shell-footer"><small class="yipex-shell-copyright">Copyright Somei E-Commerce Limited 2025. All rights reserved</small></footer>
+    </div>
+  </div>
+</div>
+<script id="dashboard-data" type="application/json">{"data":{"demo":true,"updatedAt":"2026-08-27 16:20","dateRange":{"start":"2026-08-01","end":"2026-08-27"},"metrics":[{"id":"sales","label":"销售额","value":1286430.5,"format":"currency","delta":12.6,"comparison":"较上期"},{"id":"orders","label":"订单数","value":4826,"format":"integer","delta":8.2,"comparison":"较上期"},{"id":"average","label":"平均客单价","value":266.56,"format":"currency","delta":3.1,"comparison":"较上期"},{"id":"abnormal","label":"异常订单","value":108,"format":"integer","delta":-18.4,"comparison":"较上期","tone":"warning"}],"salesTrend":[{"date":"2026-08-01","value":36280},{"date":"2026-08-03","value":42860},{"date":"2026-08-05","value":39520},{"date":"2026-08-07","value":51680},{"date":"2026-08-09","value":48340},{"date":"2026-08-11","value":60120},{"date":"2026-08-13","value":55860},{"date":"2026-08-15","value":67380},{"date":"2026-08-17","value":63140},{"date":"2026-08-19","value":74260},{"date":"2026-08-21","value":68820},{"date":"2026-08-23","value":82340},{"date":"2026-08-25","value":76980},{"date":"2026-08-27","value":89420}],"statuses":[{"id":"completed","label":"交易成功","count":3288,"color":"#4AA52E"},{"id":"processing","label":"处理中","count":721,"color":"#1677FF"},{"id":"closed","label":"已关闭","count":468,"color":"#8C8C8C"},{"id":"refund","label":"退款中","count":241,"color":"#F5A623"},{"id":"abnormal","label":"异常","count":108,"color":"#D4380D"}],"anomalies":[{"id":"YP2026082700186","createdAt":"2026-08-27 15:42","merchant":"海岸咖啡（静安店）","customer":"林女士","amount":1280,"status":"支付异常","reason":"银行侧返回超时，待确认扣款结果","risk":"高","channel":"银行卡","attempts":3,"owner":"陈路","updatedAt":"2026-08-27 16:08"},{"id":"YP2026082700172","createdAt":"2026-08-27 14:58","merchant":"松果生活馆","customer":"周先生","amount":869.5,"status":"退款异常","reason":"退款账户状态异常，请联系商户确认","risk":"中","channel":"微信支付","attempts":2,"owner":"王一","updatedAt":"2026-08-27 15:31"},{"id":"YP2026082700149","createdAt":"2026-08-27 13:26","merchant":"北屿餐厅","customer":"赵女士","amount":326,"status":"风控拦截","reason":"短时间内多笔同卡交易触发风控规则","risk":"高","channel":"银行卡","attempts":5,"owner":"徐安","updatedAt":"2026-08-27 14:02"},{"id":"YP2026082601397","createdAt":"2026-08-26 21:17","merchant":"原野户外用品","customer":"吴先生","amount":2450,"status":"支付异常","reason":"支付回调验签失败，订单状态未同步","risk":"高","channel":"支付宝","attempts":1,"owner":"陈路","updatedAt":"2026-08-27 09:18"},{"id":"YP2026082601264","createdAt":"2026-08-26 18:43","merchant":"白塔书店","customer":"沈女士","amount":158.8,"status":"退款异常","reason":"原支付渠道维护中，退款将在恢复后重试","risk":"低","channel":"微信支付","attempts":2,"owner":"王一","updatedAt":"2026-08-27 10:05"},{"id":"YP2026082601091","createdAt":"2026-08-26 16:11","merchant":"南山运动中心","customer":"梁先生","amount":3600,"status":"金额异常","reason":"订单金额与商户报备区间不匹配","risk":"中","channel":"银行卡","attempts":1,"owner":"徐安","updatedAt":"2026-08-26 17:22"},{"id":"YP2026082500875","createdAt":"2026-08-25 12:08","merchant":"沐光烘焙","customer":"钱女士","amount":498,"status":"支付异常","reason":"用户已扣款但渠道未返回成功状态","risk":"中","channel":"支付宝","attempts":3,"owner":"陈路","updatedAt":"2026-08-25 14:39"},{"id":"YP2026082400653","createdAt":"2026-08-24 10:52","merchant":"青禾花房","customer":"冯女士","amount":288,"status":"风控拦截","reason":"收货信息与支付账户地域差异过大","risk":"高","channel":"微信支付","attempts":4,"owner":"徐安","updatedAt":"2026-08-24 11:15"}]},"initialState":{"loading":false,"empty":false,"error":false,"permission-denied":false,"success":false,"activeStatus":"all","query":"","selectedOrderIds":[],"selectedOrderId":null,"page":1,"pageSize":5},"pageName":"经营分析"}</script><script defer src="../../modules/yipex/shell/vendor/react.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/react-dom.production.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs.min.js"></script><script defer src="../../modules/yipex/shell/vendor/dayjs-zh-cn.js"></script><script defer src="../../modules/yipex/shell/vendor/antd.min.js"></script><script defer src="../../modules/yipex/shell/vendor/ant-design-icons.umd.js"></script><script>(() => {
+  const shell = document.querySelector('[data-shell="yipex-default"]');
+  if (!shell) return;
+  const page = shell.querySelector('#yipex-page');
+  const navItems = [...shell.querySelectorAll('.yipex-shell-nav-item')];
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const initialKey = navItems.find((item) => item.classList.contains('active') || item.getAttribute('aria-current') === 'page')?.dataset.menuKey || '';
+  const setActive = (key) => navItems.forEach((item) => {
+    const active = item.dataset.menuKey === key;
+    item.classList.toggle('active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+  const renderEmptyState = (item) => {
+    if (!page || !item) return;
+    page.dataset.shellEmpty = 'true';
+    const label = item.getAttribute('title') || item.textContent.trim();
+    page.innerHTML = '<div class="yipex-shell-empty" data-shell-empty="true" role="status" aria-live="polite"><h1 class="yipex-shell-empty-title">' + escapeHtml(label) + '</h1><div class="yipex-shell-empty-content" data-shell-empty-mount></div></div>';
+    const mount = () => {
+      const Empty = window.antd?.Empty;
+      const target = page.querySelector('[data-shell-empty-mount]');
+      if (!Empty || !target || !window.React || !window.ReactDOM) { window.setTimeout(mount, 16); return; }
+      const element = window.React.createElement(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '暂无数据' });
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(target).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, target);
+    };
+    mount();
+  };
+  shell.querySelectorAll('[data-shell-action="toggle-sidebar"]').forEach((button) => button.addEventListener('click', () => {
+    const collapsed = shell.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.setAttribute('aria-label', collapsed ? '展开导航' : '收起导航');
+    button.setAttribute('title', collapsed ? '展开导航' : '收起导航');
+  }));
+  navItems.forEach((item) => item.addEventListener('click', (event) => {
+    const key = item.dataset.menuKey || '';
+    setActive(key);
+    if (key === initialKey && page?.dataset.shellEmpty) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      window.location.reload();
+      return;
+    }
+    if (key && key !== initialKey) {
+      event.preventDefault();
+      window.history.replaceState(null, '', '#' + encodeURIComponent(key));
+      renderEmptyState(item);
+    }
+  }));
+  shell.querySelectorAll('[data-shell-action]').forEach((button) => {
+    if (button.dataset.shellAction === 'toggle-sidebar') return;
+    button.addEventListener('click', () => button.dispatchEvent(new CustomEvent('yipex-shell-action', { bubbles: true, detail: { action: button.dataset.shellAction } })));
+  });
+  const renderIcons = () => {
+    const iconLibrary = window.icons;
+    if (!iconLibrary || !window.React || !window.ReactDOM) { window.setTimeout(renderIcons, 16); return; }
+    shell.querySelectorAll('[data-antd-icon]').forEach((node) => {
+      if (node.dataset.iconMounted) return;
+      const Icon = iconLibrary[node.dataset.antdIcon];
+      if (!Icon) return;
+      const element = window.React.createElement(Icon);
+      if (window.ReactDOM.createRoot) window.ReactDOM.createRoot(node).render(element);
+      else if (window.ReactDOM.render) window.ReactDOM.render(element, node);
+      node.dataset.iconMounted = 'true';
+    });
+  };
+  renderIcons();
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('.ant-breadcrumb a, .standard-page-breadcrumb a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(href);
+  });
+})();
+</script><script>(() => { const start = () => { if (window.React && window.ReactDOM && window.antd && window.dayjs) { 
+    (() => {
+      const h = React.createElement;
+      const { ConfigProvider, Card, Statistic, DatePicker, Button, Segmented, Input, Table, Pagination, Drawer, Modal, Descriptions, Empty, Tag, Space, Alert, Timeline, message } = antd;
+      const { DownloadOutlined, SearchOutlined, LineChartOutlined, WarningOutlined } = window.icons || {};
+      const payload = JSON.parse(document.getElementById('dashboard-data').textContent);
+      const source = payload.data;
+      const initial = payload.initialState || {};
+      const money = (value) => '¥' + Number(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const metricValue = (metric) => metric.format === 'currency' ? Number(metric.value) : Number(metric.value);
+      const riskColor = { '高':'red', '中':'orange', '低':'blue' };
+      const statusTotal = source.statuses.reduce((sum, item) => sum + item.count, 0);
+
+      function TrendChart({ points }) {
+        if (!points.length) return h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '当前日期范围暂无趋势数据' });
+        const width = 820, height = 238, left = 54, right = 14, top = 12, bottom = 34;
+        const values = points.map((item) => item.value);
+        const min = Math.floor(Math.min(...values) / 10000) * 10000 - 5000;
+        const max = Math.ceil(Math.max(...values) / 10000) * 10000 + 5000;
+        const x = (index) => left + index * ((width - left - right) / Math.max(1, points.length - 1));
+        const y = (value) => top + (max - value) * ((height - top - bottom) / Math.max(1, max - min));
+        const path = points.map((item, index) => (index ? 'L' : 'M') + x(index).toFixed(1) + ' ' + y(item.value).toFixed(1)).join(' ');
+        const children = [];
+        for (let index = 0; index < 5; index += 1) {
+          const gy = top + index * ((height - top - bottom) / 4);
+          const value = max - index * ((max - min) / 4);
+          children.push(h('line', { key: 'grid-' + index, className: 'trend-grid', x1: left, y1: gy, x2: width - right, y2: gy }));
+          children.push(h('text', { key: 'axis-' + index, className: 'trend-axis', x: 0, y: gy + 4 }, '¥' + Math.round(value / 1000) + 'k'));
+        }
+        children.push(h('path', { key: 'line', className: 'trend-line', d: path }));
+        points.forEach((item, index) => {
+          children.push(h('circle', { key: 'dot-' + index, className: 'trend-dot', cx: x(index), cy: y(item.value), r: 3 }, h('title', null, item.date + ' ' + money(item.value))));
+          if (index === 0 || index === points.length - 1 || index % Math.max(1, Math.floor(points.length / 5)) === 0) children.push(h('text', { key: 'label-' + index, className: 'trend-axis', textAnchor: 'middle', x: x(index), y: height - 8 }, item.date.slice(5).replace('-', '/')));
+        });
+        return h('div', { className: 'trend-chart' }, h('svg', { viewBox: '0 0 ' + width + ' ' + height, role: 'img', 'aria-label': '销售额趋势图' }, children));
+      }
+
+      function App() {
+        const defaultRange = [dayjs(source.dateRange.start), dayjs(source.dateRange.end)];
+        const [pendingRange, setPendingRange] = React.useState(defaultRange);
+        const [dateRange, setDateRange] = React.useState([source.dateRange.start, source.dateRange.end]);
+        const [trendRange, setTrendRange] = React.useState('本月');
+        const [query, setQuery] = React.useState(initial.query || '');
+        const [activeStatus, setActiveStatus] = React.useState(initial.activeStatus || 'all');
+        const [selectedKeys, setSelectedKeys] = React.useState(initial.selectedOrderIds || []);
+        const [pageNumber, setPageNumber] = React.useState(initial.page || 1);
+        const [drawerRecord, setDrawerRecord] = React.useState(null);
+        const pageSize = initial.pageSize || 5;
+        let trendPoints = source.salesTrend.filter((item) => item.date >= dateRange[0] && item.date <= dateRange[1]);
+        if (trendRange === '近7日') trendPoints = trendPoints.slice(-4);
+        if (trendRange === '近14日') trendPoints = trendPoints.slice(-7);
+        const trendTotal = trendRange === '本月' ? source.metrics.find((metric) => metric.id === 'sales').value : trendPoints.reduce((sum, item) => sum + item.value, 0);
+        const filtered = source.anomalies.filter((record) => {
+          const day = record.createdAt.slice(0, 10);
+          const haystack = [record.id, record.merchant, record.customer, record.status, record.reason].join(' ').toLowerCase();
+          const statusMatch = activeStatus === 'all' || activeStatus === 'abnormal';
+          return day >= dateRange[0] && day <= dateRange[1] && statusMatch && (!query.trim() || haystack.includes(query.trim().toLowerCase()));
+        });
+        const visible = filtered.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+        const pageSummary = filtered.length ? '显示 ' + ((pageNumber - 1) * pageSize + 1) + '-' + Math.min(pageNumber * pageSize, filtered.length) + ' 条，共 ' + filtered.length + ' 条' : '显示 0 条，共 0 条';
+        const exportCsv = (rows) => { if (!rows.length) { message.info('当前没有可导出的订单'); return; } const lines = [['订单号','创建时间','商户','客户','金额','状态','风险等级','支付渠道','异常原因'], ...rows.map((record) => [record.id, record.createdAt, record.merchant, record.customer, record.amount, record.status, record.risk, record.channel, record.reason])]; const csv = '\uFEFF' + lines.map((line) => line.map((value) => '"' + String(value).replace(/"/g, '""') + '"').join(',')).join('\n'); const link = document.createElement('a'); const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.href = url; link.download = 'yipex-abnormal-orders.csv'; link.click(); URL.revokeObjectURL(url); message.success('已导出 ' + rows.length + ' 条异常订单'); };
+        const applyDate = () => { if (!pendingRange || pendingRange.length !== 2) { message.warning('请选择完整日期范围'); return; } setDateRange([pendingRange[0].format('YYYY-MM-DD'), pendingRange[1].format('YYYY-MM-DD')]); setPageNumber(1); message.success('统计日期已更新'); };
+        const selectStatus = (status) => { const next = activeStatus === status.id ? 'all' : status.id; setActiveStatus(next); setPageNumber(1); if (!['all', 'abnormal'].includes(next)) message.info('异常订单列表中没有“' + status.label + '”订单'); };
+        const columns = [
+          { title: '订单号', dataIndex: 'id', width: 170, render: (value, record) => h(Button, { type: 'link', size: 'middle', className: 'order-link', onClick: () => setDrawerRecord(record) }, value) },
+          { title: '商户 / 客户', dataIndex: 'merchant', width: 220, render: (value, record) => h('div', null, [h('span', { key: 'main', className: 'merchant-main' }, value), h('span', { key: 'sub', className: 'merchant-sub' }, record.customer + ' · ' + record.channel)]) },
+          { title: '订单金额', dataIndex: 'amount', width: 130, render: (value) => h('span', { className: 'amount' }, money(value)) },
+          { title: '异常状态', dataIndex: 'status', width: 120, render: (value) => h(Tag, { color: 'error' }, value) },
+          { title: '风险等级', dataIndex: 'risk', width: 110, render: (value) => h(Tag, { color: riskColor[value] }, value + '风险') },
+          { title: '异常原因', dataIndex: 'reason', width: 260, render: (value) => h('div', { className: 'reason-cell', title: value }, value) },
+          { title: '创建时间', dataIndex: 'createdAt', width: 165 },
+          { title: '操作', key: 'action', width: 80, render: (_, record) => h(Button, { type: 'link', size: 'middle', className: 'detail-link', onClick: () => setDrawerRecord(record) }, '详情') }
+        ];
+        const metricNodes = source.metrics.map((metric) => h(Card, { key: metric.id, size: 'small', className: 'metric-card' + (metric.tone === 'warning' ? ' is-alert' : '') }, [
+          h('div', { key: 'label', className: 'metric-label' }, [h('span', { key: 'text' }, metric.label), metric.tone === 'warning' && WarningOutlined ? h(WarningOutlined, { key: 'icon', className: 'metric-icon' }) : LineChartOutlined ? h(LineChartOutlined, { key: 'icon', className: 'metric-icon' }) : null]),
+          h(Statistic, { key: 'value', value: metricValue(metric), precision: metric.format === 'currency' ? 2 : 0, prefix: metric.format === 'currency' ? '¥' : null, groupSeparator: ',' }),
+          h('div', { key: 'change', className: 'metric-change' }, [h('b', { key: 'delta' }, (metric.delta >= 0 ? '↑ ' : '↓ ') + Math.abs(metric.delta) + '%'), h('span', { key: 'comparison' }, metric.comparison)])
+        ]));
+        const statusNodes = source.statuses.map((status) => h(Button, { key: status.id, type: 'text', className: 'status-button' + (activeStatus === status.id ? ' is-active' : ''), onClick: () => selectStatus(status), 'aria-pressed': activeStatus === status.id }, [h('span', { key: 'name', className: 'status-name' }, [h('i', { key: 'dot', className: 'status-dot', style: { '--status-color': status.color } }), status.label]), h('span', { key: 'count', className: 'status-count' }, [h('b', { key: 'value' }, status.count.toLocaleString('zh-CN')), h('small', { key: 'percent' }, (status.count / statusTotal * 100).toFixed(1) + '%')]) ]));
+        const drawerBody = drawerRecord ? h(React.Fragment, null, [
+          h('div', { key: 'amount', className: 'drawer-amount' }, [h('span', { key: 'label' }, '订单金额'), h('strong', { key: 'value' }, money(drawerRecord.amount))]),
+          h(Alert, { key: 'alert', className: 'drawer-alert', type: 'error', showIcon: true, message: drawerRecord.status + ' · ' + drawerRecord.risk + '风险', description: drawerRecord.reason }),
+          h(Descriptions, { key: 'details', column: 2, bordered: false, size: 'small' }, [h(Descriptions.Item, { key: 'id', label: '订单号' }, drawerRecord.id), h(Descriptions.Item, { key: 'merchant', label: '商户' }, drawerRecord.merchant), h(Descriptions.Item, { key: 'customer', label: '客户' }, drawerRecord.customer), h(Descriptions.Item, { key: 'channel', label: '支付渠道' }, drawerRecord.channel), h(Descriptions.Item, { key: 'attempts', label: '重试次数' }, drawerRecord.attempts + ' 次'), h(Descriptions.Item, { key: 'owner', label: '当前跟进人' }, drawerRecord.owner), h(Descriptions.Item, { key: 'updated', label: '最后更新' }, drawerRecord.updatedAt)]),
+          h('h3', { key: 'timeline-title', className: 'drawer-section-title' }, '处理记录'),
+          h(Timeline, { key: 'timeline', items: [{ color: 'red', children: '系统识别到异常 · ' + drawerRecord.createdAt }, { color: 'blue', children: '进入人工复核队列 · ' + drawerRecord.owner }, { color: 'gray', children: '等待渠道状态确认' }] })
+        ]) : null;
+        return h(ConfigProvider, { autoInsertSpaceInButton: true, theme: { token: { borderRadius: 8, controlHeight: 32, colorPrimary: '#222222', colorLink: '#4AA52E', colorLinkHover: '#357D21', controlItemBgActive: '#F5F5F5', controlItemBgActiveHover: '#EDEDED' }, components: { Table: { rowSelectedBg: '#F5F5F5', rowSelectedHoverBg: '#EDEDED' }, Select: { optionSelectedBg: '#F5F5F5', optionActiveBg: '#FAFAFA' } } } }, h('div', { className: 'dashboard-page' }, [
+          h('header', { key: 'header', className: 'dashboard-header' }, h('div', { className: 'dashboard-title-row' }, [h('h1', { key: 'title', className: 'dashboard-title' }, payload.pageName), h('span', { key: 'demo', className: 'dashboard-demo' }, '演示数据')])),
+          h('section', { key: 'filter', className: 'dashboard-filter' }, [h('div', { key: 'field', className: 'dashboard-filter-field' }, [h('label', { key: 'label' }, '统计日期'), h(DatePicker.RangePicker, { key: 'picker', size: 'middle', value: pendingRange, onChange: setPendingRange, format: 'YYYY-MM-DD', style: { width: '100%' } })]), h('div', { key: 'actions', className: 'dashboard-filter-actions' }, [h(Button, { key: 'query', type: 'primary', size: 'middle', onClick: applyDate }, '查询'), h(Button, { key: 'export', size: 'middle', icon: DownloadOutlined ? h(DownloadOutlined) : null, onClick: () => exportCsv(filtered) }, '导出报表')])]),
+          h('section', { key: 'metrics', className: 'metric-grid', 'aria-label': '核心指标' }, metricNodes),
+          h('section', { key: 'analysis', className: 'dashboard-analysis' }, [
+            h(Card, { key: 'trend', className: 'analysis-card', title: h('div', { className: 'analysis-title' }, [h('span', { key: 'name' }, '销售额趋势'), h('small', { key: 'period' }, trendPoints.length ? trendPoints[0].date.slice(5).replace('-', '月') + '日 - ' + trendPoints[trendPoints.length - 1].date.slice(5).replace('-', '月') + '日' : '')]), extra: h(Segmented, { size: 'small', options: ['近7日','近14日','本月'], value: trendRange, onChange: setTrendRange }) }, [h('div', { key: 'total', className: 'trend-total' }, [h('strong', { key: 'value' }, money(trendTotal)), h('span', { key: 'change' }, '↑ 12.6% 较上期')]), h(TrendChart, { key: 'chart', points: trendPoints })]),
+            h(Card, { key: 'status', className: 'analysis-card', title: h('div', { className: 'analysis-title' }, [h('span', { key: 'name' }, '订单状态分布'), h('small', { key: 'count' }, '共 ' + statusTotal.toLocaleString('zh-CN') + ' 笔')]) }, h('div', { className: 'status-layout' }, [h('div', { key: 'donut', className: 'status-donut', role: 'img', 'aria-label': '订单状态分布环形图' }, h('div', { className: 'status-center' }, [h('strong', { key: 'total' }, statusTotal.toLocaleString('zh-CN')), h('span', { key: 'label' }, '全部订单')])), h('div', { key: 'list', className: 'status-list' }, statusNodes)]))
+          ]),
+          h('section', { key: 'result', className: 'result-section' }, h(Card, { className: 'result-card', bordered: false, title: h('div', { className: 'result-heading' }, [h('span', { key: 'name' }, '异常订单'), h('small', { key: 'count' }, '共 ' + filtered.length + ' 条')]), extra: h('div', { className: 'result-tools' }, [selectedKeys.length ? h('span', { key: 'selected', className: 'selected-count' }, '已选 ' + selectedKeys.length + ' 条') : null, h(Input, { key: 'search', allowClear: true, value: query, onChange: (event) => { setQuery(event.target.value); setPageNumber(1); }, prefix: SearchOutlined ? h(SearchOutlined) : null, placeholder: '搜索订单号、商户或异常原因' }), selectedKeys.length ? h(Button, { key: 'selected-export', onClick: () => exportCsv(source.anomalies.filter((record) => selectedKeys.includes(record.id))) }, '导出所选') : null]) }, [h(Table, { key: 'table', rowKey: 'id', columns, dataSource: visible, pagination: false, size: 'middle', scroll: { x: 1160 }, rowSelection: { selectedRowKeys: selectedKeys, onChange: setSelectedKeys }, locale: { emptyText: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: '没有符合条件的异常订单' }) } }), h('div', { key: 'pagination', className: 'result-pagination' }, [h('span', { key: 'summary', className: 'page-summary' }, pageSummary), h(Pagination, { key: 'pages', size: 'middle', current: pageNumber, pageSize, total: filtered.length, showSizeChanger: false, onChange: setPageNumber })])])),
+          h(Modal, { key: 'detail-modal', className: 'yipex-modal', title: '订单详情', open: Boolean(drawerRecord), width: window.innerWidth <= 680 ? 'calc(100vw - 32px)' : 720, onCancel: () => setDrawerRecord(null), footer: h(Space, null, [h(Button, { key: 'close', onClick: () => setDrawerRecord(null) }, '关闭'), h(Button, { key: 'follow', type: 'primary', onClick: () => { message.success('已记录跟进状态'); setDrawerRecord(null); } }, '标记为已跟进')]), centered: true }, drawerBody)
+        ]));
+      }
+      ReactDOM.createRoot(document.getElementById('order-dashboard-app')).render(h(App));
+    })();
+   } else { window.requestAnimationFrame(start); } }; start(); })();</script></body></html>

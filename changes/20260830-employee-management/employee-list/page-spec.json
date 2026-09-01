@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260830-employee-management-list",
+    "pageName": "员工管理",
+    "pageType": "employee-query-list",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "/yipex:page 生成员工管理流程，包含员工查询列表和员工信息分组表单。查询列表支持按姓名、部门和状态筛选，展示姓名、工号、部门、岗位和状态，提供新增员工和查看详情操作。点击新增员工进入分组表单，表单分为基本信息和工作信息两组，包含姓名、工号、手机号、部门、岗位和状态字段，支持取消和保存。保存成功后返回员工列表并刷新数据",
+    "assumptions": [
+      "未提供后端接口，员工查询、详情和新增使用浏览器本地演示数据。",
+      "保存成功后按创建时间倒序刷新列表，新员工显示在第一条且不增加持久高亮。"
+    ],
+    "ruleRefs": [
+      "execution/context-packs/core.md",
+      "design-system/DESIGN.md",
+      "design-system/director-rules/01-visual-constitution.md",
+      "execution/context-packs/interaction.md",
+      "execution/context-packs/accessibility.md",
+      "execution/context-packs/layout.md",
+      "execution/context-packs/components.md",
+      "design-system/03-query-list-patterns.md",
+      "execution/page-contract-v2.md"
+    ],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "list.query-detail-overlay",
+      "skeleton": "query-workbench",
+      "capabilities": ["query.basic", "table.flat", "table.pagination", "detail.overlay", "form.overlay"],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.30.4",
+      "rendererId": "yipex-standard-query-table-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "list",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [
+      { "id": "employee-list-header", "role": "page-header", "purpose": "标识员工管理任务" },
+      { "id": "employee-filters", "role": "query-controls", "purpose": "按姓名、部门和状态筛选员工" },
+      { "id": "employee-results", "role": "result-list", "purpose": "浏览员工并执行新增或详情操作" },
+      { "id": "employee-detail", "role": "detail-overlay", "purpose": "在列表上下文中查看员工完整信息" },
+      { "id": "employee-create", "role": "form-overlay", "purpose": "在列表上下文中按基本信息和工作信息分组新增员工" }
+    ],
+    "hierarchy": {
+      "primary": "快速定位并管理员工",
+      "secondary": ["从列表新增员工", "查看员工完整信息"]
+    },
+    "operations": {
+      "primary": { "id": "query-employees", "label": "查询", "placement": "查询条件区末列", "outcome": "按当前条件筛选员工并回到第一页" },
+      "secondary": [
+        { "id": "reset-employee-filters", "label": "重置", "placement": "查询按钮左侧", "outcome": "清空筛选条件并恢复全部员工" },
+        { "id": "create-employee", "label": "新增员工", "placement": "列表标题工具区最右侧", "outcome": "打开新增员工弹窗" },
+        { "id": "view-employee-detail", "label": "查看详情", "placement": "每行操作列", "outcome": "打开详情抽屉并保留列表上下文" }
+      ]
+    },
+    "stateCoverage": ["loading", "empty", "error", "permission-denied", "success"],
+    "responsive": {
+      "desktop": "三项筛选使用四列网格，结果表格展示核心员工字段；六项新增信息使用两列 Modal，详情使用两列 Drawer。",
+      "narrow": "筛选条件和新增字段改为单列，表格保留横向滚动；详情抽屉接近全宽并降为单列。"
+    },
+    "deviations": []
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "sidebar": { "width": 200, "background": "#F0F0F0", "showCollapseControl": true },
+      "brand": { "name": "Yipex", "logo": "logo.svg" },
+      "navigation": [
+        { "id": "home", "label": "首页", "icon": "HomeOutlined" },
+        { "id": "employee-management", "label": "员工管理", "icon": "TeamOutlined", "active": true }
+      ],
+      "header": { "welcome": "员工管理", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "员" },
+      "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" },
+      "floatingTools": { "show": false }
+    },
+    "root": {
+      "id": "employee-list-page",
+      "type": "standard-query-table-page",
+      "props": { "title": "员工管理", "resultTitle": "员工列表", "createLabel": "新增员工" },
+      "children": [
+        { "id": "employee-list-header", "type": "page-header", "label": "员工管理" },
+        {
+          "id": "employee-filters",
+          "type": "query-form",
+          "children": [
+            { "id": "employee-name-filter", "type": "input", "label": "姓名", "events": { "change": "editEmployeeFilters" } },
+            { "id": "employee-department-filter", "type": "select", "label": "部门", "events": { "change": "editEmployeeFilters" } },
+            { "id": "employee-status-filter", "type": "select", "label": "状态", "events": { "change": "editEmployeeFilters" } },
+            { "id": "reset-employee-filters", "type": "button", "label": "重置", "events": { "click": "resetEmployeeFilters" } },
+            { "id": "query-employees", "type": "button", "label": "查询", "props": { "buttonType": "primary", "htmlType": "submit" }, "events": { "click": "queryEmployees" } }
+          ]
+        },
+        {
+          "id": "employee-results",
+          "type": "data-table",
+          "label": "员工列表",
+          "events": { "pageChange": "paginateEmployees", "rowClick": "openEmployeeDetail" },
+          "children": [
+            { "id": "create-employee", "type": "button", "label": "新增员工", "events": { "click": "openCreateEmployee" } },
+            { "id": "view-employee-detail", "type": "button", "label": "查看详情", "events": { "click": "openEmployeeDetail" } }
+          ]
+        },
+        { "id": "employee-detail", "type": "detail-overlay", "label": "员工详情", "props": { "mode": "drawer" }, "events": { "close": "closeEmployeeDetail" } },
+        { "id": "employee-create", "type": "form-overlay", "label": "新增员工", "events": { "close": "closeCreateEmployee", "submit": "submitCreateEmployee" } }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "persistenceKey": "yipex-employee-management-demo",
+      "defaultSort": { "key": "createdAt", "order": "descend" },
+      "pageSize": 6,
+      "create": {
+        "idField": "id",
+        "timestampField": "createdAt",
+        "successMessage": "员工新增成功"
+      },
+      "filters": [
+        { "id": "employee-name", "key": "name", "label": "姓名", "type": "text", "recordKey": "name", "placeholder": "请输入员工姓名" },
+        { "id": "employee-department", "key": "department", "label": "部门", "type": "select", "placeholder": "请选择部门", "options": [{ "value": "ALL", "label": "全部部门" }, { "value": "PRODUCT", "label": "产品部" }, { "value": "TECHNOLOGY", "label": "技术部" }, { "value": "OPERATIONS", "label": "运营部" }, { "value": "FINANCE", "label": "财务部" }, { "value": "HR", "label": "人力资源部" }] },
+        { "id": "employee-status", "key": "status", "label": "状态", "type": "select", "placeholder": "请选择状态", "options": [{ "value": "ALL", "label": "全部状态" }, { "value": "ACTIVE", "label": "在职" }, { "value": "PENDING", "label": "待入职" }, { "value": "INACTIVE", "label": "已离职" }] }
+      ],
+      "columns": [
+        { "key": "name", "label": "姓名", "width": 140 },
+        { "key": "id", "label": "工号", "width": 150 },
+        { "key": "departmentLabel", "label": "部门", "width": 140 },
+        { "key": "positionLabel", "label": "岗位", "width": 170 },
+        { "key": "status", "label": "状态", "width": 110, "format": "status", "labelKey": "statusLabel" },
+        { "key": "actions", "label": "操作", "width": 110, "format": "actions", "fixed": "right", "actions": [{ "id": "detail", "type": "detail", "label": "查看详情" }] }
+      ],
+      "detailFields": [
+        { "key": "name", "label": "姓名" },
+        { "key": "id", "label": "工号" },
+        { "key": "phone", "label": "手机号" },
+        { "key": "departmentLabel", "label": "部门" },
+        { "key": "positionLabel", "label": "岗位" },
+        { "key": "status", "label": "状态", "format": "status", "labelKey": "statusLabel" },
+        { "key": "createdAt", "label": "创建时间" }
+      ],
+      "createSections": [
+        { "id": "basic", "title": "基本信息", "fieldKeys": ["name", "id", "phone"] },
+        { "id": "work", "title": "工作信息", "fieldKeys": ["department", "position", "status"] }
+      ],
+      "createFields": [
+        { "key": "name", "label": "姓名", "type": "text", "required": true, "placeholder": "请输入员工姓名" },
+        { "key": "id", "label": "工号", "type": "text", "required": true, "placeholder": "请输入工号，例如 EMP202608021" },
+        { "key": "phone", "label": "手机号", "type": "text", "required": true, "placeholder": "请输入手机号" },
+        { "key": "department", "label": "部门", "type": "select", "required": true, "labelKey": "departmentLabel", "placeholder": "请选择部门", "options": [{ "value": "PRODUCT", "label": "产品部" }, { "value": "TECHNOLOGY", "label": "技术部" }, { "value": "OPERATIONS", "label": "运营部" }, { "value": "FINANCE", "label": "财务部" }, { "value": "HR", "label": "人力资源部" }] },
+        { "key": "position", "label": "岗位", "type": "select", "required": true, "labelKey": "positionLabel", "placeholder": "请选择岗位", "options": [{ "value": "PRODUCT_MANAGER", "label": "产品经理" }, { "value": "FRONTEND_ENGINEER", "label": "前端工程师" }, { "value": "BACKEND_ENGINEER", "label": "后端工程师" }, { "value": "OPERATIONS_SPECIALIST", "label": "运营专员" }, { "value": "ACCOUNTANT", "label": "会计" }, { "value": "HR_SPECIALIST", "label": "人事专员" }] },
+        { "key": "status", "label": "状态", "type": "select", "required": true, "labelKey": "statusLabel", "placeholder": "请选择状态", "options": [{ "value": "ACTIVE", "label": "在职" }, { "value": "PENDING", "label": "待入职" }, { "value": "INACTIVE", "label": "已离职" }] }
+      ],
+      "records": [
+        { "id": "EMP202608018", "name": "周宁", "phone": "138****6218", "department": "PRODUCT", "departmentLabel": "产品部", "position": "PRODUCT_MANAGER", "positionLabel": "产品经理", "status": "ACTIVE", "statusLabel": "在职", "createdAt": "2026-08-30 09:30" },
+        { "id": "EMP202608015", "name": "叶清", "phone": "186****0934", "department": "TECHNOLOGY", "departmentLabel": "技术部", "position": "FRONTEND_ENGINEER", "positionLabel": "前端工程师", "status": "ACTIVE", "statusLabel": "在职", "createdAt": "2026-08-29 16:08" },
+        { "id": "EMP202608012", "name": "林晓", "phone": "139****8472", "department": "OPERATIONS", "departmentLabel": "运营部", "position": "OPERATIONS_SPECIALIST", "positionLabel": "运营专员", "status": "PENDING", "statusLabel": "待入职", "createdAt": "2026-08-29 11:45" },
+        { "id": "EMP202608009", "name": "何川", "phone": "158****3017", "department": "FINANCE", "departmentLabel": "财务部", "position": "ACCOUNTANT", "positionLabel": "会计", "status": "ACTIVE", "statusLabel": "在职", "createdAt": "2026-08-28 14:32" },
+        { "id": "EMP202608006", "name": "沈念", "phone": "135****1849", "department": "HR", "departmentLabel": "人力资源部", "position": "HR_SPECIALIST", "positionLabel": "人事专员", "status": "ACTIVE", "statusLabel": "在职", "createdAt": "2026-08-27 09:18" },
+        { "id": "EMP202608003", "name": "钱悦", "phone": "136****7792", "department": "TECHNOLOGY", "departmentLabel": "技术部", "position": "BACKEND_ENGINEER", "positionLabel": "后端工程师", "status": "INACTIVE", "statusLabel": "已离职", "createdAt": "2026-08-26 17:52" }
+      ]
+    },
+    "states": { "loading": false, "empty": false, "error": false, "permission-denied": false, "submitting": false, "filters": {}, "success": false },
+    "interactions": [
+      { "id": "editEmployeeFilters", "source": "employee-filters", "event": "change", "outcome": "更新待提交筛选条件，不立即刷新结果" },
+      { "id": "queryEmployees", "source": "query-employees", "event": "click", "outcome": "应用筛选条件并回到第一页" },
+      { "id": "resetEmployeeFilters", "source": "reset-employee-filters", "event": "click", "outcome": "清空筛选条件并恢复全部员工" },
+      { "id": "paginateEmployees", "source": "employee-results", "event": "pageChange", "outcome": "保留筛选条件并切换结果页" },
+      { "id": "openCreateEmployee", "source": "create-employee", "event": "click", "outcome": "打开包含基本信息和工作信息两组字段的新增弹窗" },
+      { "id": "submitCreateEmployee", "source": "employee-create", "event": "submit", "outcome": "校验并新增员工，关闭弹窗、提示成功并按创建时间倒序刷新列表" },
+      { "id": "closeCreateEmployee", "source": "employee-create", "event": "close", "outcome": "关闭弹窗并清除未提交内容" },
+      { "id": "openEmployeeDetail", "source": "view-employee-detail", "event": "click", "outcome": "打开员工详情抽屉" },
+      { "id": "closeEmployeeDetail", "source": "employee-detail", "event": "close", "outcome": "关闭详情并保留列表上下文" }
+    ],
+    "extensions": {
+      "presentationDecisions": {
+        "employee-results": { "mode": "table", "confidence": "explicit", "evidence": ["用户明确要求员工查询列表及固定展示字段"], "baseComponent": "Table + Pagination", "requiresDeviation": false },
+        "employee-detail": { "mode": "drawer", "confidence": "pattern-default", "evidence": ["员工详情包含 7 个字段"], "baseComponent": "Drawer + Descriptions (two columns)", "requiresDeviation": false },
+        "employee-create": { "mode": "modal-form", "confidence": "pattern-default", "evidence": ["新增包含 6 个录入字段；分组要求不改变字段数量阈值"], "baseComponent": "Modal + grouped form controls", "requiresDeviation": false }
+      },
+      "renderer": "yipex-standard-query-table-v1",
+      "generation": {
+        "strategy": "standard",
+        "recipeId": "list.query-detail-overlay",
+        "skeleton": "query-workbench",
+        "capabilities": ["query.basic", "table.flat", "table.pagination", "detail.overlay", "form.overlay"],
+        "rendererId": "yipex-standard-query-table-v1"
+      }
+    }
+  }
+}

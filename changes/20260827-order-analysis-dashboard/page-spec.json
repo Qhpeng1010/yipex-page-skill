@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "changeId": "20260827-order-analysis-dashboard",
+    "pageName": "经营分析",
+    "pageType": "order-analysis-dashboard",
+    "componentLibrary": {
+      "name": "antd",
+      "source": "official"
+    },
+    "request": "按照skill新规则调整下经营分析页的样式",
+    "assumptions": [
+      "当前未提供真实接口，页面使用明确标注的演示数据。",
+      "导出行为在浏览器端生成当前筛选结果的 CSV 文件。",
+      "日期筛选、状态筛选与搜索仅作用于演示数据，不代表已接入生产订单系统。",
+      "本次基于现有订单分析 Dashboard 调整为新版经营分析页面，不改变核心业务能力。"
+    ],
+    "ruleRefs": [
+      "DESIGN.md",
+      "01-foundations.md",
+      "02-components.md",
+      "03-query-list-patterns.md",
+      "execution/context-packs/accessibility.md",
+      "execution/context-packs/components.md",
+      "execution/context-packs/layout.md",
+      "execution/context-packs/interaction.md",
+      "references/antd-component-map.md",
+      "shell/README.md",
+      "shell/shell.template.html",
+      "shell/shell.css",
+      "shell/shell-runtime.js"
+    ]
+  },
+  "page": {
+    "shell": {
+      "id": "yipex-default",
+      "brand": {
+        "name": "Yipex",
+        "logo": "logo.svg"
+      },
+      "navigation": [
+        {
+          "id": "home",
+          "label": "首页",
+          "icon": "HomeOutlined"
+        },
+        {
+          "id": "business-analysis",
+          "label": "经营分析",
+          "icon": "DashboardOutlined",
+          "active": true
+        }
+      ],
+      "header": {
+        "welcome": "经营分析",
+        "userName": "订单运营",
+        "email": "运营工作台"
+      },
+      "footer": {
+        "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved"
+      }
+    },
+    "theme": {
+      "primary": "#222222",
+      "brand": "#4AA52E",
+      "brandAuxiliary": "#52BF63",
+      "surface": "#FFFFFF",
+      "canvas": "#F7F8FA",
+      "border": "#D9D9D9",
+      "radius": 8
+    },
+    "root": {
+      "id": "order-dashboard",
+      "type": "order-analysis-dashboard",
+      "props": {
+        "title": "经营分析",
+        "demoLabel": "演示数据"
+      },
+      "children": [
+        {
+          "id": "dashboard-content",
+          "type": "dashboard-main",
+          "children": [
+            {
+              "id": "dashboard-toolbar",
+              "type": "toolbar",
+              "children": [
+                {
+                  "id": "date-filter",
+                  "type": "date-range-filter",
+                  "label": "统计日期",
+                  "events": {
+                    "change": "filterByDateRange"
+                  }
+                },
+                {
+                  "id": "export-dashboard",
+                  "type": "button",
+                  "label": "导出报表",
+                  "events": {
+                    "click": "exportFilteredOrders"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "metric-overview",
+              "type": "metric-grid",
+              "label": "核心指标"
+            },
+            {
+              "id": "sales-trend",
+              "type": "line-chart",
+              "label": "销售额趋势",
+              "events": {
+                "rangeChange": "changeTrendRange"
+              }
+            },
+            {
+              "id": "status-distribution",
+              "type": "donut-chart",
+              "label": "订单状态分布",
+              "events": {
+                "select": "filterByStatus"
+              }
+            },
+            {
+              "id": "abnormal-orders",
+              "type": "data-table",
+              "label": "异常订单",
+              "events": {
+                "search": "searchOrders",
+                "select": "selectOrders",
+                "rowClick": "openOrderDetail",
+                "pageChange": "paginateOrders"
+              }
+            },
+            {
+              "id": "order-detail-drawer",
+              "type": "drawer",
+              "label": "订单详情",
+              "state": {
+                "open": false
+              },
+              "events": {
+                "close": "closeOrderDetail"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "data": {
+      "demo": true,
+      "updatedAt": "2026-08-27 16:20",
+      "dateRange": {
+        "start": "2026-08-01",
+        "end": "2026-08-27"
+      },
+      "metrics": [
+        {
+          "id": "sales",
+          "label": "销售额",
+          "value": 1286430.5,
+          "format": "currency",
+          "delta": 12.6,
+          "comparison": "较上期"
+        },
+        {
+          "id": "orders",
+          "label": "订单数",
+          "value": 4826,
+          "format": "integer",
+          "delta": 8.2,
+          "comparison": "较上期"
+        },
+        {
+          "id": "average",
+          "label": "平均客单价",
+          "value": 266.56,
+          "format": "currency",
+          "delta": 3.1,
+          "comparison": "较上期"
+        },
+        {
+          "id": "abnormal",
+          "label": "异常订单",
+          "value": 108,
+          "format": "integer",
+          "delta": -18.4,
+          "comparison": "较上期",
+          "tone": "warning"
+        }
+      ],
+      "salesTrend": [
+        {
+          "date": "2026-08-01",
+          "value": 36280
+        },
+        {
+          "date": "2026-08-03",
+          "value": 42860
+        },
+        {
+          "date": "2026-08-05",
+          "value": 39520
+        },
+        {
+          "date": "2026-08-07",
+          "value": 51680
+        },
+        {
+          "date": "2026-08-09",
+          "value": 48340
+        },
+        {
+          "date": "2026-08-11",
+          "value": 60120
+        },
+        {
+          "date": "2026-08-13",
+          "value": 55860
+        },
+        {
+          "date": "2026-08-15",
+          "value": 67380
+        },
+        {
+          "date": "2026-08-17",
+          "value": 63140
+        },
+        {
+          "date": "2026-08-19",
+          "value": 74260
+        },
+        {
+          "date": "2026-08-21",
+          "value": 68820
+        },
+        {
+          "date": "2026-08-23",
+          "value": 82340
+        },
+        {
+          "date": "2026-08-25",
+          "value": 76980
+        },
+        {
+          "date": "2026-08-27",
+          "value": 89420
+        }
+      ],
+      "statuses": [
+        {
+          "id": "completed",
+          "label": "交易成功",
+          "count": 3288,
+          "color": "#4AA52E"
+        },
+        {
+          "id": "processing",
+          "label": "处理中",
+          "count": 721,
+          "color": "#1677FF"
+        },
+        {
+          "id": "closed",
+          "label": "已关闭",
+          "count": 468,
+          "color": "#8C8C8C"
+        },
+        {
+          "id": "refund",
+          "label": "退款中",
+          "count": 241,
+          "color": "#F5A623"
+        },
+        {
+          "id": "abnormal",
+          "label": "异常",
+          "count": 108,
+          "color": "#D4380D"
+        }
+      ],
+      "anomalies": [
+        {
+          "id": "YP2026082700186",
+          "createdAt": "2026-08-27 15:42",
+          "merchant": "海岸咖啡（静安店）",
+          "customer": "林女士",
+          "amount": 1280,
+          "status": "支付异常",
+          "reason": "银行侧返回超时，待确认扣款结果",
+          "risk": "高",
+          "channel": "银行卡",
+          "attempts": 3,
+          "owner": "陈路",
+          "updatedAt": "2026-08-27 16:08"
+        },
+        {
+          "id": "YP2026082700172",
+          "createdAt": "2026-08-27 14:58",
+          "merchant": "松果生活馆",
+          "customer": "周先生",
+          "amount": 869.5,
+          "status": "退款异常",
+          "reason": "退款账户状态异常，请联系商户确认",
+          "risk": "中",
+          "channel": "微信支付",
+          "attempts": 2,
+          "owner": "王一",
+          "updatedAt": "2026-08-27 15:31"
+        },
+        {
+          "id": "YP2026082700149",
+          "createdAt": "2026-08-27 13:26",
+          "merchant": "北屿餐厅",
+          "customer": "赵女士",
+          "amount": 326,
+          "status": "风控拦截",
+          "reason": "短时间内多笔同卡交易触发风控规则",
+          "risk": "高",
+          "channel": "银行卡",
+          "attempts": 5,
+          "owner": "徐安",
+          "updatedAt": "2026-08-27 14:02"
+        },
+        {
+          "id": "YP2026082601397",
+          "createdAt": "2026-08-26 21:17",
+          "merchant": "原野户外用品",
+          "customer": "吴先生",
+          "amount": 2450,
+          "status": "支付异常",
+          "reason": "支付回调验签失败，订单状态未同步",
+          "risk": "高",
+          "channel": "支付宝",
+          "attempts": 1,
+          "owner": "陈路",
+          "updatedAt": "2026-08-27 09:18"
+        },
+        {
+          "id": "YP2026082601264",
+          "createdAt": "2026-08-26 18:43",
+          "merchant": "白塔书店",
+          "customer": "沈女士",
+          "amount": 158.8,
+          "status": "退款异常",
+          "reason": "原支付渠道维护中，退款将在恢复后重试",
+          "risk": "低",
+          "channel": "微信支付",
+          "attempts": 2,
+          "owner": "王一",
+          "updatedAt": "2026-08-27 10:05"
+        },
+        {
+          "id": "YP2026082601091",
+          "createdAt": "2026-08-26 16:11",
+          "merchant": "南山运动中心",
+          "customer": "梁先生",
+          "amount": 3600,
+          "status": "金额异常",
+          "reason": "订单金额与商户报备区间不匹配",
+          "risk": "中",
+          "channel": "银行卡",
+          "attempts": 1,
+          "owner": "徐安",
+          "updatedAt": "2026-08-26 17:22"
+        },
+        {
+          "id": "YP2026082500875",
+          "createdAt": "2026-08-25 12:08",
+          "merchant": "沐光烘焙",
+          "customer": "钱女士",
+          "amount": 498,
+          "status": "支付异常",
+          "reason": "用户已扣款但渠道未返回成功状态",
+          "risk": "中",
+          "channel": "支付宝",
+          "attempts": 3,
+          "owner": "陈路",
+          "updatedAt": "2026-08-25 14:39"
+        },
+        {
+          "id": "YP2026082400653",
+          "createdAt": "2026-08-24 10:52",
+          "merchant": "青禾花房",
+          "customer": "冯女士",
+          "amount": 288,
+          "status": "风控拦截",
+          "reason": "收货信息与支付账户地域差异过大",
+          "risk": "高",
+          "channel": "微信支付",
+          "attempts": 4,
+          "owner": "徐安",
+          "updatedAt": "2026-08-24 11:15"
+        }
+      ]
+    },
+    "states": {
+      "loading": false,
+      "empty": false,
+      "error": false,
+      "permission-denied": false,
+      "success": false,
+      "activeStatus": "all",
+      "query": "",
+      "selectedOrderIds": [],
+      "selectedOrderId": null,
+      "page": 1,
+      "pageSize": 5
+    },
+    "interactions": [
+      {
+        "id": "filterByDateRange",
+        "trigger": "date-filter.change",
+        "result": "更新趋势、指标和异常订单列表，并显示筛选反馈"
+      },
+      {
+        "id": "changeTrendRange",
+        "trigger": "sales-trend.rangeChange",
+        "result": "切换近7日、近14日和本月趋势视图"
+      },
+      {
+        "id": "filterByStatus",
+        "trigger": "status-distribution.select",
+        "result": "高亮所选状态并联动异常订单列表"
+      },
+      {
+        "id": "exportFilteredOrders",
+        "trigger": "export-dashboard.click",
+        "result": "导出当前筛选范围内的异常订单 CSV"
+      },
+      {
+        "id": "openOrderDetail",
+        "trigger": "abnormal-orders.rowClick",
+        "result": "打开订单详情抽屉并展示处理信息"
+      },
+      {
+        "id": "closeOrderDetail",
+        "trigger": "order-detail-drawer.close",
+        "result": "关闭详情抽屉并恢复焦点"
+      }
+    ],
+    "extensions": {
+      "renderer": "order-analysis-dashboard-v2-antd-shell",
+      "componentMap": {
+        "dateRange": "DatePicker.RangePicker",
+        "actions": "Button",
+        "metrics": "Card + Statistic",
+        "trendRange": "Segmented",
+        "search": "Input",
+        "results": "Table",
+        "pagination": "Pagination",
+        "detail": "Drawer",
+        "detailFields": "Descriptions",
+        "status": "Tag",
+        "empty": "Empty",
+        "feedback": "message"
+      },
+      "customComponents": {
+        "salesTrend": "Ant Design 不提供图表组件，使用只读 SVG 折线图。",
+        "statusDistribution": "Ant Design 不提供图表组件，使用 conic-gradient 环形图并配套文字图例。"
+      },
+      "responsive": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ],
+      "exportFormat": "csv"
+    }
+  }
+}

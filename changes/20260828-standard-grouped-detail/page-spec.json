@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "changeId": "20260828-standard-grouped-detail",
+    "pageName": "商户详情",
+    "pageType": "detail",
+    "componentLibrary": { "name": "antd", "source": "official" },
+    "request": "创建一个商户详情页，展示经营指标、基础信息、负责人信息和最近交易记录。",
+    "assumptions": ["页面展示脱敏演示数据。"],
+    "ruleRefs": ["DESIGN.md", "01-foundations.md", "02-components.md", "06-detail-patterns.md", "execution/presentation-intent.md", "execution/page-contract-v2.md", "execution/capability-model/capability-model.md"],
+    "generation": {
+      "mode": "auto",
+      "strategy": "standard",
+      "recipeId": "detail.grouped",
+      "skeleton": "detail-workbench",
+      "capabilities": ["detail.groups", "detail.metrics", "detail.embeddedTable"],
+      "policyVersion": 1,
+      "modelVersion": "2026.08.30.2",
+      "rendererId": "yipex-standard-grouped-detail-v1"
+    }
+  },
+  "contract": {
+    "pageFamily": "detail",
+    "shell": "yipex-default",
+    "density": "compact",
+    "regions": [{ "id": "merchant-detail", "role": "detail", "purpose": "分组展示商户完整资料" }, { "id": "recent-transactions", "role": "table", "purpose": "展示商户最近交易记录" }],
+    "hierarchy": { "primary": "快速核对商户经营和归属信息", "secondary": ["查看关键经营指标", "核对最近交易记录"] },
+    "operations": { "primary": null, "secondary": [] },
+    "stateCoverage": ["loading", "error", "permission-denied"],
+    "responsive": { "desktop": "面包屑在独立白色详情模块外展示并在上方、左侧各保留 8px；指标在内容宽度充足时使用四列，Shell 占用空间导致单项不足以完整展示默认 Statistic 时改为两列；详情分组双列展示，关联表格横向完整展示。", "narrow": "面包屑保持在模块外，指标改为单列，详情字段纵向排列，关联表格保留横向滚动。" },
+    "deviations": []
+  },
+  "page": {
+    "shell": { "id": "yipex-default", "navigation": [{ "id": "home", "label": "首页", "icon": "HomeOutlined" }, { "id": "merchant-management", "label": "商户管理", "icon": "ShopOutlined", "active": true }], "header": { "welcome": "商户管理", "userName": "平台运营", "email": "operations@yipex.tech", "avatar": "运" }, "footer": { "copyright": "Copyright Somei E-Commerce Limited 2025. All rights reserved" } },
+    "root": { "id": "merchant-detail-page", "type": "standard-grouped-detail-page", "props": {}, "children": [{ "id": "merchant-detail", "type": "detail", "label": "商户信息" }, { "id": "recent-transactions", "type": "table", "label": "最近交易" }] },
+    "data": {
+      "demo": true,
+      "record": { "id": "M10086", "name": "海岸咖啡（静安店）", "industry": "餐饮", "contact": "张敏", "phone": "138****2086", "status": "OPERATING", "statusLabel": "营业中", "signedAt": "2026-01-22", "createdAt": "2026-01-18 10:26", "owner": "陈路", "city": "上海市", "address": "静安区愚园路 218 号" },
+      "metrics": [{ "id": "amount", "label": "近30日交易金额", "value": 1286430.5, "format": "currency", "unit": "元" }, { "id": "orders", "label": "近30日订单数", "value": 4826, "format": "integer", "unit": "笔" }, { "id": "average", "label": "平均客单价", "value": 266.56, "format": "currency", "unit": "元" }, { "id": "activeDays", "label": "活跃天数", "value": 28, "format": "integer", "unit": "天" }],
+      "sections": [{ "id": "basic", "title": "基础信息", "fields": [{ "key": "id", "label": "商户编号" }, { "key": "name", "label": "商户名称" }, { "key": "industry", "label": "所属行业" }, { "key": "status", "label": "经营状态", "format": "status" }, { "key": "signedAt", "label": "签约日期" }, { "key": "createdAt", "label": "创建时间" }] }, { "id": "owner", "title": "负责人信息", "fields": [{ "key": "contact", "label": "联系人" }, { "key": "phone", "label": "联系电话" }, { "key": "owner", "label": "负责人" }, { "key": "city", "label": "所在城市" }, { "key": "address", "label": "经营地址", "span": 2 }] }],
+      "relatedTables": [{ "id": "recent", "title": "最近交易记录", "description": "近 30 日演示数据", "columns": [{ "key": "id", "label": "交易单号" }, { "key": "date", "label": "交易时间" }, { "key": "amount", "label": "交易金额", "format": "currency", "unit": "元" }, { "key": "status", "label": "状态", "format": "status" }], "records": [{ "id": "TX-20260828-001", "date": "2026-08-28 09:42", "amount": 268, "status": "SUCCESS", "statusLabel": "交易成功" }, { "id": "TX-20260827-018", "date": "2026-08-27 18:16", "amount": 1280, "status": "SUCCESS", "statusLabel": "交易成功" }, { "id": "TX-20260826-093", "date": "2026-08-26 12:08", "amount": 88, "status": "PENDING", "statusLabel": "处理中" }]}]
+    },
+    "states": { "loading": false, "error": false, "permission-denied": false },
+    "interactions": [],
+    "extensions": { "renderer": "yipex-standard-grouped-detail-v1", "generation": { "strategy": "standard", "recipeId": "detail.grouped", "skeleton": "detail-workbench", "capabilities": ["detail.groups", "detail.metrics", "detail.embeddedTable"], "rendererId": "yipex-standard-grouped-detail-v1" } }
+  }
+}
