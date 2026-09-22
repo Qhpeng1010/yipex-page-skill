@@ -44,7 +44,7 @@ for (const [name, render, spec] of specs) {
   for (const [index, match] of scripts.entries()) {
     try { new Function(match[1]); } catch (error) { errors.push(`${name} inline script ${index + 1} is invalid: ${error.message}`); }
   }
-  if (name === 'modal' && (!html.includes('yipex-preserve-structure') || !html.includes('max-height:min(70vh,720px)'))) errors.push('preserveStructure Modal contract is missing');
+  if (name === 'modal' && (!html.includes('yipex-preserve-structure') || !html.includes('max-height:min(70vh,720px)') || !html.includes('scrollbar-gutter:auto'))) errors.push('preserveStructure Modal contract is missing or reserves asymmetric scrollbar space');
   if (name === 'modal' && (!html.includes("column.format === 'status-tag'") || !html.includes('standard-detail-sections') || !html.includes("source.createPlacement === 'page-header'"))) errors.push('query renderer declarative Tag, detail sections, or page header action support is missing');
   if (!html.includes('field.disablePast === true')) errors.push(`${name} renderer does not embed disablePast support`);
 }

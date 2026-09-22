@@ -39,8 +39,8 @@
 
 ### 字体
 
-- 字体链：`Roboto, "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`。
-- 中文使用 `PingFang SC`，英文与数字优先使用 `Roboto`；常规体使用真实字重 `400`，默认字间距为 `0`。
+- 字体链：`"苹方-简", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`。
+- 中英文和数字统一优先使用当前系统 PingFang（macOS 字体族名为 `苹方-简`）；旧版 `PingFang SC` 仅作兼容回退，缺失时再回退到平台系统字体和 `sans-serif` 默认中文字体；常规体使用真实字重 `400`，默认字间距为 `0`。
 
 | Style | Size | Weight | Line Height |
 | --- | ---: | ---: | ---: |

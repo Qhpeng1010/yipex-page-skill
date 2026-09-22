@@ -86,7 +86,7 @@ YiPex 以 [Ant Design 设计价值观](https://ant.design/docs/spec/values-cn) �
 - 核心按钮默认使用主操作色，不使用品牌绿替代。
 - Ant Design 组件的 hover、active、selected、focus 状态默认使用 YiPex Foundations 中的主题色与状态色；不自动采用 Ant Design 蓝色。颜色读取和映射以后续色彩规范为准，除非页面在 `contract.deviations` 中明确记录。
 - 品牌绿与辅助绿只用于规定的品牌识别、业务状态和辅助场景。
-- 全局文字使用 Foundations `Page Title`、`Module Title`、`Body` 与 `Auxiliary` 四档样式，默认字间距为 `0`；中文使用 PingFang SC，英文与数字优先使用 Roboto，所有页面与 Ant Design 组件使用同一字体链。
+- 全局文字使用 Foundations `Page Title`、`Module Title`、`Body` 与 `Auxiliary` 四档样式，默认字间距为 `0`；中英文和数字统一优先使用当前系统 PingFang（macOS 字体族名为 苹方-简），旧版 PingFang SC 仅作兼容回退，缺失时再回退到平台系统字体和 sans-serif 默认中文字体，所有页面与 Ant Design 组件使用同一字体链。
 - 查询列表、Dashboard、表单、详情和结果场景分别读取 `03` 至 `07` 的单个页面类型 Pattern；未命中时使用 `custom` 并在 Page Contract 中声明结构和交互。
 - 页面类型内部的普通、分组、分步、含汇总或含明细等差异作为 Pattern 变体处理，不新增并列页面族。
 - Shell 的结构、导航目录和框架交互只由 `modules/yipex/shell/` 维护；页面 Pattern 只声明业务内容如何挂载到 Shell 内容插槽。

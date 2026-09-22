@@ -29,6 +29,7 @@ Skill 提供完整页面、快速页面和产品需求三种快捷入口：
 - 默认使用 Ant Design 官方组件、API、语义和状态。具体视觉、页面方案和交互规则分别读取导演规则 01–03，页面族特有结构再读取一个命中的 Page Pattern；入口不重复维护这些规则。
 - 状态列默认使用 Ant Design `Badge` 的官方语义色（`success`、`processing`、`warning`、`error`、`default`）；业务状态值应在 Page Spec 的列配置中通过 `statusTone` 映射，未声明时仅使用渲染器的通用语义兜底，不得随意生成自定义颜色。
 - 二次确认默认沿用 YiPex 主操作色 `#222222`；危险或不可逆操作的确认按钮使用 Ant Design `danger` 语义色，取消按钮使用官方中性按钮色并保留规范焦点态，不得回退为默认蓝色。
+- 全局字体统一优先使用当前系统 PingFang（macOS 字体族名为 苹方-简）；旧版 PingFang SC 仅作兼容回退，缺失时再回退到平台系统字体和 sans-serif 默认中文字体，业务页面不得把 Roboto 置于 PingFang 之前。
 - 全局辅助按钮状态必须遵循统一规则：默认白底，hover 灰底 `#F5F5F5`，active 使用 `#EDEDED`，focus 保持白底并显示规范焦点态；生成 Portal 中的 Modal/Popconfirm 时也要显式覆盖 Ant 默认蓝色样式。
 - `page-spec.json` 是页面唯一可编辑源；新页面默认使用 Page Spec V2，并在实现前声明页面族、结构、层级、操作、状态、响应式和偏离。
 - 先运行一次页面族与能力路由，并在后续阶段复用路由结果。`auto` 在一个已实现 Recipe 及其本次装配的可选能力均可交付时使用标准渲染器，否则回到开放组合；`standard`/`strict` 缺能力时输出 `capability-gap.md`；`open` 显式保留开放 Contract。

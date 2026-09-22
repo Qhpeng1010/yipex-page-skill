@@ -4,6 +4,16 @@ import vm from 'node:vm';
 
 const runtime = readFileSync(new URL('../modules/yipex/shell/shell-runtime.js', import.meta.url), 'utf8');
 const shellCss = readFileSync(new URL('../modules/yipex/shell/shell.css', import.meta.url), 'utf8');
+const fontSourceFiles = [
+  '../modules/yipex/shell/shell.css',
+  '../scripts/build-yipex-page.mjs',
+  '../scripts/renderers/yipex-standard-query-table.mjs',
+  '../scripts/renderers/yipex-standard-dashboard-overview.mjs',
+  '../scripts/renderers/yipex-standard-grouped-detail.mjs',
+  '../scripts/renderers/yipex-standard-grouped-form.mjs',
+  '../scripts/renderers/yipex-standard-result-workflow.mjs',
+  '../scripts/renderers/yipex-standard-stepped-form.mjs'
+].map((file) => readFileSync(new URL(file, import.meta.url), 'utf8'));
 const listeners = new Map();
 
 const makeNav = (key, title, active = false) => ({
@@ -66,4 +76,7 @@ for (const requiredRule of [
   if (!shellCss.includes(requiredRule)) throw new Error(`shell is missing Modal chrome rule: ${requiredRule}`);
 }
 
-console.log('yipex-shell-runtime: pass (navigation restore and Modal chrome)');
+const expectedFontChain = '"苹方-简","PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+if (!shellCss.includes(`font-family:${expectedFontChain}`)) throw new Error(`shell must prioritize the system PingFang font: ${expectedFontChain}`);
+if (fontSourceFiles.some((source) => source.includes('Roboto'))) throw new Error('business font sources must not reference Roboto');
+console.log('yipex-shell-runtime: pass (navigation restore, Modal chrome, and system font policy)');
